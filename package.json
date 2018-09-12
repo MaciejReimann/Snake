@@ -1,0 +1,19 @@
+{
+  "name": "snake",
+  "version": "1.0.0",
+  "description": "Snake game",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js",
+    "dev": "set NODE_ENV=development && npm run server"
+  },
+  "author": "Maciej Reimann",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  }
+}
