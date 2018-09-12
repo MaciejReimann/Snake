@@ -1,0 +1,7 @@
+.canvas-wrapper {
+  border: solid 1px #7b61a7;
+}
+
+canvas {
+  width: 100vw;
+}
