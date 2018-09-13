@@ -10,6 +10,7 @@
   display: grid;
   justify-content: center;
   align-content: center;
+  background-color: black;
 }
 
 .canvas {
@@ -21,4 +22,9 @@
   height: 10vh;
   width: 100vw;
 
+}
+
+
+.color {
+  color: #8cc965
 }

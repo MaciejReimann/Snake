@@ -1,27 +1,9 @@
 
 
-
 const game = snakeGame.getInstance();
 
-const CANVAS = document.querySelector(".canvas");
-CANVAS.width = game.getState().width;
-CANVAS.height = game.getState().height;
-const ctx = CANVAS.getContext('2d');
-const mod = game.getState().module;
-
-const render = () => {
-  const snake = game.getState().snakeBody;
-  const worm = game.getState().worm;
-  clearCanvas(CANVAS);
-
-  snake.forEach(point => {
-    ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
-  })
-  drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
-}
-
 const checkMediaSize = () => {
-
+  game.dispatch({ type: 'CHECK-MEDIA' })
 }
 
 const handleUp = () => {
@@ -48,6 +30,24 @@ window.addEventListener('keydown', e => {
 
 window.addEventListener('load', checkMediaSize);
 
+const render = () => {
+  const CANVAS = document.querySelector(".canvas");
+  CANVAS.width = game.getState().width;
+  CANVAS.height = game.getState().height;
+  const ctx = CANVAS.getContext('2d');
+  const mod = game.getState().module;
+
+  const snake = game.getState().snakeBody;
+  const worm = game.getState().worm;
+  clearCanvas(CANVAS);
+
+  snake.forEach(point => {
+    ctx.fillStyle = "#8cc965";
+    ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
+  })
+  ctx.fillStyle = "#c7823c";
+  drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
+}
 
 game.subscribe(render)
 

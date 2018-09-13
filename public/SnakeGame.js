@@ -4,30 +4,35 @@ const snakeGame = ( () => {
   'use strict'
   let gameInstance;
 
+  const setWidth = mod => {
+    const CANVAS = document.querySelector(".canvas");
+    const wrapperWidth = CANVAS.parentElement.clientWidth;
+    return Math.floor(wrapperWidth / mod) * mod;
+  }
+  const setHeight = mod => {
+    const CANVAS = document.querySelector(".canvas");
+    const wrapperHeight = CANVAS.parentElement.clientHeight;
+    return Math.floor(wrapperHeight / mod) * mod;
+  }
+  const checkMedia = state => {
+    (document.body.clientWidth > 1024) ? (state.module = 20) : (state.module = 40);
+    state.width =  setWidth(state.module);
+    state.height = setHeight(state.module);
+    console.log(state.width)
+    return state;
+  }
+
   // snake navigation
   const UP = { x: 0, y:-1 };
   const RIGHT = { x: 1, y: 0 };
   const DOWN = { x: 0, y: 1 };
   const LEFT = { x:-1, y: 0 };
 
-  const mod = 40;
-
-  const setWidth = () => {
-    const CANVAS = document.querySelector(".canvas");
-    const wrapperWidth = CANVAS.parentElement.clientWidth;
-    return Math.floor(wrapperWidth / mod) * mod;
-  }
-  const setHeight = () => {
-    const CANVAS = document.querySelector(".canvas");
-    const wrapperWidth = CANVAS.parentElement.clientHeight;
-    return Math.floor(wrapperWidth / mod) * mod;
-  }
-
   // initial game set-up
   const initialState = {
-    width: setWidth(),
-    height: setHeight(),
-    module: mod,
+    width: 0,
+    height: 0,
+    module: 0,
 
     lastTime: Date.now(),
     tempo: 1000,
@@ -98,6 +103,8 @@ const snakeGame = ( () => {
 
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
+      case 'CHECK-MEDIA':
+        return checkMedia(state);
       case 'MOVE':
         return moveSnake(state);
       case 'GO-RIGHT':
