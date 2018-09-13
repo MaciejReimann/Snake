@@ -51,6 +51,11 @@ const snakeGame = ( () => {
     return state;
   }
 
+  const timestamp = state => {
+    state.lastTime = Date.now();
+    return state;
+  }
+
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
       case 'MOVE':
@@ -63,6 +68,8 @@ const snakeGame = ( () => {
         return changeDirection(LEFT)(state);
       case 'GO-UP':
         return changeDirection(UP)(state);
+      case 'TIMESTAMP':
+        return timestamp(state);
       default:
         return state;
     }
