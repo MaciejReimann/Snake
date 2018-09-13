@@ -1,22 +1,27 @@
-const CANVAS = document.createElement("canvas");
-const ctx = CANVAS.getContext('2d');
-document.querySelector(".canvas-wrapper").appendChild(CANVAS);
+
+
 
 const game = snakeGame.getInstance();
 
+const CANVAS = document.querySelector(".canvas");
+CANVAS.width = game.getState().width;
+CANVAS.height = game.getState().height;
+const ctx = CANVAS.getContext('2d');
+const mod = game.getState().module;
+
 const render = () => {
-  const snake = game.getState().snakeBody
-  ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+  const snake = game.getState().snakeBody;
+  const worm = game.getState().worm;
+  clearCanvas(CANVAS);
+
   snake.forEach(point => {
-    ctx.fillRect(point.x * 20, point.y * 20, 20, 20);
+    ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
   })
+  drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
 }
 
-const handleResize = () => {
-  wrapperWidth = CANVAS.parentElement.clientWidth;
-  wrapperHeight = CANVAS.parentElement.clientHeight;
-  CANVAS.width = Math.floor(.09 * wrapperWidth) * 10;
-  CANVAS.height = Math.floor(.09 * wrapperHeight) * 10;
+const checkMediaSize = () => {
+
 }
 
 const handleUp = () => {
@@ -32,10 +37,6 @@ const handleLeft = () => {
   game.dispatch({ type: 'GO-LEFT'})
 }
 
-
-
-
-
 window.addEventListener('keydown', e => {
   switch (e.key) {
     case 'w': case 'ArrowUp':    handleUp(); break
@@ -45,13 +46,9 @@ window.addEventListener('keydown', e => {
   }
 })
 
-window.addEventListener('resize', handleResize);
-window.addEventListener('load', handleResize);
+window.addEventListener('load', checkMediaSize);
 
 
+game.subscribe(render)
 
-const unsubscribe = game.subscribe(render);
 render();
-
-console.log(game.getState())
-0

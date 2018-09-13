@@ -12,8 +12,8 @@
   align-content: center;
 }
 
-canvas {
-  border: solid 1px red;  
+.canvas {
+  border: solid 1px red;
 }
 
 .footer {

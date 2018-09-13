@@ -10,40 +10,76 @@ const snakeGame = ( () => {
   const DOWN = { x: 0, y: 1 };
   const LEFT = { x:-1, y: 0 };
 
+  const mod = 40;
+
+  const setWidth = () => {
+    const CANVAS = document.querySelector(".canvas");
+    const wrapperWidth = CANVAS.parentElement.clientWidth;
+    return Math.floor(wrapperWidth / mod) * mod;
+  }
+  const setHeight = () => {
+    const CANVAS = document.querySelector(".canvas");
+    const wrapperWidth = CANVAS.parentElement.clientHeight;
+    return Math.floor(wrapperWidth / mod) * mod;
+  }
 
   // initial game set-up
   const initialState = {
+    width: setWidth(),
+    height: setHeight(),
+    module: mod,
+
     lastTime: Date.now(),
     tempo: 1000,
     snakeDirections: [RIGHT],
     snakeBody: [
+      {
+        x: 3,
+        y: 1
+      },
+      {
+        x: 2,
+        y: 1
+      },
       {
         x: 1,
         y: 1
       }
     ],
     worm: {
-      x: 5,
-      y: 2
+      x: 10,
+      y: 1
     },
   }
 
   // game conditionals
-  const canGo = direction => state =>
+
+  const pointsAreEqual = p1 => p2 => p1.x === p2.x && p1.y === p2.y;
+
+  const willHitWall = direction => state =>
     direction.x + state.snakeDirections.x !== 0 ||
     direction.y + state.snakeDirections.y !== 0
 
+  const willEatWorm = state => pointsAreEqual(nextHead(state))(state.worm);
+
+  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
+
+  const nextHead = state => {
+    return {
+      x: state.snakeBody[0].x + state.snakeDirections[0].x,
+      y: state.snakeBody[0].y + state.snakeDirections[0].y
+    }
+  }
 
   // game actions
   const moveSnake = state => {
     let headMoved = [
       {
-          x: state.snakeBody[0].x + state.snakeDirections[0].x,
-          y: state.snakeBody[0].y + state.snakeDirections[0].y
+        x: state.snakeBody[0].x + state.snakeDirections[0].x,
+        y: state.snakeBody[0].y + state.snakeDirections[0].y
       }
     ];
-    state.snakeBody = state.snakeBody.slice(1);
-    state.snakeBody = headMoved.concat(state.snakeBody);
+    state.snakeBody = headMoved.concat(state.snakeBody).slice(0, state.snakeBody.length);
     if (state.snakeDirections.length > 1) {
       state.snakeDirections = state.snakeDirections.slice(1, state.snakeDirections.length);
     }
