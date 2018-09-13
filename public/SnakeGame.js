@@ -42,12 +42,11 @@ const snakeGame = ( () => {
           y: state.snakeBody[0].y + state.snakeDirections[0].y
       }
     ];
-
     state.snakeBody = state.snakeBody.slice(1);
     state.snakeBody = headMoved.concat(state.snakeBody);
-    if (state.snakeDirections > 1) {
+    if (state.snakeDirections.length > 1) {
       state.snakeDirections = state.snakeDirections.slice(1, state.snakeDirections.length);
-    }    
+    }
     return state;
   }
 
@@ -66,13 +65,13 @@ const snakeGame = ( () => {
       case 'MOVE':
         return moveSnake(state);
       case 'GO-RIGHT':
-        return changeDirection(RIGHT)(state);
+        return changeDirection([RIGHT])(state);
       case 'GO-DOWN':
-        return changeDirection(DOWN)(state);
+        return changeDirection([DOWN])(state);
       case 'GO-LEFT':
-        return changeDirection(LEFT)(state);
+        return changeDirection([LEFT])(state);
       case 'GO-UP':
-        return changeDirection(UP)(state);
+        return changeDirection([UP])(state);
       case 'TIMESTAMP':
         return timestamp(state);
       default:
