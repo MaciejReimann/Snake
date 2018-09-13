@@ -2,42 +2,51 @@
   'use strict'
 
   // SNAKE NAVIGATION
-  const DIRECTIONS = [
-    { x: 0, y:-1 }, // UP
-    { x: 1, y: 0 }, // RIGHT
-    { x: 0, y: 1 }, // DOWN
-    { x:-1, y: 0 }  // LEFT
-  ];
+  const UP = { x: 0, y:-1 };
+  const RIGHT = { x: 1, y: 0 };
+  const DOWN = { x: 0, y: 1 };
+  const LEFT = { x:-1, y: 0 };
+
 
   // INITIAL GAME SET-UP
   const initialState = {
     lastTime: Date.now(),
     tempo: 1000,
-    snakeDirection: 1,
-    snakeHead: {
-      x: 1,
-      y: 1
-    },
+    turningPoints:[]
+    snakeDirection: [RIGHT],
+    snakeBody: [
+      {
+        x: 1,
+        y: 1
+      }
+    ],
     worm: {
       x: 5,
       y: 2
     },
   }
 
-  // GAME EVENTS
-  const moveSnake = state => {
-    state.snakeHead = {
-      x: state.snakeHead.x + DIRECTIONS[state.snakeDirection].x,
-      y: state.snakeHead.y + DIRECTIONS[state.snakeDirection].y
+  // GAME CONDITIONS
+  const canGo = direction => state =>
+    direction.x + state.snakeDirection.x !== 0 ||
+    direction.y + state.snakeDirection.y !== 0
+
+
+
+  // GAME ACTIONS
+  const moveSnake = direction => state => {
+    let headMoved = {
+        x: state.snakeBody[0].x + state.snakeDirection[0].x,
+        y: state.snakeBody[0].y + state.snakeDirection[0].y
     }
+    state.snakeBody = state.snakeBody.slice(1);
+    state.snakeBody = headMoved.concat(state.snakeBody);
+    state.snakeDirection = state.snakeDirection.slice(1, state.snakeDirection.length);
     return state;
   }
-  const turnRight = state => {
-    (state.snakeDirection === 3) ? (state.snakeDirection = 0) : (state.snakeDirection += 1)
-    return state;
-  }
-  const turnLeft = state => {
-    (state.snakeDirection === 0) ? (state.snakeDirection = 3) : (state.snakeDirection -= 1)
+
+  const changeDirection = direction => state => {
+    state.snakeDirection = state.snakeDirection.concat(direction);
     return state;
   }
 
@@ -68,10 +77,14 @@
     switch(action.type) {
       case 'MOVE':
         return moveSnake(state);
-      case 'TURN-RIGHT':
-        return turnRight(state);
-      case 'TURN-LEFT':
-        return turnLeft(state);
+      case 'GO-RIGHT':
+        return changeDirection(RIGHT)(state);
+      case 'GO-DOWN':
+        return changeDirection(DOWN)(state);
+      case 'GO-LEFT':
+        return changeDirection(LEFT)(state);
+      case 'GO-UP':
+        return changeDirection(UP)(state);
       default:
         return state;
     }
