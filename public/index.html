@@ -10,13 +10,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
   <body class="page">
-    <header class='header'>
-      <h1>Snake</h1>
-    </header>
-    <div class='canvas-wrapper'>
+    <div class='header container-fluid'>
+        <div class='row h-100 align-items-center'>
+          <div class='col-3 d-flex justify-content-center'>Position</div>
+          <div class='col-6 d-flex justify-content-center'>Snake</div>
+          <div class='col-3 d-flex justify-content-center'>Score</div>
+        </div>
     </div>
-    <footer class='footer'>
-    </footer>
+    <div class='canvas-wrapper'></div>
+    <footer class='footer'></footer>
+
     <script src="CreateStore.js"></script>
     <script src="SnakeGame.js"></script>
     <script src="canvasGUI.js"></script>

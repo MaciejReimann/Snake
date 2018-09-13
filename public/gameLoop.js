@@ -7,10 +7,11 @@ const gameloop = () => {
   const tempo = 1000;
 
   if(intervalPassed(lastTime)(Date.now())(tempo)) {
-    console.log("loop")
+    // console.log("loop")
     snakeGame.getInstance().dispatch({ type: 'TIMESTAMP' })
+    snakeGame.getInstance().dispatch({ type: 'MOVE' })
   }
   window.requestAnimationFrame(gameloop)
 }
 
-window.requestAnimationFrame(gameloop)
+// window.requestAnimationFrame(gameloop)

@@ -1,7 +1,24 @@
+.header {
+  border: solid 2px #61a785;
+  height: 5vh;
+}
+
 .canvas-wrapper {
   border: solid 1px #7b61a7;
+  width: 100vw;
+  height: 85vh;;
+  display: grid;
+  justify-content: center;
+  align-content: center;
 }
 
 canvas {
+  border: solid 1px red;  
+}
+
+.footer {
+  border: solid 2px #61a785;
+  height: 10vh;
   width: 100vw;
+
 }
