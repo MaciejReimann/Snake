@@ -22,7 +22,7 @@ const snakeGame = ( () => {
     return state;
   }
 
-  // snake navigation
+  // snake navigation constants
   const UP = { x: 0, y:-1 };
   const RIGHT = { x: 1, y: 0 };
   const DOWN = { x: 0, y: 1 };
@@ -36,8 +36,8 @@ const snakeGame = ( () => {
 
     lastTime: Date.now(),
     tempo: 1000,
-    snakeDirections: [RIGHT],
-    snakeBody: [
+    directions: [RIGHT],
+    body: [
       {
         x: 3,
         y: 1
@@ -55,44 +55,56 @@ const snakeGame = ( () => {
       x: 10,
       y: 1
     },
+    isGameOver: false,
+    isStarted: false,
+    isPaused: false,
   }
 
-  // game conditionals
-
+  // point operations
   const pointsAreEqual = p1 => p2 => p1.x === p2.x && p1.y === p2.y;
-
-  const willHitWall = direction => state =>
-    direction.x + state.snakeDirections.x !== 0 ||
-    direction.y + state.snakeDirections.y !== 0
-
-  const willEatWorm = state => pointsAreEqual(nextHead(state))(state.worm);
-
-  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
-
-  const nextHead = state => {
+  const getRightBorder = state => state.width / state.module;
+  const getDownBorder = state => state.height / state.module;
+  const getRandomPoint = state => {
     return {
-      x: state.snakeBody[0].x + state.snakeDirections[0].x,
-      y: state.snakeBody[0].y + state.snakeDirections[0].y
+      x: Math.floor( (Math.random() * getRightBorder(state) )) - 1,
+      y: Math.floor( (Math.random() * getDownBorder(state) )) - 1
     }
   }
 
+// game conditionals
+  const moveIsValid = direction => state =>
+    direction.x + state.directions.x !== 0 ||
+    direction.y + state.directions.y !== 0
+  const willEatWorm = state => pointsAreEqual( nextHead(state) )(state.worm);
+  const willCrash = state => state.body.find( pointsAreEqual( nextHead(state) ) )
+  // calls ointsAreEqual( nextHead(state) ) (ELEMENT of the state.body array, which are points) for each ELEMENT
+  // if finds any, breaks and returns the value
+
   // game actions
+  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
+  const nextHead = state => {
+    return {
+      x: state.body[0].x + state.directions[0].x,
+      y: state.body[0].y + state.directions[0].y
+    }
+  }
+
   const moveSnake = state => {
     let headMoved = [
       {
-        x: state.snakeBody[0].x + state.snakeDirections[0].x,
-        y: state.snakeBody[0].y + state.snakeDirections[0].y
+        x: state.body[0].x + state.directions[0].x,
+        y: state.body[0].y + state.directions[0].y
       }
     ];
-    state.snakeBody = headMoved.concat(state.snakeBody).slice(0, state.snakeBody.length);
-    if (state.snakeDirections.length > 1) {
-      state.snakeDirections = state.snakeDirections.slice(1, state.snakeDirections.length);
+    state.body = headMoved.concat(state.body).slice(0, state.body.length);
+    if (state.directions.length > 1) {
+      state.directions = state.directions.slice(1, state.directions.length);
     }
     return state;
   }
 
   const changeDirection = direction => state => {
-    state.snakeDirections = state.snakeDirections.concat(direction);
+    state.directions = state.directions.concat(direction);
     return state;
   }
 

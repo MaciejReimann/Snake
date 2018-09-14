@@ -37,7 +37,7 @@ const render = () => {
   const ctx = CANVAS.getContext('2d');
   const mod = game.getState().module;
 
-  const snake = game.getState().snakeBody;
+  const snake = game.getState().body;
   const worm = game.getState().worm;
   clearCanvas(CANVAS);
 
