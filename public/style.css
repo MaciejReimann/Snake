@@ -17,6 +17,10 @@
   border: solid 1px red;
 }
 
+.Score {
+  font-size: 2rem;
+}
+
 .footer {
   border: solid 2px #61a785;
   height: 10vh;

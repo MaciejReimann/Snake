@@ -1,25 +1,17 @@
-// GAME LOGIC SINGLETON PRESERVING GAME STATE
 
+// GAME LOGIC SINGLETON PRESERVING GAME STATE
 const snakeGame = ( () => {
   'use strict'
   let gameInstance;
 
-  const setWidth = mod => {
-    const CANVAS = document.querySelector(".canvas");
-    const wrapperWidth = CANVAS.parentElement.clientWidth;
-    return Math.floor(wrapperWidth / mod) * mod;
-  }
-  const setHeight = mod => {
-    const CANVAS = document.querySelector(".canvas");
-    const wrapperHeight = CANVAS.parentElement.clientHeight;
-    return Math.floor(wrapperHeight / mod) * mod;
-  }
-  const checkMedia = state => {
-    (document.body.clientWidth > 1024) ? (state.module = 20) : (state.module = 40);
-    state.width =  setWidth(state.module);
-    state.height = setHeight(state.module);
-    console.log(state.width)
-    return state;
+  const setDimensions = () => {
+    const canvasContainer = document.querySelector(".canvas").parentElement;
+    const mod = document.body.clientWidth > 1024 ? 20 : 40;
+    return {
+      x: Math.floor(canvasContainer.clientWidth / mod) * mod,
+      y: Math.floor(canvasContainer.clientHeight / mod) * mod,
+      mod: mod
+    }
   }
 
   // snake navigation constants definition
@@ -42,12 +34,13 @@ const snakeGame = ( () => {
 
   // initial game set-up
   const initialState = {
-    width: 0,
-    height: 0,
-    module: 0,
+    score: 0,
+    width: setDimensions().x,
+    height: setDimensions().y,
+    module: setDimensions().mod,
 
     lastTime: Date.now(),
-    tempo: 300,
+    tempo: 100,
     directions: [ DIRECTIONS["RIGHT"] ],
     body: growBabySnake({ x:1, y:1 })(4),
     worm: {
@@ -127,20 +120,23 @@ const snakeGame = ( () => {
       }
     )
 
-  const makeTimestamp = time => state => Object.assign(
+  const nextScore = state => willEatWorm(state)
+    ? state.score + 1
+    : state.score
+
+  const makeTimestamp = state => Object.assign(
     {}, state, {
-      lastTime: time
+      lastTime: Date.now(),
+      score: nextScore(state)
     }
   )
 
-  const moveAndTimestamp = time => state => makeTimestamp(time)(moveSnake(state))
+  const moveAndTimestamp = state => makeTimestamp(moveSnake(state))
 
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
-      case 'CHECK-MEDIA':
-        return checkMedia(state);
       case 'MOVE_SNAKE':
-        return moveAndTimestamp(Date.now())(state);
+        return moveAndTimestamp(state);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);
       default:

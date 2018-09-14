@@ -2,10 +2,6 @@
 
 const game = snakeGame.getInstance();
 
-const checkMediaSize = () => {
-  game.dispatch({ type: 'CHECK-MEDIA' })
-}
-
 const handleTurn = direction => {
   game.dispatch({
     type: 'ENQUEUE_TURN',
@@ -22,9 +18,13 @@ window.addEventListener('keydown', e => {
   }
 })
 
-window.addEventListener('load', checkMediaSize);
+const updateScore = () => {
+    const SCORE = document.querySelector(".Score");
+    SCORE.textContent = game.getState().score
+}
 
 const render = () => {
+
   const CANVAS = document.querySelector(".canvas");
   CANVAS.width = game.getState().width;
   CANVAS.height = game.getState().height;
@@ -45,11 +45,13 @@ const render = () => {
     ctx.fillStyle = "#8cc965";
     ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
   })
-  console.log(worm)
+
+  // worm
   ctx.fillStyle = "#c7823c";
   drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
 }
 
 game.subscribe(render)
+game.subscribe(updateScore)
 
 render();
