@@ -40,6 +40,10 @@ const snakeGame = ( () => {
     directions: [ DIRECTIONS["RIGHT"] ],
     body: [
       {
+        x: 4,
+        y: 1
+      },
+      {
         x: 3,
         y: 1
       },
@@ -72,13 +76,18 @@ const snakeGame = ( () => {
     }
   }
 
-// game conditionals
-  const lastItem = array => array.length > 0
+  // array operations
+  const getLastItem = array => array.length > 0
     ? array[array.length - 1]
     : null
+  const dropFirst = array => array.slice(1, array.length);
+  const dropFirstIfLongerThanOne = array => array.length > 1
+   ? dropFirst(array) : array
+
+   // game conditionals
   const turnIsValid = direction => state =>
-    direction.x + lastItem(state.directions).x !== 0 ||
-    direction.y + lastItem(state.directions).y !== 0
+    direction.x + getLastItem(state.directions).x !== 0 ||
+    direction.y + getLastItem(state.directions).y !== 0
   const willEatWorm = state => pointsAreEqual( nextHead(state) )(state.worm);
   const willCrash = state => state.body.find( pointsAreEqual( nextHead(state) ) )
   // calls ointsAreEqual( nextHead(state) ) (ELEMENT of the state.body array, which are points) for each ELEMENT
@@ -86,6 +95,7 @@ const snakeGame = ( () => {
 
   // game actions
   const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
+
   const nextHead = state => {
     return {
       x: state.body[0].x + state.directions[0].x,
@@ -93,19 +103,21 @@ const snakeGame = ( () => {
     }
   }
 
-  const moveSnake = state => {
-    let headMoved = [
-      {
-        x: state.body[0].x + state.directions[0].x,
-        y: state.body[0].y + state.directions[0].y
+  const moveSnake = state => !willCrash(state)
+    ? Object.assign(
+        {}, state, {
+          body: []
+            .concat(nextHead(state))
+            .concat(state.body)
+            .slice(0, state.body.length),
+          directions: dropFirstIfLongerThanOne(state.directions)
+        }
+      )
+    : Object.assign(
+      {}, state, {
+        isGameOver: true
       }
-    ];
-    state.body = headMoved.concat(state.body).slice(0, state.body.length);
-    if (state.directions.length > 1) {
-      state.directions = state.directions.slice(1, state.directions.length);
-    }
-    return state;
-  }
+    )
 
   const enqueueTurn = direction => state => turnIsValid(direction)(state)
     ? Object.assign(
@@ -125,7 +137,7 @@ const snakeGame = ( () => {
     switch(action.type) {
       case 'CHECK-MEDIA':
         return checkMedia(state);
-      case 'MOVE':
+      case 'MOVE_SNAKE':
         return moveSnake(state);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);

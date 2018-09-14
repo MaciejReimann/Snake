@@ -31,6 +31,12 @@ const render = () => {
   const ctx = CANVAS.getContext('2d');
   const mod = game.getState().module;
 
+  if(game.getState().isGameOver) {
+    console.log("game over")
+    fillCanvas(CANVAS)
+    return;
+  }
+
   const snake = game.getState().body;
   const worm = game.getState().worm;
   clearCanvas(CANVAS);
