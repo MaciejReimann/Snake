@@ -22,7 +22,7 @@ const snakeGame = ( () => {
     return state;
   }
 
-  // snake navigation constants
+  // snake navigation constants definition
   const UP = { x: 0, y:-1 };
   const RIGHT = { x: 1, y: 0 };
   const DOWN = { x: 0, y: 1 };
@@ -37,7 +37,7 @@ const snakeGame = ( () => {
 
     lastTime: Date.now(),
     tempo: 1000,
-    directions: [RIGHT],
+    directions: [ DIRECTIONS["RIGHT"] ],
     body: [
       {
         x: 3,
@@ -109,12 +109,11 @@ const snakeGame = ( () => {
       directions: state.directions.concat(DIRECTIONS[direction])
     }
   )
-
-
-  const timestamp = state => {
-    state.lastTime = Date.now();
-    return state;
-  }
+  const makeTimestamp = time => state => Object.assign(
+    {}, state, {
+      lastTime: time
+    }
+  )
 
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -124,8 +123,8 @@ const snakeGame = ( () => {
         return moveSnake(state);
       case 'TURN':
         return changeDirection(action.direction)(state);
-      case 'TIMESTAMP':
-        return timestamp(state);
+      case 'MAKE_TIMESTAMP':
+        return makeTimestamp(Date.now())(state);
       default:
         return state;
     }
