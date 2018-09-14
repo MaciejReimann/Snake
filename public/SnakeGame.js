@@ -29,6 +29,17 @@ const snakeGame = ( () => {
   const LEFT = { x:-1, y: 0 };
   const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
 
+  const growBabySnake = startPoint => length => {
+    let arr = [];
+    for (let i = length; i > 0; i --) {
+      arr.push({
+        x: startPoint.x + i,
+        y: startPoint.y
+      })
+    }
+    return arr;
+  }
+
   // initial game set-up
   const initialState = {
     width: 0,
@@ -38,24 +49,7 @@ const snakeGame = ( () => {
     lastTime: Date.now(),
     tempo: 1000,
     directions: [ DIRECTIONS["RIGHT"] ],
-    body: [
-      {
-        x: 4,
-        y: 1
-      },
-      {
-        x: 3,
-        y: 1
-      },
-      {
-        x: 2,
-        y: 1
-      },
-      {
-        x: 1,
-        y: 1
-      }
-    ],
+    body: growBabySnake({ x:1, y:1 })(4),
     worm: {
       x: 10,
       y: 1
