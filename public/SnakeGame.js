@@ -47,11 +47,11 @@ const snakeGame = ( () => {
     module: 0,
 
     lastTime: Date.now(),
-    tempo: 1000,
+    tempo: 300,
     directions: [ DIRECTIONS["RIGHT"] ],
     body: growBabySnake({ x:1, y:1 })(4),
     worm: {
-      x: 10,
+      x: 7,
       y: 1
     },
     isGameOver: false,
@@ -97,7 +97,7 @@ const snakeGame = ( () => {
       )
     : state
 
-  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
+  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm
 
   const nextHead = state => {
     return {
@@ -109,11 +109,16 @@ const snakeGame = ( () => {
   const moveSnake = state => !willCrash(state)
     ? Object.assign(
         {}, state, {
-          body:
+          body: ! willEatWorm(state) ? (
             [nextHead(state)]
             .concat(state.body)
-            .slice(0, state.body.length),
-          directions: dropFirstIfLongerThanOne(state.directions)
+            .slice(0, state.body.length)
+          ) : (
+            [nextHead(state)]
+            .concat(state.body)
+          ),
+          directions: dropFirstIfLongerThanOne(state.directions),
+          worm: nextWorm(state)
         }
       )
     : Object.assign(

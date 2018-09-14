@@ -45,6 +45,7 @@ const render = () => {
     ctx.fillStyle = "#8cc965";
     ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
   })
+  console.log(worm)
   ctx.fillStyle = "#c7823c";
   drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
 }
