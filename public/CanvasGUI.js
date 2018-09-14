@@ -6,25 +6,19 @@ const checkMediaSize = () => {
   game.dispatch({ type: 'CHECK-MEDIA' })
 }
 
-const handleUp = () => {
-  game.dispatch({ type: 'GO-UP' })
-}
-const handleRight = () => {
-  game.dispatch({ type: 'GO-RIGHT'})
-}
-const handleDown = () => {
-  game.dispatch({ type: 'GO-DOWN'})
-}
-const handleLeft = () => {
-  game.dispatch({ type: 'GO-LEFT'})
+const handleTurn = direction => {
+  game.dispatch({
+    type: 'TURN',
+    direction: direction
+  })
 }
 
 window.addEventListener('keydown', e => {
   switch (e.key) {
-    case 'w': case 'ArrowUp':    handleUp(); break
-    case 'a': case 'ArrowLeft':  handleLeft();  break
-    case 's': case 'ArrowDown':  handleDown(); break
-    case 'd': case 'ArrowRight': handleRight();  break
+    case 'w': case 'ArrowUp':    handleTurn('UP'); break
+    case 'a': case 'ArrowLeft':  handleTurn('LEFT');  break
+    case 's': case 'ArrowDown':  handleTurn('DOWN'); break
+    case 'd': case 'ArrowRight': handleTurn('RIGHT');  break
   }
 })
 

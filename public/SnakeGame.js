@@ -27,6 +27,7 @@ const snakeGame = ( () => {
   const RIGHT = { x: 1, y: 0 };
   const DOWN = { x: 0, y: 1 };
   const LEFT = { x:-1, y: 0 };
+  const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
 
   // initial game set-up
   const initialState = {
@@ -104,7 +105,7 @@ const snakeGame = ( () => {
   }
 
   const changeDirection = direction => state => {
-    state.directions = state.directions.concat(direction);
+    state.directions = state.directions.concat(DIRECTIONS[direction]);
     return state;
   }
 
@@ -119,14 +120,8 @@ const snakeGame = ( () => {
         return checkMedia(state);
       case 'MOVE':
         return moveSnake(state);
-      case 'GO-RIGHT':
-        return changeDirection([RIGHT])(state);
-      case 'GO-DOWN':
-        return changeDirection([DOWN])(state);
-      case 'GO-LEFT':
-        return changeDirection([LEFT])(state);
-      case 'GO-UP':
-        return changeDirection([UP])(state);
+      case 'TURN':
+        return changeDirection(action.direction)(state);
       case 'TIMESTAMP':
         return timestamp(state);
       default:
