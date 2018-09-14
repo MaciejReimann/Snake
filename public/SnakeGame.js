@@ -104,10 +104,12 @@ const snakeGame = ( () => {
     return state;
   }
 
-  const changeDirection = direction => state => {
-    state.directions = state.directions.concat(DIRECTIONS[direction]);
-    return state;
-  }
+  const changeDirection = direction => state => Object.assign(
+    {}, state, {
+      directions: state.directions.concat(DIRECTIONS[direction])
+    }
+  )
+
 
   const timestamp = state => {
     state.lastTime = Date.now();
