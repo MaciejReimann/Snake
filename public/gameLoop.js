@@ -7,7 +7,6 @@ const gameloop = () => {
   const tempo = game.getState().tempo;
 
   if(intervalPassed(lastTime)(Date.now())(tempo)) {
-    snakeGame.getInstance().dispatch({ type: 'MAKE_TIMESTAMP' })
     snakeGame.getInstance().dispatch({ type: 'MOVE_SNAKE' })
     console.log(game.getState().snakeDirections)
   }

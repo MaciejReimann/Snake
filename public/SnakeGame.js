@@ -69,6 +69,7 @@ const snakeGame = ( () => {
       y: Math.floor( (Math.random() * getDownBorder(state) )) - 1
     }
   }
+  const mod = x => y => ((y % x) + x) % x // http://bit.ly/2oF4mQ7
 
   // array operations
   const getLastItem = array => array.length > 0
@@ -88,20 +89,28 @@ const snakeGame = ( () => {
   // if finds any, breaks and returns the value
 
   // game actions
+  const enqueueTurn = direction => state => turnIsValid(direction)(state)
+    ? Object.assign(
+        {}, state, {
+          directions: state.directions.concat(direction)
+        }
+      )
+    : state
+
   const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm;
 
   const nextHead = state => {
     return {
-      x: state.body[0].x + state.directions[0].x,
-      y: state.body[0].y + state.directions[0].y
+      x: mod(getRightBorder(state))(state.body[0].x + state.directions[0].x),
+      y: mod(getDownBorder(state))(state.body[0].y + state.directions[0].y)
     }
   }
 
   const moveSnake = state => !willCrash(state)
     ? Object.assign(
         {}, state, {
-          body: []
-            .concat(nextHead(state))
+          body:
+            [nextHead(state)]
             .concat(state.body)
             .slice(0, state.body.length),
           directions: dropFirstIfLongerThanOne(state.directions)
@@ -113,30 +122,22 @@ const snakeGame = ( () => {
       }
     )
 
-  const enqueueTurn = direction => state => turnIsValid(direction)(state)
-    ? Object.assign(
-        {}, state, {
-          directions: state.directions.concat(direction)
-        }
-      )
-    : state
-
   const makeTimestamp = time => state => Object.assign(
     {}, state, {
       lastTime: time
     }
   )
 
+  const moveAndTimestamp = time => state => makeTimestamp(time)(moveSnake(state))
+
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
       case 'CHECK-MEDIA':
         return checkMedia(state);
       case 'MOVE_SNAKE':
-        return moveSnake(state);
+        return moveAndTimestamp(Date.now())(state);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);
-      case 'MAKE_TIMESTAMP':
-        return makeTimestamp(Date.now())(state);
       default:
         return state;
     }
