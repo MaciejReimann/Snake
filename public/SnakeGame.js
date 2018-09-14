@@ -73,9 +73,12 @@ const snakeGame = ( () => {
   }
 
 // game conditionals
-  const moveIsValid = direction => state =>
-    direction.x + state.directions.x !== 0 ||
-    direction.y + state.directions.y !== 0
+  const lastItem = array => array.length > 0
+    ? array[array.length - 1]
+    : null
+  const turnIsValid = direction => state =>
+    direction.x + lastItem(state.directions).x !== 0 ||
+    direction.y + lastItem(state.directions).y !== 0
   const willEatWorm = state => pointsAreEqual( nextHead(state) )(state.worm);
   const willCrash = state => state.body.find( pointsAreEqual( nextHead(state) ) )
   // calls ointsAreEqual( nextHead(state) ) (ELEMENT of the state.body array, which are points) for each ELEMENT
@@ -104,11 +107,14 @@ const snakeGame = ( () => {
     return state;
   }
 
-  const changeDirection = direction => state => Object.assign(
-    {}, state, {
-      directions: state.directions.concat(DIRECTIONS[direction])
-    }
-  )
+  const enqueueTurn = direction => state => turnIsValid(direction)(state)
+    ? Object.assign(
+        {}, state, {
+          directions: state.directions.concat(direction)
+        }
+      )
+    : state
+
   const makeTimestamp = time => state => Object.assign(
     {}, state, {
       lastTime: time
@@ -121,8 +127,8 @@ const snakeGame = ( () => {
         return checkMedia(state);
       case 'MOVE':
         return moveSnake(state);
-      case 'TURN':
-        return changeDirection(action.direction)(state);
+      case 'ENQUEUE_TURN':
+        return enqueueTurn(DIRECTIONS[action.direction])(state);
       case 'MAKE_TIMESTAMP':
         return makeTimestamp(Date.now())(state);
       default:

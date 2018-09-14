@@ -8,7 +8,7 @@ const checkMediaSize = () => {
 
 const handleTurn = direction => {
   game.dispatch({
-    type: 'TURN',
+    type: 'ENQUEUE_TURN',
     direction: direction
   })
 }
