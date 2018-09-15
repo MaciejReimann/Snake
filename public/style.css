@@ -21,11 +21,16 @@
   font-size: 2rem;
 }
 
-.footer {
+.Footer {
   border: solid 2px #61a785;
-  height: 10vh;
+  height: 10rem;
   width: 100vw;
+}
 
+.Footer>button {
+  border: solid 2px #61a785;
+  height: 10rem;
+  width: 10rem;
 }
 
 

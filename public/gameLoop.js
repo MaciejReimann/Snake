@@ -1,5 +1,6 @@
 
-
+const snake = snakeGame.getInstance();
+let id;
 const intervalPassed = t1 => t2 => tempo => t2-t1 > tempo;
 
 const gameloop = () => {
@@ -7,9 +8,20 @@ const gameloop = () => {
   const tempo = game.getState().tempo;
 
   if(intervalPassed(lastTime)(Date.now())(tempo)) { // if more miliseconds passed than tempo, action is dispatched
-    snakeGame.getInstance().dispatch({ type: 'MOVE_SNAKE' })
+    snake
+      .dispatch({
+        type: 'MOVE_SNAKE',
+        id: id
+      })
   }
-  window.requestAnimationFrame(gameloop)
+  id = window.requestAnimationFrame(gameloop)
 }
 
-window.requestAnimationFrame(gameloop)
+id = window.requestAnimationFrame(gameloop)
+
+
+window.addEventListener('keydown', e => {
+  if(e.key === " ") {
+    window.cancelAnimationFrame(snake.getState().id)
+  }
+})

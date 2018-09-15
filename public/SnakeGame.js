@@ -90,7 +90,9 @@ const snakeGame = ( () => {
       )
     : state
 
-  const nextWorm = state => willEatWorm(state) ? getRandomPoint(state) : state.worm
+  const nextWorm = state => ! willEatWorm(state)
+    ? state.worm
+    : getRandomPoint(state)
 
   const nextHead = state => {
     return {
@@ -124,19 +126,20 @@ const snakeGame = ( () => {
     ? state.score + 1
     : state.score
 
-  const makeTimestamp = state => Object.assign(
+  const makeTimestamp = state => id => Object.assign(
     {}, state, {
       lastTime: Date.now(),
-      score: nextScore(state)
+      score: nextScore(state),
+      id: id
     }
   )
 
-  const moveAndTimestamp = state => makeTimestamp(moveSnake(state))
+  const moveAndTimestamp = state => id => makeTimestamp(moveSnake(state))(id)
 
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
       case 'MOVE_SNAKE':
-        return moveAndTimestamp(state);
+        return moveAndTimestamp(state)(action.id);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);
       default:

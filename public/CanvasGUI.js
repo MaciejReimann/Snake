@@ -1,5 +1,4 @@
 
-
 const game = snakeGame.getInstance();
 
 const handleTurn = direction => {
@@ -8,6 +7,14 @@ const handleTurn = direction => {
     direction: direction
   })
 }
+const handlePause = () => {
+  console.log("paused")
+  console.log(game.getState().id)
+  // window.cancelAnimationFrame(game.getState().id)
+  // game.dispatch({
+  //   type: 'GAME_PAUSED',
+  // })
+}
 
 window.addEventListener('keydown', e => {
   switch (e.key) {
@@ -15,8 +22,12 @@ window.addEventListener('keydown', e => {
     case 'a': case 'ArrowLeft':  handleTurn('LEFT');  break
     case 's': case 'ArrowDown':  handleTurn('DOWN'); break
     case 'd': case 'ArrowRight': handleTurn('RIGHT');  break
+    case ' ': handlePause();  break
   }
 })
+// window.addEventListener('keydown', e => {
+//   console.log(e.key)
+// })
 
 const updateScore = () => {
     const SCORE = document.querySelector(".Score");
