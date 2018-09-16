@@ -4,16 +4,6 @@ const snakeGame = ( () => {
   'use strict'
   let gameInstance;
 
-  const setDimensions = () => {
-    const canvasContainer = document.querySelector(".canvas").parentElement;
-    const mod = document.body.clientWidth > 1024 ? 20 : 40;
-    return {
-      x: Math.floor(canvasContainer.clientWidth / mod) * mod,
-      y: Math.floor(canvasContainer.clientHeight / mod) * mod,
-      mod: mod
-    }
-  }
-
   // snake navigation constants definition
   const UP = { x: 0, y:-1 };
   const RIGHT = { x: 1, y: 0 };
@@ -21,37 +11,24 @@ const snakeGame = ( () => {
   const LEFT = { x:-1, y: 0 };
   const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
 
-  const growBabySnake = startPoint => length => {
-    let arr = [];
-    for (let i = length; i > 0; i --) {
-      arr.push({
-        x: startPoint.x + i,
-        y: startPoint.y
-      })
-    }
-    return arr;
-  }
-
-  // initial game set-up
   const initialState = {
     score: 0,
     width: 0,
     height: 0,
     pixel: 0,
-
     lastTime: Date.now(),
     tempo: 100,
-    directions: [ DIRECTIONS["RIGHT"] ],
-    body: growBabySnake({ x:1, y:1 })(4),
-    worm: {
-      x: 7,
-      y: 1
-    },
+    directions: [ RIGHT ],
+    body: Array(4).fill()
+      .map((_, i) => { return { x: 1 + i, y: 1 } }
+    ),
+    worm: { x: 7, y: 1 },
     isGameOver: false,
     isStarted: false,
     isPaused: false,
   }
 
+  // gameboard setup
   const pixel = width => width > 1024 ? 20 : 40;
   const resizeGameboard = state => width => height => Object.assign(
     {}, state, {
