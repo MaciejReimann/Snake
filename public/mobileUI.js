@@ -1,27 +1,35 @@
 const FOOTER = document.querySelector(".Footer");
 
-const createButton = text => className => {
-  const button = document.createElement('button');
-  button.textContent = text;
-  button.className = className;
-  return button;
-};
+const BUTTON = 'button';
+const I = 'i';
+const UP = 'UP';
+const RIGHT = 'RIGHT';
+const DOWN = 'DOWN';
+const LEFT = 'LEFT';
 
-// const selectControls = () => {
+const createElement = element => document.createElement(element);
+const giveClass = element => className => {
+  element.className = className;
+  return element;
+}
+const createButton = className => giveClass(createElement(BUTTON))(className);
+const createI = className => giveClass(createElement(I))(className);
 
+
+const selectControls = (() => {
 
   const addMobileControls = () => {
-    [...new Array(4)].map((button ,i) => {
+    Array(4).fill().map((_, i) => { // https://goo.gl/YQJYxR; https://goo.gl/6rJzAh;
       switch(i) {
-        case 0: return createButton("<")("LEFT")
-        case 1: return createButton("^")("UP")
-        case 2: return createButton(">")("RIGHT")
-        case 3: return createButton("v")("DOWN")
+        case 0: return createButton(LEFT).appendChild(createI("fas fa-angle-left")).parentElement; // https://goo.gl/3dzoKc
+        case 1: return createButton(DOWN).appendChild(createI("fas fa-angle-down")).parentElement;
+        case 2: return createButton(UP).appendChild(createI("fas fa-angle-up")).parentElement;
+        case 3: return createButton(RIGHT).appendChild(createI("fas fa-angle-right")).parentElement;
       }
     })
     .map(button => FOOTER.appendChild(button))
-    .map(button => button.addEventListener('click', e => handleTurn(e.target.className)))
+    .map(button => button.addEventListener('click', e => handleTurn(button.className)))
   }
 
   document.body.clientWidth > 1024 ? addDesktopControls() : addMobileControls();
-// }
+})()
