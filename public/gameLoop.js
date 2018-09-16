@@ -15,9 +15,9 @@ const gameloop = () => {
           id: id
         })
     }
-    id = window.requestAnimationFrame(gameloop)
+    window.requestAnimationFrame(gameloop)
   }
-  id = window.requestAnimationFrame(gameloop)
+  window.requestAnimationFrame(gameloop)
 }
 
 
