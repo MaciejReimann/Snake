@@ -1,22 +1,9 @@
 const FOOTER = document.querySelector(".Footer");
 
-const BUTTON = 'button';
-const I = 'i';
-const UP = 'UP';
-const RIGHT = 'RIGHT';
-const DOWN = 'DOWN';
-const LEFT = 'LEFT';
-
-const createElement = element => document.createElement(element);
-const giveClass = element => className => {
-  element.className = className;
-  return element;
-}
-const createButton = className => giveClass(createElement(BUTTON))(className);
-const createI = className => giveClass(createElement(I))(className);
-
-
-const selectControls = (() => {
+const selectControls = ( () => {
+  addDesktopControls = () => {
+    console.log('DESKTOP')
+  }
 
   const addMobileControls = () => {
     Array(4).fill().map((_, i) => { // https://goo.gl/YQJYxR; https://goo.gl/6rJzAh;
@@ -30,6 +17,5 @@ const selectControls = (() => {
     .map(button => FOOTER.appendChild(button))
     .map(button => button.addEventListener('click', e => handleTurn(button.className)))
   }
-
   document.body.clientWidth > 1024 ? addDesktopControls() : addMobileControls();
 })()

@@ -35,9 +35,9 @@ const snakeGame = ( () => {
   // initial game set-up
   const initialState = {
     score: 0,
-    width: setDimensions().x,
-    height: setDimensions().y,
-    module: setDimensions().mod,
+    width: 0,
+    height: 0,
+    pixel: 0,
 
     lastTime: Date.now(),
     tempo: 100,
@@ -51,6 +51,14 @@ const snakeGame = ( () => {
     isStarted: false,
     isPaused: false,
   }
+
+  const pixel = width => width > 1024 ? 20 : 40;
+  const resizeGameboard = state => width => height => Object.assign(
+    {}, state, {
+      width: Math.floor(width / pixel(width)) * pixel(width),
+      height: Math.floor(height/ pixel(width)) * pixel(width),
+      module: mod
+    })
 
   // point operations
   const pointsAreEqual = p1 => p2 => p1.x === p2.x && p1.y === p2.y;
@@ -134,14 +142,25 @@ const snakeGame = ( () => {
     }
   )
 
+  const startGame = state => Object.assign(
+    {}, state, {
+      isStarted: true
+    }
+  )
+
   const moveAndTimestamp = state => id => makeTimestamp(moveSnake(state))(id)
 
   const snakeReducer = (state = initialState, action) => {
     switch(action.type) {
+      case 'START_GAME':
+      console.log("starting")
+        return startGame (resizeGameboard(state)(action.width)(action.height) )
       case 'MOVE_SNAKE':
         return moveAndTimestamp(state)(action.id);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);
+      case 'RESIZE_SCREEN':
+        return resizeGameboard(state)(action.width)(action.height)
       default:
         return state;
     }

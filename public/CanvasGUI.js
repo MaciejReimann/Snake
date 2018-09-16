@@ -1,5 +1,32 @@
 
 const game = snakeGame.getInstance();
+const canvasContainer = document.querySelector(".canvas-wrapper");
+
+
+// const setupCanvas = () => {
+//
+//   const CANVAS = canvasContainer.appendChild( createCanvas('canvas'));
+//   CANVAS.width = canvasContainer.clientWidth;
+//   CANVAS.height = canvasContainer.clientHeight;
+// }
+
+
+const UP = 'UP';
+const RIGHT = 'RIGHT';
+const DOWN = 'DOWN';
+const LEFT = 'LEFT';
+
+
+
+// const game = snakeGame.getInstance();
+
+const handleStart = () => {
+  game.dispatch({
+    type: 'START_GAME',
+    width: canvasContainer.clientWidth,
+    height: canvasContainer.clientHeight
+  })
+}
 
 const handleTurn = direction => {
   game.dispatch({
@@ -7,6 +34,17 @@ const handleTurn = direction => {
     direction: direction
   })
 }
+
+const handleResize = () => {
+  console.log("resized", game.getState())
+  game.dispatch({
+    type: 'RESIZE_SCREEN',
+    width: canvasContainer.clientWidth,
+    height: canvasContainer.clientHeight
+  })
+  render();
+}
+
 const handlePause = () => {
   console.log("paused")
   console.log(game.getState().id)
@@ -22,9 +60,13 @@ window.addEventListener('keydown', e => {
     case 'a': case 'ArrowLeft':  handleTurn('LEFT');  break
     case 's': case 'ArrowDown':  handleTurn('DOWN'); break
     case 'd': case 'ArrowRight': handleTurn('RIGHT');  break
+    case 'Enter': handleStart();  break
     case ' ': handlePause();  break
   }
 })
+
+window.addEventListener('resize', handleResize)
+// window.addEventListener('load', handleResize)
 // window.addEventListener('keydown', e => {
 //   console.log(e.key)
 // })
@@ -35,8 +77,12 @@ const updateScore = () => {
 }
 
 const render = () => {
+  const currentGame = game.getState();
+  console.log(currentGame)
 
-  const CANVAS = document.querySelector(".canvas");
+
+  if(currentGame.isStarted) {return}
+  console.log('here')
   CANVAS.width = game.getState().width;
   CANVAS.height = game.getState().height;
   const ctx = CANVAS.getContext('2d');
@@ -65,4 +111,4 @@ const render = () => {
 game.subscribe(render)
 game.subscribe(updateScore)
 
-render();
+console.log(game.getState())
