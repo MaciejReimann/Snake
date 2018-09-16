@@ -34,7 +34,7 @@ const snakeGame = ( () => {
     {}, state, {
       width: Math.floor(width / pixel(width)) * pixel(width),
       height: Math.floor(height/ pixel(width)) * pixel(width),
-      module: mod
+      pixel: pixel(width)
     })
 
   // point operations

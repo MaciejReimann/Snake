@@ -1,43 +1,42 @@
-const game = snakeGame.getInstance();
+
+
 
 
 const updateScore = () => {
-    const SCORE = document.querySelector(".Score");
-    SCORE.textContent = game.getState().score
+  const SCORE = document.querySelector(".Score");
+  SCORE.textContent = snakeGame.getInstance().getState().score;
 }
 
 const updateCanvas = () => {
   const CANVAS = document.querySelector(".canvas");
-  
-  const currentGame = game.getState();
-  console.log(currentGame)
+  const currentGame = snakeGame.getInstance().getState();
 
-  if(game.getState().isGameOver) {
+  console.log(currentGame)
+  if(currentGame.isGameOver) {
     console.log("game over")
     fillCanvas(CANVAS)
     return;
   }
 
   if(currentGame.isStarted) {
-    console.log('here')
-    CANVAS.width = game.getState().width;
-    CANVAS.height = game.getState().height;
+    CANVAS.width = currentGame.width;
+    CANVAS.height = currentGame.height;
     const ctx = CANVAS.getContext('2d');
-    const mod = game.getState().module;
+    const pixel = currentGame.pixel;
+    console.log('here')
 
 
-
-    const snake = game.getState().body;
-    const worm = game.getState().worm;
+    const snake = currentGame.body;
+    const worm = currentGame.worm;
     clearCanvas(CANVAS);
 
     snake.forEach(point => {
       ctx.fillStyle = "#8cc965";
-      ctx.fillRect(point.x * mod, point.y * mod, mod, mod);
+      ctx.fillRect(point.x * pixel, point.y * pixel, pixel, pixel);
     })
 
     // worm
     ctx.fillStyle = "#c7823c";
-    drawCircleInSquare(worm.x * mod, worm.y * mod, (mod / 2), ctx);
+    drawCircleInSquare(worm.x * pixel, worm.y * pixel, (pixel / 2), ctx);
   }
 }
