@@ -1,4 +1,6 @@
 
+const snakeColor = "#8cc965";
+const wormColor = "#c7823c";
 
 const updateScore = () => {
   const SCORE = document.querySelector(".Score");
@@ -8,35 +10,21 @@ const updateScore = () => {
 const updateCanvas = () => {
   const CANVAS = document.querySelector(".canvas");
   const currentGame = snakeGame.getInstance().getState;
+  const pixel = currentGame().pixel;
+  const snake = currentGame().body;
+  const worm = currentGame().worm;
 
-  // console.log(currentGame)
-
-  // if(currentGame.isGameOver) {
-  //   console.log("game over")
-  //   fillCanvas(CANVAS)
-  //   return;
-  // }
+  if(currentGame().isOver) {
+    fill(CANVAS)
+    return;
+  }
 
   if(currentGame().isStarted) {
-    // animate(snakeGame.getInstance())
-    CANVAS.width = currentGame().width;
-    CANVAS.height = currentGame().height;
-    const ctx = CANVAS.getContext('2d');
-    const pixel = currentGame().pixel;
-    // console.log('here')
-
-
-    const snake = currentGame().body;
-    const worm = currentGame().worm;
-    clearCanvas(CANVAS);
-
-    snake.forEach(point => {
-      ctx.fillStyle = "#8cc965";
-      ctx.fillRect(point.x * pixel, point.y * pixel, pixel, pixel);
-    })
-
-    // worm
-    ctx.fillStyle = "#c7823c";
-    drawCircleInSquare(worm.x * pixel, worm.y * pixel, (pixel / 2), ctx);
+    resize(CANVAS)(currentGame().width)(currentGame().height);
+    clear(CANVAS);
+    // draw snake
+    snake.forEach(point => drawSquare(CANVAS)(pixel)(snakeColor)(point));
+    // draw worm
+    drawCircle(CANVAS)(pixel)(wormColor)(worm);  
   }
 }

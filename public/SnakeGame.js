@@ -25,12 +25,12 @@ const snakeGame = ( () => {
     height: 0,
     pixel: 1,
     lastTime: Date.now(),
-    tempo: 500,
+    tempo: 200,
     directions: [ RIGHT ],
     body: Array(4).fill()
       .map((_, i) => {return  {x: 4 - i, y: 1}   }),
     worm: { x: 7, y: 1 },
-    isGameOver: false,
+    isOver: false,
     isStarted: false,
     isPaused: false,
   }
@@ -137,8 +137,8 @@ const snakeGame = ( () => {
       case 'START_GAME':
         console.log("starting")
         return startGame (resizeGameboard(state)(action.width)(action.height) )
-      case 'PAUSE_GAME':
-        console.log("game paused")
+      case 'PAUSE_TOGGLE':
+        console.log(state.isPaused)
         return pauseGame(state)
       case 'MOVE_SNAKE':
         console.log("snake moved")

@@ -14,6 +14,7 @@ const handle = (() => {
       width: canvasContainer.clientWidth,
       height: canvasContainer.clientHeight
     })
+    startAnimation();
   }
   const turn = direction => {
     // to not to enque turns if the game hasn't started
@@ -32,8 +33,9 @@ const handle = (() => {
   }
   const pause = () => {
     game.dispatch({
-      type: 'GAME_PAUSED',
+      type: 'PAUSE_TOGGLE',
     })
+    stopAnimation();
   }
 
   game.subscribe(updateCanvas);
