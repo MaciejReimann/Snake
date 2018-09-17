@@ -1,7 +1,5 @@
 
 
-
-
 const updateScore = () => {
   const SCORE = document.querySelector(".Score");
   SCORE.textContent = snakeGame.getInstance().getState().score;
@@ -9,25 +7,27 @@ const updateScore = () => {
 
 const updateCanvas = () => {
   const CANVAS = document.querySelector(".canvas");
-  const currentGame = snakeGame.getInstance().getState();
+  const currentGame = snakeGame.getInstance().getState;
 
-  console.log(currentGame)
-  if(currentGame.isGameOver) {
-    console.log("game over")
-    fillCanvas(CANVAS)
-    return;
-  }
+  // console.log(currentGame)
 
-  if(currentGame.isStarted) {
-    CANVAS.width = currentGame.width;
-    CANVAS.height = currentGame.height;
+  // if(currentGame.isGameOver) {
+  //   console.log("game over")
+  //   fillCanvas(CANVAS)
+  //   return;
+  // }
+
+  if(currentGame().isStarted) {
+    // animate(snakeGame.getInstance())
+    CANVAS.width = currentGame().width;
+    CANVAS.height = currentGame().height;
     const ctx = CANVAS.getContext('2d');
-    const pixel = currentGame.pixel;
-    console.log('here')
+    const pixel = currentGame().pixel;
+    // console.log('here')
 
 
-    const snake = currentGame.body;
-    const worm = currentGame.worm;
+    const snake = currentGame().body;
+    const worm = currentGame().worm;
     clearCanvas(CANVAS);
 
     snake.forEach(point => {

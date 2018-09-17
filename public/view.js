@@ -40,6 +40,7 @@ const selectControls = ( () => {
   }
   window.addEventListener('resize', handle.resize)
 
+
   document.body.clientWidth > 1024 ? addDesktopControls() : addMobileControls();
 
 })()
