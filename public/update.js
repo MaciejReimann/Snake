@@ -13,18 +13,17 @@ const updateCanvas = () => {
   const pixel = currentGame().pixel;
   const snake = currentGame().body;
   const worm = currentGame().worm;
-
-  if(currentGame().isOver) {
-    fill(CANVAS)
-    return;
-  }
-
-  if(currentGame().isStarted) {
-    resize(CANVAS)(currentGame().width)(currentGame().height);
+  const drawGame = () => {
+    resize(CANVAS)(currentGame().width)(currentGame().height)
     clear(CANVAS);
     // draw snake
     snake.forEach(point => drawSquare(CANVAS)(pixel)(snakeColor)(point));
     // draw worm
-    drawCircle(CANVAS)(pixel)(wormColor)(worm);  
+    drawCircle(CANVAS)(pixel)(wormColor)(worm);
   }
+
+  currentGame().isOver ? fill(CANVAS) : (
+    ! currentGame().isStarted ? null : drawGame()
+  )
+
 }
