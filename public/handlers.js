@@ -2,11 +2,12 @@
 
 const handle = (() => {
   const game = snakeGame.getInstance();
+  const state = game.getState;
   const canvasContainer = document.querySelector(".canvas-wrapper");
 
   // event handlers
   const start = () => {
-    if (game.getState().isStarted) { return }
+    if (state().isStarted) { return }
     canvasContainer.appendChild(createCanvas('canvas'));
     resize(); // otherwise functions taking width and height in SnakeGame become buggy
     game.dispatch({
@@ -14,11 +15,11 @@ const handle = (() => {
       width: canvasContainer.clientWidth,
       height: canvasContainer.clientHeight
     })
-    startAnimation();
+    gameloop.start();
   }
   const turn = direction => {
     // to not to enque turns if the game hasn't started
-    if (!game.getState().isStarted) { return }
+    if (!state().isStarted || state().isPaused) { return }
     game.dispatch({
       type: 'ENQUEUE_TURN',
       direction: direction
@@ -35,7 +36,7 @@ const handle = (() => {
     game.dispatch({
       type: 'PAUSE_TOGGLE',
     })
-    stopAnimation();
+    state().isPaused ? gameloop.stop() : gameloop.start()
   }
 
   game.subscribe(updateCanvas);

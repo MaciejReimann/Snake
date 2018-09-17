@@ -1,6 +1,4 @@
 
-const snakeColor = "#8cc965";
-const wormColor = "#c7823c";
 
 const updateScore = () => {
   const SCORE = document.querySelector(".Score");
@@ -13,6 +11,9 @@ const updateCanvas = () => {
   const pixel = currentGame().pixel;
   const snake = currentGame().body;
   const worm = currentGame().worm;
+  const snakeColor = "#8cc965";
+  const wormColor = "#c7823c";
+
   const drawGame = () => {
     resize(CANVAS)(currentGame().width)(currentGame().height)
     clear(CANVAS);
@@ -23,7 +24,7 @@ const updateCanvas = () => {
   }
 
   currentGame().isOver ? fill(CANVAS) : (
-    ! currentGame().isStarted ? null : drawGame()
+    currentGame().isStarted ? drawGame() : null
   )
 
 }
