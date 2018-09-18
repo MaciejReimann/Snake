@@ -36,7 +36,7 @@ const snakeGame = ( () => {
   }
 
   // gameboard setup
-  const pixel = width => width > 1024 ? 10 : 20;
+  const pixel = width => width > 1024 ? 20 : 10;
   const resizeGameboard = state => width => height => Object.assign(
     {}, state, {
       width: Math.floor(width / pixel(width)) * pixel(width),

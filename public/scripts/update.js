@@ -11,9 +11,9 @@ const updateCanvas = () => {
   const pixel = currentGame().pixel;
   const snake = currentGame().body;
   const worm = currentGame().worm;
-  const snakeColor = "rgba(84, 143, 81, 0.78)";
-  const wormColor = "rgb(75, 77, 75)";
-  const gridColor = "rgb(75, 77, 75)";
+  const snakeColor = "rgba(133, 201, 35, 0.78)";
+  const wormColor = "rgb(235, 154, 18)";
+  const gridColor = "rgba(129, 21, 237, 0.32)";
 
   const drawGame = () => {
     resize(CANVAS)(currentGame().width)(currentGame().height)
