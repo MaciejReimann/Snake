@@ -14,7 +14,7 @@ const selectControls = (() => {
 
   const addMobileControls = () => { // https://goo.gl/YQJYxR; https://goo.gl/6rJzAh;
 
-    BOARD.addEventListener('click', document.documentElement.webkitRequestFullscreen)
+    PAGE.addEventListener('click', document.documentElement.webkitRequestFullscreen)
     BOARD.addEventListener('click', handle.start);
     BOARD.addEventListener('click', handle.pause);
     Array(4).fill().map((_, i) => createButton( Object.keys(DIRECTIONS)[i])

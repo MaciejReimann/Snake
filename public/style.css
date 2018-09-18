@@ -14,6 +14,11 @@
   background-color: black;
 }
 
+.page:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
 .canvas {
   border-bottom: solid 1px white;
 }

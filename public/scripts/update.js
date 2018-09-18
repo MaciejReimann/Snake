@@ -12,7 +12,7 @@ const updateCanvas = () => {
   const snake = currentGame().body;
   const worm = currentGame().worm;
   const snakeColor = "rgba(84, 143, 81, 0.78)";
-  const wormColor = "#c7823c";
+  const wormColor = "rgb(75, 77, 75)";
   const gridColor = "rgb(75, 77, 75)";
 
   const drawGame = () => {
