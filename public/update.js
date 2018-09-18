@@ -11,8 +11,9 @@ const updateCanvas = () => {
   const pixel = currentGame().pixel;
   const snake = currentGame().body;
   const worm = currentGame().worm;
-  const snakeColor = "#8cc965";
+  const snakeColor = "rgba(84, 143, 81, 0.78)";
   const wormColor = "#c7823c";
+  const gridColor = "rgb(75, 77, 75)";
 
   const drawGame = () => {
     resize(CANVAS)(currentGame().width)(currentGame().height)
@@ -21,6 +22,7 @@ const updateCanvas = () => {
     snake.forEach(point => drawSquare(CANVAS)(pixel)(snakeColor)(point));
     // draw worm
     drawCircle(CANVAS)(pixel)(wormColor)(worm);
+    drawRectangularGrid(CANVAS)(pixel)(gridColor);
   }
 
   currentGame().isOver ? fill(CANVAS) : (

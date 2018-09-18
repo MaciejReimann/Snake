@@ -14,6 +14,7 @@ const selectControls = (() => {
   const addMobileControls = () => { // https://goo.gl/YQJYxR; https://goo.gl/6rJzAh;
     console.log('MOBILE')
     BOARD.addEventListener('click', handle.start);
+    BOARD.addEventListener('click', handle.pause);
     Array(4).fill().map((_, i) => createButton( Object.keys(DIRECTIONS)[i])
         .appendChild(createI(Object.values(DIRECTIONS)[i])).parentElement)
     .map(button => FOOTER.appendChild(button))
