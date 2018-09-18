@@ -2,7 +2,7 @@
 
 const updateScore = () => {
   const SCORE = document.querySelector(".score");
-  SCORE.textContent = snakeGame.getInstance().getState().score;
+  SCORE.textContent = snakeGame.getInstance().getState().score || 0;
 }
 
 const updateCanvas = () => {

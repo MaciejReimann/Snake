@@ -4,6 +4,7 @@ const selectControls = (() => {
   const PAGE = document.querySelector(".page");
   const FOOTER = document.querySelector(".footer");
   const BOARD = document.querySelector(".canvas-wrapper");
+  const SCORE = document.querySelector(".score");
 
   const DIRECTIONS = {
     LEFT: "fas fa-angle-left",
@@ -24,6 +25,8 @@ const selectControls = (() => {
   }
 
   const addDesktopControls = () => {
+    BOARD.style.height = '100vh';
+    FOOTER.className = 'on-desktop'
     console.log('DESKTOP');
     window.addEventListener('keydown', e => {
       switch (e.key) {
@@ -38,5 +41,6 @@ const selectControls = (() => {
   }
 
   window.addEventListener('resize', handle.resize)
-  document.body.clientWidth > 1024 ? addDesktopControls() : addMobileControls();
+  window.addEventListener('load', () => document.body.clientWidth > 1024 ? addDesktopControls() : addMobileControls())
+
 })()
