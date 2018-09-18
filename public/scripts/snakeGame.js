@@ -102,7 +102,7 @@ const snakeGame = ( () => {
       )
     : Object.assign(
       {}, state, {
-        isGameOver: true
+        isOver: true
       }
     )
 

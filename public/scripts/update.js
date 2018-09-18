@@ -14,6 +14,7 @@ const updateCanvas = () => {
   const snakeColor = "rgba(133, 201, 35, 0.78)";
   const wormColor = "rgb(235, 154, 18)";
   const gridColor = "rgba(129, 21, 237, 0.32)";
+  const gameOverColor = () => { CANVAS.parentElement.className = "game-over" }
 
   const drawGame = () => {
     resize(CANVAS)(currentGame().width)(currentGame().height)
@@ -25,7 +26,7 @@ const updateCanvas = () => {
     drawRectangularGrid(CANVAS)(pixel)(gridColor);
   }
 
-  currentGame().isOver ? fill(CANVAS) : (
+  currentGame().isOver ? gameOverColor() : (
     currentGame().isStarted ? drawGame() : null
   )
 

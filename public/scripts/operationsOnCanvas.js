@@ -44,24 +44,6 @@ const drawRectangularGrid = canvas => offset => color => {
   drawOffsetHorizontalLines(canvas)(offset)(color)
 }
 
-
-
-
-
-// const drawVerticalLines = canvas => offset => color => {
-//
-//   for (let i = 0; i < canvas)
-//   ctx.beginPath();
-//   ctx.moveTo(50, 50);
-//   ctx.lineTo(100, 100);
-//   ctx.stroke();
-//   ctx.fillStyle = color;
-//   context.beginPath();
-//   const gridX = canvas.width / d;
-//   const gridY = canvas.height / d;
-//   return Array()
-// }
-
 const drawCircle = canvas => d => color => point => {
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = color;
@@ -72,8 +54,8 @@ const clear = canvas => {
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 }
 
-const fill = canvas => {
-  canvas.getContext('2d').fillStyle = 'red';
+const fill = canvas => color => {
+  canvas.getContext('2d').fillStyle = color;
   canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height)
 }
 
