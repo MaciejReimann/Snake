@@ -1,6 +1,7 @@
 
 
 const selectControls = (() => {
+  const PAGE = document.querySelector(".page");
   const FOOTER = document.querySelector(".footer");
   const BOARD = document.querySelector(".canvas-wrapper");
 
@@ -12,7 +13,8 @@ const selectControls = (() => {
   }
 
   const addMobileControls = () => { // https://goo.gl/YQJYxR; https://goo.gl/6rJzAh;
-    console.log('MOBILE')
+
+    BOARD.addEventListener('click', document.documentElement.webkitRequestFullscreen)
     BOARD.addEventListener('click', handle.start);
     BOARD.addEventListener('click', handle.pause);
     Array(4).fill().map((_, i) => createButton( Object.keys(DIRECTIONS)[i])

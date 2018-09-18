@@ -132,16 +132,12 @@ const snakeGame = ( () => {
   const moveAndTimestamp = state => makeTimestamp(moveSnake(state))
 
   const snakeReducer = (state = initialState, action) => {
-    console.log( nextHead(state) )
     switch(action.type) {
       case 'START_GAME':
-        console.log("starting")
         return startGame (resizeGameboard(state)(action.width)(action.height) )
       case 'PAUSE_TOGGLE':
-        console.log(state.isPaused)
         return pauseGame(state)
       case 'MOVE_SNAKE':
-        console.log("snake moved")
         return moveAndTimestamp(state);
       case 'ENQUEUE_TURN':
         return enqueueTurn(DIRECTIONS[action.direction])(state);
