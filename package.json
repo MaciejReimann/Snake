@@ -11,8 +11,7 @@
     "publish": "git push heroku master && heroku open"
   },
   "cacheDirectories": [
-    "node_modules",
-    "client/node_modules"
+    "node_modules"
   ],
   "author": "Maciej Reimann",
   "license": "MIT",
