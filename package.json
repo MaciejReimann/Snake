@@ -6,13 +6,9 @@
     "node": "9.10.0"
   },
   "scripts": {
-    "locally": "npm install && cd client && npm install && cd.. && npm run dev",
     "start": "node server",
     "server": "nodemon server",
-    "client": "cd client && npm start",
-    "dev": "concurrently \"npm run server\" \"npm run client \" ",
-    "publish": "git push heroku master && heroku open",
-    "heroku-postbuild": "cd client/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "publish": "git push heroku master && heroku open"
   },
   "cacheDirectories": [
     "node_modules",
