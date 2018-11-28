@@ -1,22 +1,27 @@
 // redux-like state management
-const createStore = reducer => {
-  let state;
+function createStore(reducer) {
+  let state = {};
   let listeners = [];
 
-  const getState = () => state;
-
-  const dispatch = action => {
-    state = reducer(state, action);
-    listeners.forEach(listener => listener())
+  function getState() {
+    return state;
   };
 
-  const subscribe = listener => {
+  function dispatch(action) {
+    state = reducer(state, action);
+    listeners.forEach(listener => listener());
+  };
+
+  function subscribe(listener) {
     listeners.push(listener);
+
+    // To unsubscribe execute what subscribe returns
     return () => {
-      listeners = listeners.filter( l => l !== listener );
+      listeners = listeners.filter(l => l !== listener );
     };
   };
 
   dispatch({});
-  return { getState, dispatch, subscribe };
+
+  return { getState, dispatch, subscribe }
 };
