@@ -20,12 +20,12 @@ const snakeGame = ( () => {
   const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
 
   const initialState = {
-    score: 0,
+    score: 4,
     width: 0,
     height: 0,
     pixel: 1,
     lastTime: Date.now(),
-    tempo: 200,
+    tempo: 300,
     directions: [ RIGHT ],
     body: Array(4).fill()
       .map((_, i) => {return  {x: 4 - i, y: 1}   }),
@@ -110,10 +110,17 @@ const snakeGame = ( () => {
     ? state.score + 1
     : state.score
 
+  // const incrementTempo = state => Object.assign(
+  //   {}, state, {
+  //     tempo: mod(state.score)(5) === 0 ? console.log(state.score) : state.tempo
+  //   }
+  // )
+
   const makeTimestamp = state => Object.assign(
     {}, state, {
       lastTime: Date.now(),
       score: nextScore(state),
+      // tempo: mod(state.score)(5) === 0 ? console.log(state.score) : state.tempo
     }
   )
 

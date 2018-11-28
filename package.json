@@ -1,22 +1,30 @@
 {
   "name": "snake",
   "version": "1.0.0",
-  "description": "Snake game",
-  "main": "server.js",
-  "scripts": {
-    "server": "nodemon server.js",
-    "dev": "set NODE_ENV=development && npm run server"
-  },
-  "author": "Maciej Reimann",
-  "license": "MIT",
-  "devDependencies": {
-    "nodemon": "^1.18.4"
-  },
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.3"
-  },
+  "description": "Snake Game",
   "engines": {
     "node": "9.10.0"
-  }
+  },
+  "scripts": {
+    "locally": "npm install && cd client && npm install && cd.. && npm run dev",
+    "start": "node server",
+    "server": "nodemon server",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client \" ",
+    "publish": "git push heroku master && heroku open",
+    "heroku-postbuild": "cd client/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+  },
+  "cacheDirectories": [
+    "node_modules",
+    "client/node_modules"
+  ],
+  "author": "Maciej Reimann",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "concurrently": "^4.1.0"
+  },  
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }  
 }
