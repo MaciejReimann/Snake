@@ -6,8 +6,10 @@
     "node": "9.10.0"
   },
   "scripts": {
+    "test": "jest --watch",
     "start": "node server",
     "server": "nodemon server",
+    "build": "cd client && cd public && browserify scripts/index.js -o bundle.js",
     "publish": "git push heroku master && heroku open"
   },
   "cacheDirectories": [
@@ -16,10 +18,11 @@
   "author": "Maciej Reimann",
   "license": "MIT",
   "dependencies": {
+    "concurrently": "^4.1.0",
     "express": "^4.16.3",
-    "concurrently": "^4.1.0"
-  },  
+    "jest": "^23.6.0"
+  },
   "devDependencies": {
     "nodemon": "^1.18.4"
-  }  
+  }
 }
