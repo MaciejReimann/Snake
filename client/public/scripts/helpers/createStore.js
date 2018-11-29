@@ -1,6 +1,6 @@
-// redux-like state management
-function createStore(reducer) {
-  let state = {};
+// redux-like state store
+module.exports = function createStore(reducer, initialState) {
+  let state = initialState || {};
   let listeners = [];
 
   function getState() {
@@ -21,7 +21,5 @@ function createStore(reducer) {
     };
   };
 
-  dispatch({});
-
-  return { getState, dispatch, subscribe }
+  return { getState, dispatch, subscribe };
 };
