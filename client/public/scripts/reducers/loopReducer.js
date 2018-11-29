@@ -1,5 +1,6 @@
 
 
+
 const gameloop = (() => {
   let id;
   const game = snakeGame.getInstance()
