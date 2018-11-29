@@ -4,13 +4,15 @@ const PAUSE_GAME = 'PAUSE_GAME';
 const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 
 const MOVE_FORWARD = 'MOVE_FORWARD';
-
+const TURN_RIGHT = 'TURN_RIGHT';
+const TURN_LEFT = 'TURN_LEFT';
 
 module.exports = {
     START_GAME,
     PAUSE_GAME,
     CHANGE_INTERVAL,
-
+    TURN_RIGHT,
+    TURN_LEFT,
     
     MOVE_FORWARD 
 }

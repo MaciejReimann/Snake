@@ -5,13 +5,15 @@ const PAUSE_GAME = 'PAUSE_GAME';
 const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 
 const MOVE_FORWARD = 'MOVE_FORWARD';
-
+const TURN_RIGHT = 'TURN_RIGHT';
+const TURN_LEFT = 'TURN_LEFT';
 
 module.exports = {
     START_GAME,
     PAUSE_GAME,
     CHANGE_INTERVAL,
-
+    TURN_RIGHT,
+    TURN_LEFT,
     
     MOVE_FORWARD 
 }
@@ -21,9 +23,9 @@ const {
     PAUSE_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
-const { render } = require('./renderActions');
+const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop')
-const gameloop = Gameloop(render);
+const gameloop = Gameloop(moveForward);
 
 const startGame = () => {
     gameloop.start();
@@ -51,20 +53,23 @@ module.exports = {
     pauseGame,
     changeInterval
 };
-},{"../helpers/Gameloop":4,"./constants":1,"./renderActions":3}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":4,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+const {
+    MOVE_FORWARD,
+    TURN_RIGHT,
+    TURN_LEFT
+} = require('./constants');
 
 
-
-function render() {
-    console.log('rendered')
-};
-
+function moveForward() {
+    console.log('moved forward')
+}
 
 
 module.exports = {
-    render
+    moveForward
 }
-},{}],4:[function(require,module,exports){
+},{"./constants":1}],4:[function(require,module,exports){
 module.exports = function Gameloop(callback) {
     let interval = 1000;
     let lastTime;
@@ -154,7 +159,7 @@ window.addEventListener("keydown", (e) => {
             ? snake.dispatch(startGame())
             : snake.dispatch(pauseGame())
     } else if(e.key=== 'a') {
-        snake.dispatch(changeInterval(.5))
+        snake.dispatch(changeInterval(snake.getState().increaseRate))
     };
 })
 },{"./actions/loopActions":2,"./store":10}],8:[function(require,module,exports){
@@ -185,37 +190,10 @@ module.exports = function(state, action) {
     console.log("Game paused from the reducer")
     nextState.paused = true;
   } else if(action.type === CHANGE_INTERVAL) {
-    nextState.tempo = state.tempo * 0.5;
+    nextState.tempo = state.tempo * state.increaseRate;
   }
   return Object.assign(state, nextState)
 };
-
-
-// const gameloop = (() => {
-//   let id;
-//   const game = snakeGame.getInstance()
-//   const intervalPassed = t1 => t2 => tempo => t2-t1 > tempo;
-
-//   const start = () => {
-//     const loop = () => {
-//       const lastTime = game.getState().lastTime;
-//       const tempo = game.getState().tempo;
-//       if(intervalPassed(lastTime)(Date.now())(tempo)) {
-//         // if more miliseconds passed than tempo, action is dispatched
-//         game.dispatch({
-//             type: 'MOVE_SNAKE'
-//           })
-//         }
-//       id = window.requestAnimationFrame(loop);
-//       }
-//     id = window.requestAnimationFrame(loop);
-//   }
-
-//   const stop = () => {
-//     window.cancelAnimationFrame(id);
-//   }
-//   return { start, stop }
-// })()
 
 },{"../actions/constants":1}],10:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
@@ -223,7 +201,8 @@ const combinedReducers = require('./reducers');
 
 const initialState = {
     paused: true,
-    tempo: 1000
+    tempo: 1000,
+    increaseRate: .95
 };
 
 module.exports = createStore( combinedReducers, initialState );

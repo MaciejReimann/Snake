@@ -15,6 +15,6 @@ window.addEventListener("keydown", (e) => {
             ? snake.dispatch(startGame())
             : snake.dispatch(pauseGame())
     } else if(e.key=== 'a') {
-        snake.dispatch(changeInterval(.5))
+        snake.dispatch(changeInterval(snake.getState().increaseRate))
     };
 })

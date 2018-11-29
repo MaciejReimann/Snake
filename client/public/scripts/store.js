@@ -3,7 +3,8 @@ const combinedReducers = require('./reducers');
 
 const initialState = {
     paused: true,
-    tempo: 1000
+    tempo: 1000,
+    increaseRate: .95
 };
 
 module.exports = createStore( combinedReducers, initialState );

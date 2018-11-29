@@ -3,9 +3,9 @@ const {
     PAUSE_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
-const { render } = require('./renderActions');
+const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop')
-const gameloop = Gameloop(render);
+const gameloop = Gameloop(moveForward);
 
 const startGame = () => {
     gameloop.start();
