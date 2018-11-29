@@ -1,11 +1,11 @@
 const {
     START_GAME,
-    PAUSE_GAME
+    PAUSE_GAME,
+    CHANGE_INTERVAL
 } = require('./constants');
 const { render } = require('./renderActions');
 const Gameloop = require('../helpers/Gameloop')
 const gameloop = Gameloop(render);
-gameloop.set(1000);
 
 const startGame = () => {
     gameloop.start();
@@ -21,7 +21,15 @@ function pauseGame() {
     };
 };
 
+function changeInterval(rate) {
+    gameloop.changeInterval(rate);
+    return {
+        type: CHANGE_INTERVAL
+    };
+};
+
 module.exports = {
     startGame,
-    pauseGame
+    pauseGame,
+    changeInterval
 };

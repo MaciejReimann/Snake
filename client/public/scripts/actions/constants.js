@@ -1,6 +1,7 @@
 
 const START_GAME = 'START_GAME';
 const PAUSE_GAME = 'PAUSE_GAME';
+const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 
 const MOVE_FORWARD = 'MOVE_FORWARD';
 
@@ -8,5 +9,8 @@ const MOVE_FORWARD = 'MOVE_FORWARD';
 module.exports = {
     START_GAME,
     PAUSE_GAME,
+    CHANGE_INTERVAL,
+
+    
     MOVE_FORWARD 
 }

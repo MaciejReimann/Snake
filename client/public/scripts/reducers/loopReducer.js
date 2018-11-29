@@ -1,6 +1,7 @@
 const {
   START_GAME,
-  PAUSE_GAME
+  PAUSE_GAME,
+  CHANGE_INTERVAL
 } = require('../actions/constants');
 
 module.exports = function(state, action) {
@@ -16,6 +17,8 @@ module.exports = function(state, action) {
   } else if(action.type === PAUSE_GAME) {
     console.log("Game paused from the reducer")
     nextState.paused = true;
+  } else if(action.type === CHANGE_INTERVAL) {
+    nextState.tempo = state.tempo * 0.5;
   }
   return Object.assign(state, nextState)
 };

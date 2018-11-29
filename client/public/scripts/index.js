@@ -1,8 +1,8 @@
 const snake = require('./store');
 const {
-    initLoop,
     startGame,
-    pauseGame
+    pauseGame,
+    changeInterval
 } = require('./actions/loopActions');
 
 console.log(snake.getState())
@@ -14,5 +14,7 @@ window.addEventListener("keydown", (e) => {
         snake.getState().paused
             ? snake.dispatch(startGame())
             : snake.dispatch(pauseGame())
+    } else if(e.key=== 'a') {
+        snake.dispatch(changeInterval(.5))
     };
 })

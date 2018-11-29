@@ -2,6 +2,7 @@
 
 const START_GAME = 'START_GAME';
 const PAUSE_GAME = 'PAUSE_GAME';
+const CHANGE_INTERVAL = 'CHANGE_INTERVAL';
 
 const MOVE_FORWARD = 'MOVE_FORWARD';
 
@@ -9,17 +10,20 @@ const MOVE_FORWARD = 'MOVE_FORWARD';
 module.exports = {
     START_GAME,
     PAUSE_GAME,
+    CHANGE_INTERVAL,
+
+    
     MOVE_FORWARD 
 }
 },{}],2:[function(require,module,exports){
 const {
     START_GAME,
-    PAUSE_GAME
+    PAUSE_GAME,
+    CHANGE_INTERVAL
 } = require('./constants');
 const { render } = require('./renderActions');
 const Gameloop = require('../helpers/Gameloop')
 const gameloop = Gameloop(render);
-gameloop.set(1000);
 
 const startGame = () => {
     gameloop.start();
@@ -35,9 +39,17 @@ function pauseGame() {
     };
 };
 
+function changeInterval(rate) {
+    gameloop.changeInterval(rate);
+    return {
+        type: CHANGE_INTERVAL
+    };
+};
+
 module.exports = {
     startGame,
-    pauseGame
+    pauseGame,
+    changeInterval
 };
 },{"../helpers/Gameloop":4,"./constants":1,"./renderActions":3}],3:[function(require,module,exports){
 
@@ -54,7 +66,7 @@ module.exports = {
 }
 },{}],4:[function(require,module,exports){
 module.exports = function Gameloop(callback) {
-    let interval;
+    let interval = 1000;
     let lastTime;
     let id;
     let loopCallback = callback;
@@ -68,12 +80,12 @@ module.exports = function Gameloop(callback) {
         return intervalHasPassed;
     };
 
-    function set(i) {
-        interval = i;
+    function changeInterval(rate) {
+        console.log("interval changed")
+        interval = interval * rate || interval ;
     };
 
     function start() {
-        console.log("started")
         lastTime = Date.now();
         if(!id) {
             id = setInterval(_hasIntervalPassed, 10)
@@ -84,7 +96,7 @@ module.exports = function Gameloop(callback) {
        id = clearInterval(id);
     };
 
-    return {start, stop, set}
+    return {start, stop, changeInterval}
 };
 },{}],5:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
@@ -127,9 +139,9 @@ module.exports = function createStore(reducer, initialState) {
 },{}],7:[function(require,module,exports){
 const snake = require('./store');
 const {
-    initLoop,
     startGame,
-    pauseGame
+    pauseGame,
+    changeInterval
 } = require('./actions/loopActions');
 
 console.log(snake.getState())
@@ -141,6 +153,8 @@ window.addEventListener("keydown", (e) => {
         snake.getState().paused
             ? snake.dispatch(startGame())
             : snake.dispatch(pauseGame())
+    } else if(e.key=== 'a') {
+        snake.dispatch(changeInterval(.5))
     };
 })
 },{"./actions/loopActions":2,"./store":10}],8:[function(require,module,exports){
@@ -153,7 +167,8 @@ module.exports = combineReducers({
 },{"../helpers/combineReducers":5,"./loopReducer":9}],9:[function(require,module,exports){
 const {
   START_GAME,
-  PAUSE_GAME
+  PAUSE_GAME,
+  CHANGE_INTERVAL
 } = require('../actions/constants');
 
 module.exports = function(state, action) {
@@ -169,6 +184,8 @@ module.exports = function(state, action) {
   } else if(action.type === PAUSE_GAME) {
     console.log("Game paused from the reducer")
     nextState.paused = true;
+  } else if(action.type === CHANGE_INTERVAL) {
+    nextState.tempo = state.tempo * 0.5;
   }
   return Object.assign(state, nextState)
 };

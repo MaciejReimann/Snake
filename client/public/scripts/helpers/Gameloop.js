@@ -1,5 +1,5 @@
 module.exports = function Gameloop(callback) {
-    let interval;
+    let interval = 1000;
     let lastTime;
     let id;
     let loopCallback = callback;
@@ -13,12 +13,12 @@ module.exports = function Gameloop(callback) {
         return intervalHasPassed;
     };
 
-    function set(i) {
-        interval = i;
+    function changeInterval(rate) {
+        console.log("interval changed")
+        interval = interval * rate || interval ;
     };
 
     function start() {
-        console.log("started")
         lastTime = Date.now();
         if(!id) {
             id = setInterval(_hasIntervalPassed, 10)
@@ -29,5 +29,5 @@ module.exports = function Gameloop(callback) {
        id = clearInterval(id);
     };
 
-    return {start, stop, set}
+    return {start, stop, changeInterval}
 };
