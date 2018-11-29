@@ -1,37 +1,24 @@
-const initialState = require('./initialState');
 const {
-
-} = require('../actions/snakeActions');
-
-module.exports = function(state = initialState, action) {
-    switch(action.type) {
-        case TURN_RIGHT: 
-            return {
-                ...state,
-                items: action.payload,
-                loading: false
-            };
-        case TURN_LEFT: 
-            return {
-                ...state,
-                items: [action.payload, ...state.items]
-            };
-        case PROCEED: 
-            return {
-                ...state,
-                items: state.items.filter(item => item._id !== action.payload)
-            };
-        case EAT: 
-            return {
-                ...state,
-                loading: true
-            };
-        case CRASH: 
-            return {
-                ...state,
-                loading: true
-            };
-        default: 
-            return state;
+    MOVE_FORWARD,
+    CHANGE_DIRECTION,
+    EAT_FOOD,
+    HIT_BODY
+  } = require('../actions/constants');
+  
+  module.exports = function(state, action) {
+    let nextState = {};
+    if(!action) {
+      action = {};
+    };
+  
+    if(action.type === MOVE_FORWARD) {
+        console.log("MOVE_FORWARD from reducer")
+    } else if(action.type === CHANGE_DIRECTION) {
+        console.log("CHANGE_DIRECTION from reducer")
+    } else if(action.type === EAT_FOOD) {
+        console.log("EAT_FOOD from reducer")
+    } else if(action.type === HIT_BODY) {
+        console.log("HIT_BODY from reducer")
     }
-}
+    return Object.assign(state, nextState)
+  };

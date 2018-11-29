@@ -1,20 +1,22 @@
 const snake = require('./store');
 const {
+    addControls
+} = require('./actions/viewActions');
+const {
     startGame,
-    pauseGame,
-    changeInterval
+    pauseGame
 } = require('./actions/loopActions');
 
-console.log(snake.getState())
-console.log("hello from index.js")
+window.addEventListener("load", () => {
+    snake.dispatch(addControls());
+})
 
 window.addEventListener("keydown", (e) => {
-    console.log(e.key)
-    if(e.key=== 'Enter') {
-        snake.getState().paused
-            ? snake.dispatch(startGame())
-            : snake.dispatch(pauseGame())
-    } else if(e.key=== 'a') {
-        snake.dispatch(changeInterval(snake.getState().increaseRate))
+    if (snake.getState().isOnDesktop) {
+        if(e.key=== 'Enter' || e.key=== ' ') {
+            snake.getState().paused
+                ? snake.dispatch(startGame())
+                : snake.dispatch(pauseGame())
+        };
     };
 })
