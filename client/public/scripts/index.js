@@ -11,6 +11,8 @@ console.log("hello from index.js")
 window.addEventListener("keydown", (e) => {
     console.log(e.key)
     if(e.key=== 'Enter') {
-        snake.dispatch(startGame());    
-    }
+        snake.getState().paused
+            ? snake.dispatch(startGame())
+            : snake.dispatch(pauseGame())
+    };
 })

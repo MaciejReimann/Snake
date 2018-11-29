@@ -1,5 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-const INIT_LOOP = 'INIT_LOOP';
+
 const START_GAME = 'START_GAME';
 const PAUSE_GAME = 'PAUSE_GAME';
 
@@ -7,7 +7,6 @@ const MOVE_FORWARD = 'MOVE_FORWARD';
 
 
 module.exports = {
-    INIT_LOOP,
     START_GAME,
     PAUSE_GAME,
     MOVE_FORWARD 
@@ -18,9 +17,43 @@ const {
     PAUSE_GAME
 } = require('./constants');
 const { render } = require('./renderActions');
-let gameloop;
+const Gameloop = require('../helpers/Gameloop')
+const gameloop = Gameloop(render);
+gameloop.set(1000);
 
-function Gameloop(callback) {
+const startGame = () => {
+    gameloop.start();
+    return {
+        type: START_GAME
+    };
+};
+
+function pauseGame() {
+    gameloop.stop();
+    return {
+        type: PAUSE_GAME
+    };
+};
+
+module.exports = {
+    startGame,
+    pauseGame
+};
+},{"../helpers/Gameloop":4,"./constants":1,"./renderActions":3}],3:[function(require,module,exports){
+
+
+
+function render() {
+    console.log('rendered')
+};
+
+
+
+module.exports = {
+    render
+}
+},{}],4:[function(require,module,exports){
+module.exports = function Gameloop(callback) {
     let interval;
     let lastTime;
     let id;
@@ -42,53 +75,18 @@ function Gameloop(callback) {
     function start() {
         console.log("started")
         lastTime = Date.now();
-        id = setInterval(_hasIntervalPassed, 10)
+        if(!id) {
+            id = setInterval(_hasIntervalPassed, 10)
+        };        
     };
 
     function stop() {
-        clearInterval(id);
+       id = clearInterval(id);
     };
 
     return {start, stop, set}
 };
-
-const startGame = () => {
-    gameloop = Gameloop(render);
-    gameloop.set(1000);
-    if(gameloop) {
-        gameloop.start()
-    }    
-    return {
-        type: START_GAME
-    };
-};
-
-function pauseGame() {
-    console.log("Game started from the action")
-    intervalID = setTimeout(moveForward, 1000)
-    return {
-        type: PAUSE_GAME
-    };
-};
-
-module.exports = {
-    startGame,
-    pauseGame
-};
-},{"./constants":1,"./renderActions":3}],3:[function(require,module,exports){
-
-
-
-function render() {
-    console.log('rendered')
-};
-
-
-
-module.exports = {
-    render
-}
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
     let combinedState = {};
     // Leave only valid reducers, 
@@ -100,7 +98,7 @@ module.exports = function combineReducers(reducers) {
         return combinedState;
     };
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // redux-like state store
 module.exports = function createStore(reducer, initialState) {
   let state = initialState || {};
@@ -126,7 +124,7 @@ module.exports = function createStore(reducer, initialState) {
 
   return { getState, dispatch, subscribe };
 };
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 const snake = require('./store');
 const {
     initLoop,
@@ -140,19 +138,20 @@ console.log("hello from index.js")
 window.addEventListener("keydown", (e) => {
     console.log(e.key)
     if(e.key=== 'Enter') {
-        snake.dispatch(startGame());    
-    }
+        snake.getState().paused
+            ? snake.dispatch(startGame())
+            : snake.dispatch(pauseGame())
+    };
 })
-},{"./actions/loopActions":2,"./store":9}],7:[function(require,module,exports){
+},{"./actions/loopActions":2,"./store":10}],8:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer')
 
 module.exports = combineReducers({
     loop: loopReducer
 })
-},{"../helpers/combineReducers":4,"./loopReducer":8}],8:[function(require,module,exports){
+},{"../helpers/combineReducers":5,"./loopReducer":9}],9:[function(require,module,exports){
 const {
-  INIT_LOOP,
   START_GAME,
   PAUSE_GAME
 } = require('../actions/constants');
@@ -162,10 +161,14 @@ module.exports = function(state, action) {
   if(!action) {
     action = {};
   };
-  
+
   if(action.type === START_GAME) {
     console.log("Game started from the reducer")
-    nextState.gameStarted = true;
+    nextState.started = true;
+    nextState.paused = false;
+  } else if(action.type === PAUSE_GAME) {
+    console.log("Game paused from the reducer")
+    nextState.paused = true;
   }
   return Object.assign(state, nextState)
 };
@@ -197,14 +200,15 @@ module.exports = function(state, action) {
 //   return { start, stop }
 // })()
 
-},{"../actions/constants":1}],9:[function(require,module,exports){
+},{"../actions/constants":1}],10:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 
 const initialState = {
+    paused: true,
     tempo: 1000
 };
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":5,"./reducers":7}]},{},[6]);
+},{"./helpers/createStore":6,"./reducers":8}]},{},[7]);

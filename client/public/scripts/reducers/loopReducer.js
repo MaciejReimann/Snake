@@ -1,5 +1,4 @@
 const {
-  INIT_LOOP,
   START_GAME,
   PAUSE_GAME
 } = require('../actions/constants');
@@ -9,10 +8,14 @@ module.exports = function(state, action) {
   if(!action) {
     action = {};
   };
-  
+
   if(action.type === START_GAME) {
     console.log("Game started from the reducer")
-    nextState.gameStarted = true;
+    nextState.started = true;
+    nextState.paused = false;
+  } else if(action.type === PAUSE_GAME) {
+    console.log("Game paused from the reducer")
+    nextState.paused = true;
   }
   return Object.assign(state, nextState)
 };
