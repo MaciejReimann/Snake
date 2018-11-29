@@ -2,12 +2,7 @@ const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 
 const initialState = {
-    counter: 0
+    tempo: 1000
 };
 
-const store = createStore(
-    combinedReducers,
-    initialState
-);
-
-module.exports = store;
+module.exports = createStore( combinedReducers, initialState );
