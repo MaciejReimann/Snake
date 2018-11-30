@@ -1,14 +1,21 @@
 const snake = require('./store');
 const {
-    addControls
-} = require('./actions/viewActions');
-const {
     startGame,
     pauseGame
 } = require('./actions/loopActions');
+const {
+    resizeBoard,
+    addControls
+} = require('./actions/viewActions');
+
+
 
 window.addEventListener("load", () => {
     snake.dispatch(addControls());
+})
+
+window.addEventListener('resize', () => {
+    snake.dispatch(resizeBoard());
 })
 
 window.addEventListener("keydown", (e) => {
