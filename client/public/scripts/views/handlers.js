@@ -10,11 +10,11 @@ const handle = (() => {
     if (state().isStarted) { return }
     canvasContainer.appendChild(createCanvas('canvas'));
     resize(); // otherwise functions taking width and height in SnakeGame become buggy
-    game.dispatch({
-      type: 'START_GAME',
-      width: canvasContainer.clientWidth,
-      height: canvasContainer.clientHeight
-    })
+    // game.dispatch({
+    //   type: 'START_GAME',
+    //   width: canvasContainer.clientWidth,
+    //   height: canvasContainer.clientHeight
+    // })
     gameloop.start();
   }
   const turn = direction => {
@@ -25,19 +25,19 @@ const handle = (() => {
       direction: direction
     })
   }
-  const resize = () => {
-    game.dispatch({
-      type: 'RESIZE_SCREEN',
-      width: canvasContainer.clientWidth,
-      height: canvasContainer.clientHeight
-    })
-  }
-  const pause = () => {
-    game.dispatch({
-      type: 'PAUSE_TOGGLE',
-    })
-    state().isPaused ? gameloop.stop() : gameloop.start()
-  }
+  // const resize = () => {
+  //   game.dispatch({
+  //     type: 'RESIZE_SCREEN',
+  //     width: canvasContainer.clientWidth,
+  //     height: canvasContainer.clientHeight
+  //   })
+  // }
+  // const pause = () => {
+  //   game.dispatch({
+  //     type: 'PAUSE_TOGGLE',
+  //   })
+  //   state().isPaused ? gameloop.stop() : gameloop.start()
+  // }
 
   game.subscribe(updateCanvas);
   game.subscribe(updateScore);

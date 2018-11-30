@@ -18,7 +18,6 @@ const {
     } else if(action.type === ADD_CONTROLS) {
         nextState.isOnDesktop = action.isOnDesktop;
     };
-    console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
   };
   

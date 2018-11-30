@@ -4,11 +4,14 @@ const {
     pauseGame
 } = require('./actions/loopActions');
 const {
+    renderCanvas
+} = require('./actions/renderActions');
+const {
     resizeBoard,
     addControls
 } = require('./actions/viewActions');
 
-
+snake.subscribe(() => console.log("SAgfsadg"));
 
 window.addEventListener("load", () => {
     snake.dispatch(addControls());

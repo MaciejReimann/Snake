@@ -4,7 +4,9 @@ const {
     CHANGE_INTERVAL
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
-const Gameloop = require('../helpers/Gameloop')
+const Gameloop = require('../helpers/Gameloop');
+
+// Initialize gameloop with a callback to be fired from inside
 const gameloop = Gameloop(moveForward);
 
 const startGame = () => {
