@@ -23,7 +23,6 @@ function addControls() {
 
     function onDesktop() {
         window.addEventListener('keydown', e => {
-            console.log(e)
             switch (e.key) {
                 case 'w': case 'ArrowUp':    changeDirection('UP'); break
                 case 'a': case 'ArrowLeft':  changeDirection('LEFT');  break

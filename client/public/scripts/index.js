@@ -14,7 +14,7 @@ window.addEventListener("load", () => {
 window.addEventListener("keydown", (e) => {
     if (snake.getState().isOnDesktop) {
         if(e.key=== 'Enter' || e.key=== ' ') {
-            snake.getState().paused
+            snake.getState().isPaused
                 ? snake.dispatch(startGame())
                 : snake.dispatch(pauseGame())
         };

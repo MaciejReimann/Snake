@@ -1,8 +1,8 @@
 
 // GAME LOGIC SINGLETON PRESERVING GAME STATE
-const snakeGame = ( () => {
-  'use strict'
-  let gameInstance;
+// const snakeGame = ( () => {
+//   'use strict'
+//   let gameInstance;
 
   // array operations
   const getLastItem = array => array.length > 0
@@ -12,12 +12,12 @@ const snakeGame = ( () => {
   const dropFirstIfLongerThanOne = array => array.length > 1
    ? dropFirst(array) : array
 
-  // snake navigation constants definition
-  const UP = { x: 0, y:-1 };
-  const RIGHT = { x: 1, y: 0 };
-  const DOWN = { x: 0, y: 1 };
-  const LEFT = { x:-1, y: 0 };
-  const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
+  // // snake navigation constants definition
+  // const UP = { x: 0, y:-1 };
+  // const RIGHT = { x: 1, y: 0 };
+  // const DOWN = { x: 0, y: 1 };
+  // const LEFT = { x:-1, y: 0 };
+  // const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
 
   const initialState = {
     score: 4,

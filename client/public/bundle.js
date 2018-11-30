@@ -93,10 +93,10 @@ const {
     CHANGE_RESOLUTION,
     ADD_CONTROLS
     } = require('../actions/constants');
-const {
-    startGame,
-    pauseGame
-} = require('../actions/loopActions')
+// const {
+//     startGame,
+//     pauseGame
+// } = require('../actions/loopActions')
 const {
     changeDirection
 } = require('../actions/snakeActions')
@@ -105,11 +105,14 @@ function addControls() {
 
     function onMobile() {
 
+        return {
+            type: ADD_CONTROLS,
+            isOnDesktop: false
+        };
     };
 
     function onDesktop() {
         window.addEventListener('keydown', e => {
-            console.log(e)
             switch (e.key) {
                 case 'w': case 'ArrowUp':    changeDirection('UP'); break
                 case 'a': case 'ArrowLeft':  changeDirection('LEFT');  break
@@ -122,14 +125,13 @@ function addControls() {
             isOnDesktop: true
         };
     };
-
     return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
 }
 
 module.exports = {
     addControls
 }
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3}],5:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/snakeActions":3}],5:[function(require,module,exports){
 module.exports = function Gameloop(callback) {
     let interval = 1000;
     let lastTime;
@@ -218,13 +220,36 @@ window.addEventListener("load", () => {
 window.addEventListener("keydown", (e) => {
     if (snake.getState().isOnDesktop) {
         if(e.key=== 'Enter' || e.key=== ' ') {
-            snake.getState().paused
+            snake.getState().isPaused
                 ? snake.dispatch(startGame())
                 : snake.dispatch(pauseGame())
         };
     };
 })
-},{"./actions/loopActions":2,"./actions/viewActions":4,"./store":13}],9:[function(require,module,exports){
+},{"./actions/loopActions":2,"./actions/viewActions":4,"./store":15}],9:[function(require,module,exports){
+const UP = { x: 0, y:-1 };
+const RIGHT = { x: 1, y: 0 };
+const DOWN = { x: 0, y: 1 };
+const LEFT = { x:-1, y: 0 };
+const DIRECTIONS = { UP, RIGHT, DOWN, LEFT };
+
+
+module.exports = { UP, RIGHT, DOWN, LEFT };
+},{}],10:[function(require,module,exports){
+const { RIGHT } = require('./constants');
+
+module.exports = {
+    tempo: 1000,
+    increaseRate: .95,
+    directions: [ RIGHT ],
+    body: Array(4).fill()
+    .map((_, i) => {return  {x: 4 - i, y: 1}   }),
+    food: { x: 7, y: 1 },
+    isOver: false,
+    isStarted: false,
+    isPaused: true,
+};
+},{"./constants":9}],11:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -235,7 +260,7 @@ module.exports = combineReducers({
     loop: loopReducer,
     snake: snakeReducer
 })
-},{"../helpers/combineReducers":6,"./loopReducer":10,"./snakeReducer":11,"./viewReducer":12}],10:[function(require,module,exports){
+},{"../helpers/combineReducers":6,"./loopReducer":12,"./snakeReducer":13,"./viewReducer":14}],12:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -250,18 +275,18 @@ module.exports = function(state, action) {
 
   if(action.type === START_GAME) {
     console.log("Game started from the reducer")
-    nextState.started = true;
-    nextState.paused = false;
+    nextState.isStarted = true;
+    nextState.isPaused = false;
   } else if(action.type === PAUSE_GAME) {
     console.log("Game paused from the reducer")
-    nextState.paused = true;
+    nextState.isPaused = true;
   } else if(action.type === CHANGE_INTERVAL) {
     nextState.tempo = state.tempo * state.increaseRate;
   }
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1}],11:[function(require,module,exports){
+},{"../actions/constants":1}],13:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     CHANGE_DIRECTION,
@@ -286,7 +311,7 @@ const {
     }
     return Object.assign(state, nextState)
   };
-},{"../actions/constants":1}],12:[function(require,module,exports){
+},{"../actions/constants":1}],14:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -309,16 +334,11 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],13:[function(require,module,exports){
+},{"../actions/constants":1}],15:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
-
-const initialState = {
-    paused: true,
-    tempo: 1000,
-    increaseRate: .95
-};
+const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":7,"./reducers":9}]},{},[8]);
+},{"./helpers/createStore":7,"./logic/initialState":10,"./reducers":11}]},{},[8]);

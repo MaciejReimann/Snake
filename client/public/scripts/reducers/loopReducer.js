@@ -12,11 +12,11 @@ module.exports = function(state, action) {
 
   if(action.type === START_GAME) {
     console.log("Game started from the reducer")
-    nextState.started = true;
-    nextState.paused = false;
+    nextState.isStarted = true;
+    nextState.isPaused = false;
   } else if(action.type === PAUSE_GAME) {
     console.log("Game paused from the reducer")
-    nextState.paused = true;
+    nextState.isPaused = true;
   } else if(action.type === CHANGE_INTERVAL) {
     nextState.tempo = state.tempo * state.increaseRate;
   }
