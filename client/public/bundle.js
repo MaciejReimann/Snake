@@ -78,6 +78,7 @@ module.exports = {
     updateScore
 }
 },{"./constants":1}],4:[function(require,module,exports){
+const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
@@ -90,8 +91,11 @@ function moveForward() {
 
 };
 
-function enqueueTurn() {
-    console.log('enqueued turn')
+function enqueueTurn(turn) { 
+    return dispatch({
+        type: ENQUEUE_TURN,
+        payload: turn
+    });
 };
 
 function changeDirection() {
@@ -99,25 +103,24 @@ function changeDirection() {
     
 };
 
-
 module.exports = {
     moveForward,
     enqueueTurn,
     changeDirection
 };
-},{"./constants":1}],5:[function(require,module,exports){
+},{"../store":18,"./constants":1}],5:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
     ADD_CONTROLS
     } = require('../actions/constants');
 const {
+    enqueueTurn
+} = require('../actions/snakeActions')
+const {
     createElement,
     resizeCanvas
 } = require('../helpers/DOMHelpers')
-const {
-    enqueueTurn
-} = require('../actions/snakeActions')
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
@@ -252,6 +255,7 @@ module.exports = function createStore(reducer, initialState) {
   };
 
   function dispatch(action) {
+    console.log(action)
     state = reducer(state, action);
     listeners.forEach(listener => listener());
   };
@@ -268,7 +272,7 @@ module.exports = function createStore(reducer, initialState) {
   return { getState, dispatch, subscribe };
 };
 },{}],10:[function(require,module,exports){
-const snake = require('./store');
+const store = require('./store');
 const {
     startGame,
     pauseGame
@@ -281,22 +285,22 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-snake.subscribe(() => console.log("SAgfsadg"));
+store.subscribe(() => console.log("SAgfsadg"));
 
 window.addEventListener("load", () => {
-    snake.dispatch(addControls());
+    store.dispatch(addControls());
 })
 
 window.addEventListener('resize', () => {
-    snake.dispatch(resizeBoard());
+    store.dispatch(resizeBoard());
 })
 
 window.addEventListener("keydown", (e) => {
-    if (snake.getState().isOnDesktop) {
+    if (store.getState().isOnDesktop) {
         if(e.key=== 'Enter' || e.key=== ' ') {
-            snake.getState().isPaused
-                ? snake.dispatch(startGame())
-                : snake.dispatch(pauseGame())
+            store.getState().isPaused
+                ? store.dispatch(startGame())
+                : store.dispatch(pauseGame())
         };
     };
 })

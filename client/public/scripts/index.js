@@ -1,4 +1,4 @@
-const snake = require('./store');
+const store = require('./store');
 const {
     startGame,
     pauseGame
@@ -11,22 +11,22 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-snake.subscribe(() => console.log("SAgfsadg"));
+store.subscribe(() => console.log("SAgfsadg"));
 
 window.addEventListener("load", () => {
-    snake.dispatch(addControls());
+    store.dispatch(addControls());
 })
 
 window.addEventListener('resize', () => {
-    snake.dispatch(resizeBoard());
+    store.dispatch(resizeBoard());
 })
 
 window.addEventListener("keydown", (e) => {
-    if (snake.getState().isOnDesktop) {
+    if (store.getState().isOnDesktop) {
         if(e.key=== 'Enter' || e.key=== ' ') {
-            snake.getState().isPaused
-                ? snake.dispatch(startGame())
-                : snake.dispatch(pauseGame())
+            store.getState().isPaused
+                ? store.dispatch(startGame())
+                : store.dispatch(pauseGame())
         };
     };
 })

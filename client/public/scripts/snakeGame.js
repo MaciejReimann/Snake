@@ -1,6 +1,6 @@
 
 // GAME LOGIC SINGLETON PRESERVING GAME STATE
-// const snakeGame = ( () => {
+const snakeGame = ( () => {
 //   'use strict'
 //   let gameInstance;
 

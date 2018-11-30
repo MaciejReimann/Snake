@@ -4,12 +4,12 @@ const {
     ADD_CONTROLS
     } = require('../actions/constants');
 const {
+    enqueueTurn
+} = require('../actions/snakeActions')
+const {
     createElement,
     resizeCanvas
 } = require('../helpers/DOMHelpers')
-const {
-    enqueueTurn
-} = require('../actions/snakeActions')
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
