@@ -1,10 +1,4 @@
 
-function resizeCanvas(canvas, width, height) {
-  canvas.width = width;
-  canvas.height = height;
-  return canvas;
-}
-
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = color;
