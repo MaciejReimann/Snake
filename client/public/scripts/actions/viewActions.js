@@ -11,6 +11,18 @@ const {
     changeDirection
 } = require('../actions/snakeActions')
 
+function resizeBoard() {
+    const canvasContainer = document.querySelector(".canvas-container");
+    const payload = {
+        width: canvasContainer.clientWidth,
+        height: canvasContainer.clientHeight
+    };
+    return {
+        type: RESIZE_BOARD,
+        payload
+    };
+};
+
 function addControls() {
 
     function onMobile() {
@@ -39,5 +51,6 @@ function addControls() {
 }
 
 module.exports = {
-    addControls
+    addControls,
+    resizeBoard
 }

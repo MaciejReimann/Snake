@@ -11,12 +11,14 @@ const {
     };
   
     if(action.type === RESIZE_BOARD) {
-        console.log("RESIZE_BOARD from reducer")
+        nextState.boardWidth = action.payload.width;
+        nextState.boardHeight = action.payload.height;
     } else if(action.type === CHANGE_RESOLUTION) {
         console.log("CHANGE_RESOLUTION from reducer")
     } else if(action.type === ADD_CONTROLS) {
         nextState.isOnDesktop = action.isOnDesktop;
-    }
+    };
+    console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
   };
   

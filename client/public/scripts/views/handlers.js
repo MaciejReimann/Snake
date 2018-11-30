@@ -3,7 +3,7 @@
 const handle = (() => {
   const game = snakeGame.getInstance();
   const state = game.getState;
-  const canvasContainer = document.querySelector(".canvas-wrapper");
+  const canvasContainer = document.querySelector(".canvas-container");
 
   // event handlers
   const start = () => {
