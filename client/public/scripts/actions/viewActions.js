@@ -3,19 +3,28 @@ const {
     CHANGE_RESOLUTION,
     ADD_CONTROLS
     } = require('../actions/constants');
-// const {
-//     startGame,
-//     pauseGame
-// } = require('../actions/loopActions')
+const {
+    createElement,
+    resizeCanvas
+} = require('../helpers/DOMHelpers')
 const {
     changeDirection
 } = require('../actions/snakeActions')
 
+const canvasContainer = document.querySelector(".canvas-container");
+let CANVAS;
+
 function resizeBoard() {
-    const canvasContainer = document.querySelector(".canvas-container");
+    const width = canvasContainer.clientWidth;
+    const height = canvasContainer.clientHeight;
+    if(!CANVAS) {
+        CANVAS = createElement('canvas');
+        canvasContainer.appendChild(CANVAS);
+    }
+    resizeCanvas(CANVAS, width, height);
     const payload = {
-        width: canvasContainer.clientWidth,
-        height: canvasContainer.clientHeight
+        width,
+        height,
     };
     return {
         type: RESIZE_BOARD,
@@ -24,6 +33,7 @@ function resizeBoard() {
 };
 
 function addControls() {
+    
 
     function onMobile() {
 
@@ -34,6 +44,7 @@ function addControls() {
     };
 
     function onDesktop() {
+        resizeBoard();
         window.addEventListener('keydown', e => {
             switch (e.key) {
                 case 'w': case 'ArrowUp':    changeDirection('UP'); break
