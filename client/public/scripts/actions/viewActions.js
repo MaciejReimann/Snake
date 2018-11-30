@@ -8,7 +8,7 @@ const {
     resizeCanvas
 } = require('../helpers/DOMHelpers')
 const {
-    changeDirection
+    enqueueTurn
 } = require('../actions/snakeActions')
 
 const canvasContainer = document.querySelector(".canvas-container");
@@ -47,10 +47,10 @@ function addControls() {
         resizeBoard();
         window.addEventListener('keydown', e => {
             switch (e.key) {
-                case 'w': case 'ArrowUp':    changeDirection('UP'); break
-                case 'a': case 'ArrowLeft':  changeDirection('LEFT');  break
-                case 's': case 'ArrowDown':  changeDirection('DOWN'); break
-                case 'd': case 'ArrowRight': changeDirection('RIGHT');  break
+                case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
+                case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
+                case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
+                case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
             };
         });
         return {

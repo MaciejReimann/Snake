@@ -13,6 +13,7 @@ module.exports = {
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',
     CHANGE_DIRECTION:'CHANGE_DIRECTION',
+    ENQUEUE_TURN: 'ENQUEUE_TURN',
     EAT_FOOD: 'EAT_FOOD',
     HIT_BODY: 'HIT_BODY'
 };

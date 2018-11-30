@@ -1,5 +1,6 @@
 const {
     MOVE_FORWARD,
+    ENQUEUE_TURN,
     CHANGE_DIRECTION
 } = require('./constants');
 
@@ -7,6 +8,10 @@ const {
 function moveForward() {
     console.log('moved forward')
 
+};
+
+function enqueueTurn() {
+    console.log('enqueued turn')
 };
 
 function changeDirection() {
@@ -17,5 +22,6 @@ function changeDirection() {
 
 module.exports = {
     moveForward,
+    enqueueTurn,
     changeDirection
 };

@@ -1,6 +1,6 @@
 const {
     MOVE_FORWARD,
-    CHANGE_DIRECTION,
+    ENQUEUE_TURN,
     EAT_FOOD,
     HIT_BODY
   } = require('../actions/constants');
@@ -13,8 +13,8 @@ const {
   
     if(action.type === MOVE_FORWARD) {
         console.log("MOVE_FORWARD from reducer")
-    } else if(action.type === CHANGE_DIRECTION) {
-        console.log("CHANGE_DIRECTION from reducer")
+    } else if(action.type === ENQUEUE_TURN) {
+        console.log("ENQUEUE_TURN from reducer")
     } else if(action.type === EAT_FOOD) {
         console.log("EAT_FOOD from reducer")
     } else if(action.type === HIT_BODY) {
