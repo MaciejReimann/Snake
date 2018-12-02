@@ -1,4 +1,4 @@
-const { dispatch } = require('../store');
+const { getState } = require('../store');
 const {
     RENDER_CANVAS,
     UPDATE_SCORE
@@ -6,16 +6,10 @@ const {
 
 function renderCanvas() {
     console.log('canvas rendered');
-    return {
-        type: RENDER_CANVAS
-    };    
 };
 
 function updateScore() {
-    console.log('score updated')
-    return dispatch({
-        type: UPDATE_SCORE
-    });
+    console.log(getState().score)
 };
 
 module.exports = {

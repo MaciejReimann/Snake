@@ -37,10 +37,28 @@ function resizeBoard() {
     });
 };
 
+function addKeydownListeners() {
+    window.addEventListener('keydown', e => {
+        switch (e.key) {
+            case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
+            case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
+            case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
+            case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
+            case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
+        };
+    });
+}
+
+function addSwipeListeners() {
+    window.addEventListener('keydown', e => {
+
+    });
+}
+
 function addControls() {    
 
     function onMobile() {
-
+        addSwipeListeners();
         return dispatch({
             type: ADD_CONTROLS,
             deviceType: 'mobile'
@@ -49,15 +67,7 @@ function addControls() {
 
     function onDesktop() {
         resizeBoard();
-        window.addEventListener('keydown', e => {
-            switch (e.key) {
-                case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
-                case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
-                case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
-                case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
-                case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
-            };
-        });
+        addKeydownListeners();
         return dispatch({
             type: ADD_CONTROLS,
             deviceType: 'desktop'
@@ -67,6 +77,6 @@ function addControls() {
 }
 
 module.exports = {
-    addControls,
-    resizeBoard
-}
+    resizeBoard,
+    addControls    
+};
