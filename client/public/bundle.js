@@ -58,6 +58,7 @@ module.exports = {
     changeInterval
 };
 },{"../helpers/Gameloop":7,"../store":18,"./constants":1,"./snakeActions":4}],3:[function(require,module,exports){
+const { dispatch } = require('../store');
 const {
     RENDER_CANVAS,
     UPDATE_SCORE
@@ -65,14 +66,14 @@ const {
 
 function renderCanvas() {
     console.log('canvas rendered');
-    return dispatch({
+    return {
         type: RENDER_CANVAS
-    });    
+    };    
 };
 
 function updateScore() {
     console.log('score updated')
-    return dispatchEvent({
+    return dispatch({
         type: UPDATE_SCORE
     });
 };
@@ -81,7 +82,7 @@ module.exports = {
     renderCanvas,
     updateScore
 }
-},{"./constants":1}],4:[function(require,module,exports){
+},{"../store":18,"./constants":1}],4:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
@@ -285,10 +286,6 @@ module.exports = function createStore(reducer, initialState) {
 },{}],10:[function(require,module,exports){
 const store = require('./store');
 const {
-    startGame,
-    pauseGame
-} = require('./actions/loopActions');
-const {
     renderCanvas
 } = require('./actions/renderActions');
 const {
@@ -296,7 +293,7 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-// subscribe(() => console.log("SAgfsadg"));
+store.subscribe(renderCanvas);
 
 window.addEventListener("load", () => {
     addControls();
@@ -305,7 +302,7 @@ window.addEventListener("load", () => {
 window.addEventListener('resize', () => {
     resizeBoard();
 });
-},{"./actions/loopActions":2,"./actions/renderActions":3,"./actions/viewActions":5,"./store":18}],11:[function(require,module,exports){
+},{"./actions/renderActions":3,"./actions/viewActions":5,"./store":18}],11:[function(require,module,exports){
 const UP = { x: 0, y:-1 };
 const RIGHT = { x: 1, y: 0 };
 const DOWN = { x: 0, y: 1 };

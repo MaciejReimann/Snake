@@ -1,3 +1,4 @@
+const { dispatch } = require('../store');
 const {
     RENDER_CANVAS,
     UPDATE_SCORE
@@ -5,14 +6,14 @@ const {
 
 function renderCanvas() {
     console.log('canvas rendered');
-    return dispatch({
+    return {
         type: RENDER_CANVAS
-    });    
+    };    
 };
 
 function updateScore() {
     console.log('score updated')
-    return dispatchEvent({
+    return dispatch({
         type: UPDATE_SCORE
     });
 };

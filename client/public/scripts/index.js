@@ -1,9 +1,5 @@
 const store = require('./store');
 const {
-    startGame,
-    pauseGame
-} = require('./actions/loopActions');
-const {
     renderCanvas
 } = require('./actions/renderActions');
 const {
@@ -11,7 +7,7 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-// subscribe(() => console.log("SAgfsadg"));
+store.subscribe(renderCanvas);
 
 window.addEventListener("load", () => {
     addControls();
