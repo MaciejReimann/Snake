@@ -19,6 +19,7 @@ module.exports = {
     HIT_BODY: 'HIT_BODY'
 };
 },{}],2:[function(require,module,exports){
+const { dispatch } = require('../store');
 const {
     START_GAME,
     PAUSE_GAME,
@@ -27,28 +28,28 @@ const {
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
 
-// Initialize gameloop with a callback to be fired from inside
+// Initialize gameloop with a callback to be fired from inside the gameloop functions
 const gameloop = Gameloop(moveForward);
 
 const startGame = () => {
     gameloop.start();
-    return {
+    return dispatch({
         type: START_GAME
-    };
+    });
 };
 
 function pauseGame() {
     gameloop.stop();
-    return {
+    return dispatch({
         type: PAUSE_GAME
-    };
+    });
 };
 
 function changeInterval(rate) {
     gameloop.changeInterval(rate);
-    return {
+    return dispatch({
         type: CHANGE_INTERVAL
-    };
+    });
 };
 
 module.exports = {
@@ -56,22 +57,25 @@ module.exports = {
     pauseGame,
     changeInterval
 };
-},{"../helpers/Gameloop":7,"./constants":1,"./snakeActions":4}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":7,"../store":18,"./constants":1,"./snakeActions":4}],3:[function(require,module,exports){
 const {
     RENDER_CANVAS,
     UPDATE_SCORE
 } = require('./constants');
 
-
 function renderCanvas() {
-    console.log('canvas rendered')
+    console.log('canvas rendered');
+    return dispatch({
+        type: RENDER_CANVAS
+    });    
 };
 
 function updateScore() {
     console.log('score updated')
+    return dispatchEvent({
+        type: UPDATE_SCORE
+    });
 };
-
-
 
 module.exports = {
     renderCanvas,
@@ -87,11 +91,12 @@ const {
 
 
 function moveForward() {
-    console.log('moved forward')
-
+    return dispatch({
+        type: MOVE_FORWARD
+    });
 };
 
-function enqueueTurn(turn) { 
+function enqueueTurn(turn) {
     return dispatch({
         type: ENQUEUE_TURN,
         payload: turn
@@ -99,8 +104,9 @@ function enqueueTurn(turn) {
 };
 
 function changeDirection() {
-    console.log('changed direction')
-    
+    return dispatch({
+        type: CHANGE_DIRECTION
+    });   
 };
 
 module.exports = {
@@ -109,6 +115,7 @@ module.exports = {
     changeDirection
 };
 },{"../store":18,"./constants":1}],5:[function(require,module,exports){
+const { dispatch, getState } = require('../store');
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -116,7 +123,11 @@ const {
     } = require('../actions/constants');
 const {
     enqueueTurn
-} = require('../actions/snakeActions')
+} = require('../actions/snakeActions');
+const {
+    startGame,
+    pauseGame    
+} = require('../actions/loopActions');
 const {
     createElement,
     resizeCanvas
@@ -137,37 +148,37 @@ function resizeBoard() {
         width,
         height,
     };
-    return {
+    return dispatch({
         type: RESIZE_BOARD,
         payload
-    };
+    });
 };
 
-function addControls() {
-    
+function addControls() {    
 
     function onMobile() {
 
-        return {
+        return dispatch({
             type: ADD_CONTROLS,
-            isOnDesktop: false
-        };
+            deviceType: 'mobile'
+        });
     };
 
     function onDesktop() {
         resizeBoard();
         window.addEventListener('keydown', e => {
             switch (e.key) {
+                case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
                 case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
                 case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
                 case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
                 case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
             };
         });
-        return {
+        return dispatch({
             type: ADD_CONTROLS,
-            isOnDesktop: true
-        };
+            deviceType: 'desktop'
+        });
     };
     return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
 }
@@ -176,7 +187,7 @@ module.exports = {
     addControls,
     resizeBoard
 }
-},{"../actions/constants":1,"../actions/snakeActions":4,"../helpers/DOMHelpers":6}],6:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":4,"../helpers/DOMHelpers":6,"../store":18}],6:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -285,25 +296,15 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-store.subscribe(() => console.log("SAgfsadg"));
+// subscribe(() => console.log("SAgfsadg"));
 
 window.addEventListener("load", () => {
-    store.dispatch(addControls());
-})
+    addControls();
+});
 
 window.addEventListener('resize', () => {
-    store.dispatch(resizeBoard());
-})
-
-window.addEventListener("keydown", (e) => {
-    if (store.getState().isOnDesktop) {
-        if(e.key=== 'Enter' || e.key=== ' ') {
-            store.getState().isPaused
-                ? store.dispatch(startGame())
-                : store.dispatch(pauseGame())
-        };
-    };
-})
+    resizeBoard();
+});
 },{"./actions/loopActions":2,"./actions/renderActions":3,"./actions/viewActions":5,"./store":18}],11:[function(require,module,exports){
 const UP = { x: 0, y:-1 };
 const RIGHT = { x: 1, y: 0 };
@@ -425,7 +426,7 @@ const {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;
     } else if(action.type === CHANGE_RESOLUTION) {
-        console.log("CHANGE_RESOLUTION from reducer")
+        // console.log("CHANGE_RESOLUTION from reducer")
     } else if(action.type === ADD_CONTROLS) {
         nextState.isOnDesktop = action.isOnDesktop;
     };

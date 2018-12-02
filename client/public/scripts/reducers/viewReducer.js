@@ -14,7 +14,7 @@ const {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;
     } else if(action.type === CHANGE_RESOLUTION) {
-        console.log("CHANGE_RESOLUTION from reducer")
+        // console.log("CHANGE_RESOLUTION from reducer")
     } else if(action.type === ADD_CONTROLS) {
         nextState.isOnDesktop = action.isOnDesktop;
     };

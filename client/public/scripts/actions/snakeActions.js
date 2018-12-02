@@ -7,11 +7,12 @@ const {
 
 
 function moveForward() {
-    console.log('moved forward')
-
+    return dispatch({
+        type: MOVE_FORWARD
+    });
 };
 
-function enqueueTurn(turn) { 
+function enqueueTurn(turn) {
     return dispatch({
         type: ENQUEUE_TURN,
         payload: turn
@@ -19,8 +20,9 @@ function enqueueTurn(turn) {
 };
 
 function changeDirection() {
-    console.log('changed direction')
-    
+    return dispatch({
+        type: CHANGE_DIRECTION
+    });   
 };
 
 module.exports = {

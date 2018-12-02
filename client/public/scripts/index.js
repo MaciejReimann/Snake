@@ -11,22 +11,12 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-store.subscribe(() => console.log("SAgfsadg"));
+// subscribe(() => console.log("SAgfsadg"));
 
 window.addEventListener("load", () => {
-    store.dispatch(addControls());
-})
+    addControls();
+});
 
 window.addEventListener('resize', () => {
-    store.dispatch(resizeBoard());
-})
-
-window.addEventListener("keydown", (e) => {
-    if (store.getState().isOnDesktop) {
-        if(e.key=== 'Enter' || e.key=== ' ') {
-            store.getState().isPaused
-                ? store.dispatch(startGame())
-                : store.dispatch(pauseGame())
-        };
-    };
-})
+    resizeBoard();
+});

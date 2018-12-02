@@ -1,3 +1,4 @@
+const { dispatch, getState } = require('../store');
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -5,7 +6,11 @@ const {
     } = require('../actions/constants');
 const {
     enqueueTurn
-} = require('../actions/snakeActions')
+} = require('../actions/snakeActions');
+const {
+    startGame,
+    pauseGame    
+} = require('../actions/loopActions');
 const {
     createElement,
     resizeCanvas
@@ -26,37 +31,37 @@ function resizeBoard() {
         width,
         height,
     };
-    return {
+    return dispatch({
         type: RESIZE_BOARD,
         payload
-    };
+    });
 };
 
-function addControls() {
-    
+function addControls() {    
 
     function onMobile() {
 
-        return {
+        return dispatch({
             type: ADD_CONTROLS,
-            isOnDesktop: false
-        };
+            deviceType: 'mobile'
+        });
     };
 
     function onDesktop() {
         resizeBoard();
         window.addEventListener('keydown', e => {
             switch (e.key) {
+                case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
                 case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
                 case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
                 case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
                 case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
             };
         });
-        return {
+        return dispatch({
             type: ADD_CONTROLS,
-            isOnDesktop: true
-        };
+            deviceType: 'desktop'
+        });
     };
     return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
 }
