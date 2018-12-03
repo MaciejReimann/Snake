@@ -8,13 +8,13 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: black;
+  /* background-color: black; */
   font-family: 'Russo One', sans-serif;
 }
 
 .header {
   /* margin-bottom: .5vh; */
-  height: 8vh;
+  height: 5vh;
   width: 100vw;
   display: flex;
   flex-direction: row;
@@ -24,46 +24,31 @@
   display: grid;
   justify-content: center;
   align-content: center;
-  color: rgba(161, 84, 237, 0.83);
 }
 
 .options {
   width: 20vw;
-  /* border: solid 1px rgba(129, 21, 237, 0.32); */
 }
 
 .message {
   width: 60vw;
-  
-  /* border: solid 1px rgba(129, 21, 237, 0.32); */
 }
 
 .score {
   width: 20vw;
-  /* color: rgba(161, 84, 237, 0.83); */
-  font-size: 5vh;
-  /* border: solid 1px rgba(129, 21, 237, 0.32); */
-  /* order: 1; */
+  font-size: 3vh;
 }
 
 .canvas-container {
-  height: 92vh;
+  height: 95vh;
   display: grid;
   justify-content: center;
-  align-content: center;
+  align-content: start;
   background-color: black;
-  border-top: solid 1px rgba(129, 21, 237, 0.32);
 }
 
-
-
-
 /* .canvas {
-  border-bottom: solid 1px rgba(129, 21, 237, 0.32);
-} */
-
-/* .game-over {
-  background-color: rgba(237, 54, 21, 0.86);
+  border: solid 1px rgba(129, 21, 237, 0.32);
 } */
 
 /* .LEFT, .UP {

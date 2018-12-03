@@ -21,8 +21,8 @@ let CANVAS;
 
 function resizeBoard() {
     const res = getState().resolution;
-    const width = Math.floor(canvasContainer.clientWidth / res ) * res;
-    const height = Math.floor(canvasContainer.clientHeight / res) * res;
+    const width = Math.floor(canvasContainer.clientWidth / res ) * res - 2 * res;
+    const height = Math.floor(canvasContainer.clientHeight / res) * res - res;
     if(!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);

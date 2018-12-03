@@ -114,8 +114,8 @@ let CANVAS;
 
 function resizeBoard() {
     const res = getState().resolution;
-    const width = Math.floor(canvasContainer.clientWidth / res ) * res;
-    const height = Math.floor(canvasContainer.clientHeight / res) * res;
+    const width = Math.floor(canvasContainer.clientWidth / res ) * res - 2 * res;
+    const height = Math.floor(canvasContainer.clientHeight / res) * res - res;
     if(!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);
@@ -513,8 +513,16 @@ const {
     snakeColor,
     foodColor,
     gridColor,
+    textColor,
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
+
+function applyColorsToStyle() {
+    document.querySelector(".header").style.backgroundColor = gridColor;
+    document.querySelector(".canvas-container").style.backgroundColor = gridColor;
+    document.querySelector(".canvas").style.backgroundColor = "black";
+    document.querySelector(".page").style.color = textColor;
+}
 
 function renderCanvas() {
     const { snake, food, resolution, isOver } = getState();
@@ -557,6 +565,7 @@ function updateScore() {
 };
 
 function render() {
+    applyColorsToStyle();
     renderCanvas();
     updateOptions();
     updateMessage();
@@ -579,7 +588,8 @@ module.exports = {
     darkViolet: {
         snakeColor: "rgba(133, 201, 35, 0.78)",
         foodColor: "rgb(235, 154, 18)",
-        gridColor: "rgba(129, 21, 237, 0.32)",
+        gridColor: "rgb(26, 0, 51)",
+        textColor: "rgba(161, 84, 237, 0.83)",
         gameOverColor: "rgba(237, 54, 21, 0.86)"
     }
 }

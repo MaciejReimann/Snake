@@ -10,8 +10,16 @@ const {
     snakeColor,
     foodColor,
     gridColor,
+    textColor,
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
+
+function applyColorsToStyle() {
+    document.querySelector(".header").style.backgroundColor = gridColor;
+    document.querySelector(".canvas-container").style.backgroundColor = gridColor;
+    document.querySelector(".canvas").style.backgroundColor = "black";
+    document.querySelector(".page").style.color = textColor;
+}
 
 function renderCanvas() {
     const { snake, food, resolution, isOver } = getState();
@@ -54,6 +62,7 @@ function updateScore() {
 };
 
 function render() {
+    applyColorsToStyle();
     renderCanvas();
     updateOptions();
     updateMessage();
