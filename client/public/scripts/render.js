@@ -2,17 +2,20 @@ const { getState } = require('./store');
 const { 
     clear,
     drawRectangularGrid, 
+    drawSquareFromCorner,
     drawCircle 
 } = require('./helpers/renderHelpers');
 
 function renderCanvas() {
     const { snake, food, resolution } = getState();
     const CANVAS = document.querySelector(".canvas");
-    console.log(CANVAS)
     clear(CANVAS);
-
-    // snake.forEach()
-    drawRectangularGrid(CANVAS, resolution, 'white', .5)
+    // draw snake
+    snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, "white", square));
+    // draw food
+    drawCircle(CANVAS, resolution, "white", food);
+    // draw grid
+    drawRectangularGrid(CANVAS, resolution, 'white', .5);
 };
 
 function updateOptions() {
