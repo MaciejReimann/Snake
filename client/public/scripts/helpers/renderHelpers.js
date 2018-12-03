@@ -3,8 +3,8 @@ function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = color;
   ctx.beginPath();
-  ctx.moveTo(offset, 0);
-  ctx.lineTo(offset, canvas.height);
+  ctx.moveTo(offset - width / 2, 0 - width / 2);
+  ctx.lineTo(offset - width / 2, canvas.height - width / 2);
   ctx.lineWidth = width;
   ctx.stroke();
   return canvas;
@@ -14,8 +14,8 @@ function drawHorizontalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = color;
   ctx.beginPath();
-  ctx.moveTo(0, offset);
-  ctx.lineTo(canvas.width, offset);
+  ctx.moveTo(0 - width / 2, offset - width / 2);
+  ctx.lineTo(canvas.width - width / 2, offset - width / 2);
   ctx.lineWidth = width;
   ctx.stroke();
   return canvas;
@@ -78,7 +78,6 @@ function clear(canvas) {
 };
 
 module.exports = {
-  resizeCanvas,
   drawVerticalLine,
   drawHorizontalLine,
   drawOffsetVerticalLines,

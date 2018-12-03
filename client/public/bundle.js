@@ -57,7 +57,7 @@ module.exports = {
     pauseGame,
     changeInterval
 };
-},{"../helpers/Gameloop":6,"../store":17,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../store":18,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
@@ -90,7 +90,7 @@ module.exports = {
     enqueueTurn,
     changeDirection
 };
-},{"../store":17,"./constants":1}],4:[function(require,module,exports){
+},{"../store":18,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
 const {
     RESIZE_BOARD,
@@ -107,14 +107,15 @@ const {
 const {
     createElement,
     resizeCanvas
-} = require('../helpers/DOMHelpers')
+} = require('../helpers/DOMHelpers');
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
 
 function resizeBoard() {
-    const width = canvasContainer.clientWidth;
-    const height = canvasContainer.clientHeight;
+    const res = getState().resolution;
+    const width = Math.floor(canvasContainer.clientWidth / res ) * res;
+    const height = Math.floor(canvasContainer.clientHeight / res) * res;
     if(!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);
@@ -173,7 +174,7 @@ module.exports = {
     resizeBoard,
     addControls    
 };
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":17}],5:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":18}],5:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -187,13 +188,13 @@ function resizeCanvas(canvas, width, height) {
   canvas.width = width;
   canvas.height = height;
   return canvas;
-}
+};
 
 
 module.exports = {
   createElement,
   resizeCanvas
-}
+};
 
 },{}],6:[function(require,module,exports){
 module.exports = function Gameloop(callback) {
@@ -269,6 +270,109 @@ module.exports = function createStore(reducer, initialState) {
   return { getState, dispatch, subscribe };
 };
 },{}],9:[function(require,module,exports){
+
+function drawVerticalLine(canvas, offset, color, width) {
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(offset - width / 2, 0 - width / 2);
+  ctx.lineTo(offset - width / 2, canvas.height - width / 2);
+  ctx.lineWidth = width;
+  ctx.stroke();
+  return canvas;
+};
+
+function drawHorizontalLine(canvas, offset, color, width) {
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0 - width / 2, offset - width / 2);
+  ctx.lineTo(canvas.width - width / 2, offset - width / 2);
+  ctx.lineWidth = width;
+  ctx.stroke();
+  return canvas;
+};
+
+function drawOffsetVerticalLines(canvas, offset, color, width) {
+  return Array(canvas.width / offset)
+      .fill()
+      .map((_, i) => drawVerticalLine(canvas, offset * i, color, width))
+};
+
+function drawOffsetHorizontalLines(canvas, offset, color, width) {
+  return Array(canvas.height / offset)
+      .fill()
+      .map((_, i) => drawHorizontalLine(canvas, offset * i, color, width))
+};
+
+function drawRectangularGrid(canvas, offset, color, width) {
+  drawOffsetVerticalLines(canvas, offset, color, width)
+  drawOffsetHorizontalLines(canvas, offset, color, width)
+};
+
+function drawSquare(vertices, canvas, color) {
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.moveTo(vertices[0].x, vertices[0].y);
+  ctx.lineTo(vertices[1].x, vertices[1].y);
+  ctx.lineTo(vertices[2].x, vertices[2].y);
+  ctx.lineTo(vertices[3].x, vertices[3].y);
+  return ctx;
+};
+
+function drawSquareFromCorner(canvas, d, color, point) {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color;
+  ctx.fillRect(point.x * d, point.y * d, d, d)
+};
+
+function drawCircle(canvas, d, color, point) {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color;
+  drawCircleInSquare(point.x * d, point.y * d, (d / 2), ctx);
+};
+
+function drawCircleInSquare(x, y, r, context) {
+  context.beginPath();
+  context.arc(x + r, y + r, r, 0, 2 * Math.PI, false);
+  context.fill();
+};
+
+function fill(canvas, color) {
+  canvas.getContext('2d').fillStyle = color;
+  canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height)
+};
+
+function clear(canvas) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+module.exports = {
+  drawVerticalLine,
+  drawHorizontalLine,
+  drawOffsetVerticalLines,
+  drawOffsetHorizontalLines,
+  drawRectangularGrid,
+  drawSquare,
+  drawSquareFromCorner,
+  drawCircle,
+  drawCircleInSquare,
+  fill,
+  clear
+};
+
+
+
+
+
+
+
+
+
+
+},{}],10:[function(require,module,exports){
 const store = require('./store');
 const {
     render
@@ -287,28 +391,29 @@ window.addEventListener("load", () => {
 window.addEventListener('resize', () => {
     resizeBoard();
 });
-},{"./actions/viewActions":4,"./render":16,"./store":17}],10:[function(require,module,exports){
+},{"./actions/viewActions":4,"./render":17,"./store":18}],11:[function(require,module,exports){
 const UP = { x: 0, y:-1 };
 const RIGHT = { x: 1, y: 0 };
 const DOWN = { x: 0, y: 1 };
 const LEFT = { x:-1, y: 0 };
 
 module.exports = { UP, RIGHT, DOWN, LEFT };
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const { RIGHT } = require('./constants');
 
 module.exports = {
     tempo: 1000,
     increaseRate: .95,
+    resolution: 20,
     directions: [ RIGHT ],
-    body: Array(4).fill()
-    .map((_, i) => {return  {x: 4 - i, y: 1}   }),
+    snake: Array(4).fill()
+        .map((_, i) => {return  {x: 4 - i, y: 1}   }),
     food: { x: 7, y: 1 },
     isOver: false,
     isStarted: false,
     isPaused: true,
 };
-},{"./constants":10}],12:[function(require,module,exports){
+},{"./constants":11}],13:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -319,7 +424,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":7,"./loopReducer":13,"./snakeReducer":14,"./viewReducer":15}],13:[function(require,module,exports){
+},{"../helpers/combineReducers":7,"./loopReducer":14,"./snakeReducer":15,"./viewReducer":16}],14:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -345,7 +450,7 @@ module.exports = function(state, action) {
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1}],14:[function(require,module,exports){
+},{"../actions/constants":1}],15:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
@@ -371,7 +476,7 @@ const {
     }
     return Object.assign(state, nextState)
   };
-},{"../actions/constants":1}],15:[function(require,module,exports){
+},{"../actions/constants":1}],16:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -395,13 +500,27 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],16:[function(require,module,exports){
+},{"../actions/constants":1}],17:[function(require,module,exports){
 const { getState } = require('./store');
+const { 
+    clear,
+    drawRectangularGrid, 
+    drawCircle 
+} = require('./helpers/renderHelpers');
 
 function renderCanvas() {
+    const { snake, food, resolution } = getState();
+    const CANVAS = document.querySelector(".canvas");
+    console.log(CANVAS)
+    clear(CANVAS);
 
-    console.log('canvas rendered');
+    // snake.forEach()
+    drawRectangularGrid(CANVAS, resolution, 'white', .5)
 };
+
+function updateOptions() {
+    document.querySelector(".options").textContent = 'GitHub';
+}
 
 function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
@@ -425,19 +544,20 @@ function updateScore() {
 
 function render() {
     renderCanvas();
+    updateOptions();
     updateMessage();
     updateScore();
-}
+};
 
 module.exports = {
     render
 };
 
-},{"./store":17}],17:[function(require,module,exports){
+},{"./helpers/renderHelpers":9,"./store":18}],18:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":8,"./logic/initialState":11,"./reducers":12}]},{},[9]);
+},{"./helpers/createStore":8,"./logic/initialState":12,"./reducers":13}]},{},[10]);

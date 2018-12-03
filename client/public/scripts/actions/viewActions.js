@@ -14,14 +14,15 @@ const {
 const {
     createElement,
     resizeCanvas
-} = require('../helpers/DOMHelpers')
+} = require('../helpers/DOMHelpers');
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
 
 function resizeBoard() {
-    const width = canvasContainer.clientWidth;
-    const height = canvasContainer.clientHeight;
+    const res = getState().resolution;
+    const width = Math.floor(canvasContainer.clientWidth / res ) * res;
+    const height = Math.floor(canvasContainer.clientHeight / res) * res;
     if(!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);

@@ -1,9 +1,23 @@
 const { getState } = require('./store');
+const { 
+    clear,
+    drawRectangularGrid, 
+    drawCircle 
+} = require('./helpers/renderHelpers');
 
 function renderCanvas() {
+    const { snake, food, resolution } = getState();
+    const CANVAS = document.querySelector(".canvas");
+    console.log(CANVAS)
+    clear(CANVAS);
 
-    console.log('canvas rendered');
+    // snake.forEach()
+    drawRectangularGrid(CANVAS, resolution, 'white', .5)
 };
+
+function updateOptions() {
+    document.querySelector(".options").textContent = 'GitHub';
+}
 
 function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
@@ -27,9 +41,10 @@ function updateScore() {
 
 function render() {
     renderCanvas();
+    updateOptions();
     updateMessage();
     updateScore();
-}
+};
 
 module.exports = {
     render
