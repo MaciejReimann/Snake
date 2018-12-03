@@ -502,7 +502,8 @@ const {
   
 },{"../actions/constants":1}],17:[function(require,module,exports){
 const { getState } = require('./store');
-const { 
+const {
+    fill,
     clear,
     drawRectangularGrid, 
     drawSquareFromCorner,
@@ -516,9 +517,13 @@ const {
 } = require('./view/colorPalette').darkViolet;
 
 function renderCanvas() {
-    const { snake, food, resolution } = getState();
+    const { snake, food, resolution, isOver } = getState();
     const CANVAS = document.querySelector(".canvas");
     clear(CANVAS);
+    // when game is over
+    if(isOver) {
+        fill(CANVAS, gameOverColor);
+    };
     // draw snake
     snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));
     // draw food
