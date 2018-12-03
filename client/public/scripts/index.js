@@ -1,15 +1,13 @@
 const store = require('./store');
 const {
-    renderCanvas,
-    updateScore
-} = require('./actions/renderActions');
+    render
+} = require('./render');
 const {
     resizeBoard,
     addControls
 } = require('./actions/viewActions');
 
-store.subscribe(renderCanvas);
-store.subscribe(updateScore);
+store.subscribe(render);
 
 window.addEventListener("load", () => {
     addControls();

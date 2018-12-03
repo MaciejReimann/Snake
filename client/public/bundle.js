@@ -57,28 +57,7 @@ module.exports = {
     pauseGame,
     changeInterval
 };
-},{"../helpers/Gameloop":7,"../store":17,"./constants":1,"./snakeActions":4}],3:[function(require,module,exports){
-const { getState } = require('../store');
-const {
-    RENDER_CANVAS,
-    UPDATE_SCORE
-} = require('./constants');
-
-function renderCanvas() {
-
-    console.log('canvas rendered');
-};
-
-function updateScore() {
-    document.querySelector(".score").textContent = getState().score || 0;
-};
-
-module.exports = {
-    renderCanvas,
-    updateScore
-};
-
-},{"../store":17,"./constants":1}],4:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../store":17,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
@@ -111,7 +90,7 @@ module.exports = {
     enqueueTurn,
     changeDirection
 };
-},{"../store":17,"./constants":1}],5:[function(require,module,exports){
+},{"../store":17,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
 const {
     RESIZE_BOARD,
@@ -194,7 +173,7 @@ module.exports = {
     resizeBoard,
     addControls    
 };
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":4,"../helpers/DOMHelpers":6,"../store":17}],6:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":17}],5:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -216,7 +195,7 @@ module.exports = {
   resizeCanvas
 }
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function Gameloop(callback) {
     let interval = 1000;
     let lastTime;
@@ -250,7 +229,7 @@ module.exports = function Gameloop(callback) {
 
     return {start, stop, changeInterval}
 };
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
     let combinedState = {};
     // Leave only valid reducers, 
@@ -262,7 +241,7 @@ module.exports = function combineReducers(reducers) {
         return combinedState;
     };
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // redux-like state store
 module.exports = function createStore(reducer, initialState) {
   let state = initialState || {};
@@ -289,19 +268,17 @@ module.exports = function createStore(reducer, initialState) {
 
   return { getState, dispatch, subscribe };
 };
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 const store = require('./store');
 const {
-    renderCanvas,
-    updateScore
-} = require('./actions/renderActions');
+    render
+} = require('./render');
 const {
     resizeBoard,
     addControls
 } = require('./actions/viewActions');
 
-store.subscribe(renderCanvas);
-store.subscribe(updateScore);
+store.subscribe(render);
 
 window.addEventListener("load", () => {
     addControls();
@@ -310,14 +287,14 @@ window.addEventListener("load", () => {
 window.addEventListener('resize', () => {
     resizeBoard();
 });
-},{"./actions/renderActions":3,"./actions/viewActions":5,"./store":17}],11:[function(require,module,exports){
+},{"./actions/viewActions":4,"./render":16,"./store":17}],10:[function(require,module,exports){
 const UP = { x: 0, y:-1 };
 const RIGHT = { x: 1, y: 0 };
 const DOWN = { x: 0, y: 1 };
 const LEFT = { x:-1, y: 0 };
 
 module.exports = { UP, RIGHT, DOWN, LEFT };
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const { RIGHT } = require('./constants');
 
 module.exports = {
@@ -331,7 +308,7 @@ module.exports = {
     isStarted: false,
     isPaused: true,
 };
-},{"./constants":11}],13:[function(require,module,exports){
+},{"./constants":10}],12:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -342,7 +319,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":8,"./loopReducer":14,"./snakeReducer":15,"./viewReducer":16}],14:[function(require,module,exports){
+},{"../helpers/combineReducers":7,"./loopReducer":13,"./snakeReducer":14,"./viewReducer":15}],13:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -368,7 +345,7 @@ module.exports = function(state, action) {
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1}],15:[function(require,module,exports){
+},{"../actions/constants":1}],14:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
@@ -394,7 +371,7 @@ const {
     }
     return Object.assign(state, nextState)
   };
-},{"../actions/constants":1}],16:[function(require,module,exports){
+},{"../actions/constants":1}],15:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -418,11 +395,41 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],17:[function(require,module,exports){
+},{"../actions/constants":1}],16:[function(require,module,exports){
+const { getState } = require('./store');
+
+function renderCanvas() {
+
+    console.log('canvas rendered');
+};
+
+function updateMessage() {
+    const message = getState().isStarted 
+        ? 'To start game press spacebar'
+        : 'To pause game press spacebar'
+
+    document.querySelector(".message").textContent = message;
+};
+
+function updateScore() {
+    document.querySelector(".score").textContent = getState().score || 0;
+};
+
+function render() {
+    renderCanvas();
+    updateMessage();
+    updateScore();
+}
+
+module.exports = {
+    render
+};
+
+},{"./store":17}],17:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":13}]},{},[10]);
+},{"./helpers/createStore":8,"./logic/initialState":11,"./reducers":12}]},{},[9]);

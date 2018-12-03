@@ -1,9 +1,9 @@
 
 
-const updateScore = () => {
-  const SCORE = document.querySelector(".score");
-  SCORE.textContent = snakeGame.getInstance().getState().score || 0;
-}
+// const updateScore = () => {
+//   const SCORE = document.querySelector(".score");
+//   SCORE.textContent = snakeGame.getInstance().getState().score || 0;
+// }
 
 const updateCanvas = () => {
   const CANVAS = document.querySelector(".canvas");
