@@ -5,17 +5,23 @@ const {
     drawSquareFromCorner,
     drawCircle 
 } = require('./helpers/renderHelpers');
+const { 
+    snakeColor,
+    foodColor,
+    gridColor,
+    gameOverColor
+} = require('./view/colorPalette').darkViolet;
 
 function renderCanvas() {
     const { snake, food, resolution } = getState();
     const CANVAS = document.querySelector(".canvas");
     clear(CANVAS);
     // draw snake
-    snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, "white", square));
+    snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));
     // draw food
-    drawCircle(CANVAS, resolution, "white", food);
+    drawCircle(CANVAS, resolution, foodColor, food);
     // draw grid
-    drawRectangularGrid(CANVAS, resolution, 'white', .5);
+    drawRectangularGrid(CANVAS, resolution, gridColor, .5);
 };
 
 function updateOptions() {

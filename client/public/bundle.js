@@ -508,17 +508,23 @@ const {
     drawSquareFromCorner,
     drawCircle 
 } = require('./helpers/renderHelpers');
+const { 
+    snakeColor,
+    foodColor,
+    gridColor,
+    gameOverColor
+} = require('./view/colorPalette').darkViolet;
 
 function renderCanvas() {
     const { snake, food, resolution } = getState();
     const CANVAS = document.querySelector(".canvas");
     clear(CANVAS);
     // draw snake
-    snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, "white", square));
+    snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));
     // draw food
-    drawCircle(CANVAS, resolution, "white", food);
+    drawCircle(CANVAS, resolution, foodColor, food);
     // draw grid
-    drawRectangularGrid(CANVAS, resolution, 'white', .5);
+    drawRectangularGrid(CANVAS, resolution, gridColor, .5);
 };
 
 function updateOptions() {
@@ -556,11 +562,20 @@ module.exports = {
     render
 };
 
-},{"./helpers/renderHelpers":9,"./store":18}],18:[function(require,module,exports){
+},{"./helpers/renderHelpers":9,"./store":18,"./view/colorPalette":19}],18:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":8,"./logic/initialState":12,"./reducers":13}]},{},[10]);
+},{"./helpers/createStore":8,"./logic/initialState":12,"./reducers":13}],19:[function(require,module,exports){
+module.exports = {
+    darkViolet: {
+        snakeColor: "rgba(133, 201, 35, 0.78)",
+        foodColor: "rgb(235, 154, 18)",
+        gridColor: "rgba(129, 21, 237, 0.32)",
+        gameOverColor: "rgba(237, 54, 21, 0.86)"
+    }
+}
+},{}]},{},[10]);
