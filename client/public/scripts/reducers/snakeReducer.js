@@ -14,6 +14,7 @@ const {
     if(action.type === MOVE_FORWARD) {
         console.log("MOVE_FORWARD from reducer")
     } else if(action.type === ENQUEUE_TURN) {
+        
         console.log("ENQUEUE_TURN from reducer")
     } else if(action.type === EAT_FOOD) {
         console.log("EAT_FOOD from reducer")

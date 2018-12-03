@@ -5,14 +5,15 @@ const {
 } = require('./constants');
 
 function renderCanvas() {
+
     console.log('canvas rendered');
 };
 
 function updateScore() {
-    console.log(getState().score)
+    document.querySelector(".score").textContent = getState().score || 0;
 };
 
 module.exports = {
     renderCanvas,
     updateScore
-}
+};

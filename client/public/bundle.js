@@ -65,17 +65,19 @@ const {
 } = require('./constants');
 
 function renderCanvas() {
+
     console.log('canvas rendered');
 };
 
 function updateScore() {
-    console.log(getState().score)
+    document.querySelector(".score").textContent = getState().score || 0;
 };
 
 module.exports = {
     renderCanvas,
     updateScore
-}
+};
+
 },{"../store":17,"./constants":1}],4:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
@@ -290,7 +292,8 @@ module.exports = function createStore(reducer, initialState) {
 },{}],10:[function(require,module,exports){
 const store = require('./store');
 const {
-    renderCanvas
+    renderCanvas,
+    updateScore
 } = require('./actions/renderActions');
 const {
     resizeBoard,
@@ -298,6 +301,7 @@ const {
 } = require('./actions/viewActions');
 
 store.subscribe(renderCanvas);
+store.subscribe(updateScore);
 
 window.addEventListener("load", () => {
     addControls();
@@ -381,6 +385,7 @@ const {
     if(action.type === MOVE_FORWARD) {
         console.log("MOVE_FORWARD from reducer")
     } else if(action.type === ENQUEUE_TURN) {
+        
         console.log("ENQUEUE_TURN from reducer")
     } else if(action.type === EAT_FOOD) {
         console.log("EAT_FOOD from reducer")
