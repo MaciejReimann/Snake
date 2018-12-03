@@ -6,6 +6,9 @@ const {
     drawSquareFromCorner,
     drawCircle 
 } = require('./helpers/renderHelpers');
+const {
+    createElement
+} = require('./helpers/DOMHelpers');
 const { 
     snakeColor,
     foodColor,
@@ -14,20 +17,32 @@ const {
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
 
+
+
 function applyColorsToStyle() {
     document.querySelector(".header").style.backgroundColor = gridColor;
     document.querySelector(".canvas-container").style.backgroundColor = gridColor;
     document.querySelector(".canvas").style.backgroundColor = "black";
-    document.querySelector(".page").style.color = textColor;
-}
+    document.querySelector(".header").style.color = textColor;
+};
+
+function showGameOver() {
+    const CANVAS = document.querySelector(".canvas");    
+    fill(CANVAS, gameOverColor);
+    document.querySelector(".page")
+        .appendChild(createElement('div', 'game-over'))
+        .textContent = 'Game Over!';
+    // text color should be assigned here, but style.color wouldnt work...
+};
 
 function renderCanvas() {
-    const { snake, food, resolution, isOver } = getState();
+    const { snake, food, resolution, isOver } = getState();    
     const CANVAS = document.querySelector(".canvas");
+
     clear(CANVAS);
     // when game is over
     if(isOver) {
-        fill(CANVAS, gameOverColor);
+        showGameOver();
     };
     // draw snake
     snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));
@@ -45,7 +60,7 @@ function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
     let message;
     if (isOver) {
-        message = 'Game is over <br> To restart press q';
+        message = 'To restart press "q" ';
     } else if(!isStarted) {
         message = 'To start press spacebar';
     } else if(isStarted && isPaused) {
