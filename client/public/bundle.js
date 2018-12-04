@@ -458,24 +458,32 @@ const {
     HIT_BODY
   } = require('../actions/constants');
   
-  module.exports = function(state, action) {
+function turnIsValid() {
+    return true;
+}
+
+module.exports = function(state, action) {
     let nextState = {};
-    if(!action) {
-      action = {};
+if(!action) {
+    action = {};
+};
+
+if(action.type === MOVE_FORWARD) {
+    console.log("MOVE_FORWARD from reducer")
+} else if(action.type === ENQUEUE_TURN) {
+    if(turnIsValid()) {
+        nextState.directions = state.directions.concat(action.payload)
     };
-  
-    if(action.type === MOVE_FORWARD) {
-        console.log("MOVE_FORWARD from reducer")
-    } else if(action.type === ENQUEUE_TURN) {
-        
-        console.log("ENQUEUE_TURN from reducer")
-    } else if(action.type === EAT_FOOD) {
-        console.log("EAT_FOOD from reducer")
-    } else if(action.type === HIT_BODY) {
-        console.log("HIT_BODY from reducer")
-    }
+    
+    console.log("ENQUEUE_TURN from reducer")
+} else if(action.type === EAT_FOOD) {
+    console.log("EAT_FOOD from reducer")
+} else if(action.type === HIT_BODY) {
+    console.log("HIT_BODY from reducer")
+}
+    console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
-  };
+};
 },{"../actions/constants":1}],16:[function(require,module,exports){
 const {
     RESIZE_BOARD,
@@ -535,6 +543,7 @@ function showGameOver() {
     document.querySelector(".page")
         .appendChild(createElement('div', 'game-over'))
         .textContent = 'Game Over!';
+    // text color should be assigned here, but style.color wouldnt work...
 };
 
 function renderCanvas() {
@@ -562,7 +571,7 @@ function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
     let message;
     if (isOver) {
-        message = 'Game is over! To restart press q';
+        message = 'To restart press "q" ';
     } else if(!isStarted) {
         message = 'To start press spacebar';
     } else if(isStarted && isPaused) {
