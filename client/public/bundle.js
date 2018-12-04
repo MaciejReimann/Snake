@@ -232,12 +232,15 @@ module.exports = function Gameloop(callback) {
 };
 },{}],7:[function(require,module,exports){
 
-
 function getLastItem(array) {
     return array.length > 0
         ? array[array.length - 1]
         : null
 };
+
+module.exports = {
+    getLastItem
+}
 },{}],8:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
     let combinedState = {};
@@ -409,11 +412,13 @@ module.exports = {
     }
 };
 },{}],13:[function(require,module,exports){
+const { RIGHT } = require('./directions').directions
+
 module.exports = {
     tempo: 1000,
     increaseRate: .95,
     resolution: 20,
-    directions: [ "RIGHT" ],
+    directions: [ RIGHT ],
     snake: Array(4).fill()
         .map((_, i) => {return  {x: 4 - i, y: 1}   }),
     food: { x: 7, y: 1 },
@@ -421,7 +426,7 @@ module.exports = {
     isStarted: false,
     isPaused: true,
 };
-},{}],14:[function(require,module,exports){
+},{"./directions":12}],14:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -472,10 +477,13 @@ const {
     getLastItem
 } = require('../helpers/arrayHelpers');
   
-function turnIsValid(state, direction) {
+function turnIsValid(state, nextDirection) {
+    // console.log(
+    //     directions[nextDirection].x + getLastItem(state.directions).x
+    // )
     return (
-        direction.x + getLastItem(state.directions).x !== 0 ||
-        direction.y + getLastItem(state.directions).y !== 0
+        nextDirection.x + getLastItem(state.directions).x !== 0 ||
+        nextDirection.y + getLastItem(state.directions).y !== 0
     );
 };
 
@@ -488,14 +496,17 @@ if(!action) {
 if(action.type === MOVE_FORWARD) {
     console.log("MOVE_FORWARD from reducer")
 } else if(action.type === ENQUEUE_TURN) {
-    if(turnIsValid(state, action.payload)) {
-        nextState.directions = state.directions.concat(action.payload);
+    if(turnIsValid(state, directions[action.payload])) {
+        nextState.directions = state.directions.concat(directions[action.payload]);
     };
+    
 } else if(action.type === EAT_FOOD) {
     console.log("EAT_FOOD from reducer")
 } else if(action.type === HIT_BODY) {
     console.log("HIT_BODY from reducer")
 }
+
+    console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
 },{"../actions/constants":1,"../helpers/arrayHelpers":7,"../logic/directions":12}],17:[function(require,module,exports){

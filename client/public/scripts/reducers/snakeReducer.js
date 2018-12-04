@@ -11,10 +11,10 @@ const {
     getLastItem
 } = require('../helpers/arrayHelpers');
   
-function turnIsValid(state, direction) {
+function turnIsValid(state, nextDirection) {
     return (
-        direction.x + getLastItem(state.directions).x !== 0 ||
-        direction.y + getLastItem(state.directions).y !== 0
+        nextDirection.x + getLastItem(state.directions).x !== 0 ||
+        nextDirection.y + getLastItem(state.directions).y !== 0
     );
 };
 
@@ -27,13 +27,16 @@ if(!action) {
 if(action.type === MOVE_FORWARD) {
     console.log("MOVE_FORWARD from reducer")
 } else if(action.type === ENQUEUE_TURN) {
-    if(turnIsValid(state, action.payload)) {
-        nextState.directions = state.directions.concat(action.payload);
+    if(turnIsValid(state, directions[action.payload])) {
+        nextState.directions = state.directions.concat(directions[action.payload]);
     };
+    
 } else if(action.type === EAT_FOOD) {
     console.log("EAT_FOOD from reducer")
 } else if(action.type === HIT_BODY) {
     console.log("HIT_BODY from reducer")
 }
+
+    console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
