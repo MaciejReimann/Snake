@@ -7,7 +7,7 @@ const {
     drawCircle 
 } = require('./helpers/renderHelpers');
 const {
-    createElement
+    displayOnTopOfThePage
 } = require('./helpers/DOMHelpers');
 const { 
     snakeColor,
@@ -17,19 +17,11 @@ const {
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
 
-document.querySelector(".page")
-        .appendChild(createElement('div', 'page-foreground'));
-
 function applyColorsToStyle() {
     document.querySelector(".header").style.backgroundColor = gridColor;
     document.querySelector(".canvas-container").style.backgroundColor = gridColor;
     document.querySelector(".canvas").style.backgroundColor = "black";
     document.querySelector(".header").style.color = textColor;
-};
-
-function displayOnTopOfThePage(text) {    
-    document.querySelector(".page-foreground").textContent = text;
-    // text color should be assigned here, but style.color wouldnt work...
 };
 
 function renderCanvas() {

@@ -13,8 +13,14 @@ function resizeCanvas(canvas, width, height) {
   return canvas;
 };
 
+function displayOnTopOfThePage(text) {    
+  document.querySelector(".page-foreground").textContent = text;
+  // text color should be assigned here, but style.color wouldnt work...
+};
+
 
 module.exports = {
   createElement,
-  resizeCanvas
+  resizeCanvas,
+  displayOnTopOfThePage
 };
