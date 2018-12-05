@@ -1,8 +1,7 @@
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
-    ENQUEUE_TURN,
-    CHANGE_DIRECTION
+    ENQUEUE_TURN
 } = require('./constants');
 
 function moveForward() {
@@ -18,14 +17,7 @@ function enqueueTurn(turn) {
     });
 };
 
-function changeDirection() {
-    return dispatch({
-        type: CHANGE_DIRECTION
-    });   
-};
-
 module.exports = {
     moveForward,
-    enqueueTurn,
-    changeDirection
+    enqueueTurn
 };

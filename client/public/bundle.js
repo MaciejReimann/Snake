@@ -2,7 +2,7 @@
 module.exports = {
 // view actions
     RESIZE_BOARD: 'RESIZE_BOARD',
-    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION', // still to do 
+    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION', // TODO!
     ADD_CONTROLS: 'ADD_CONTROLS',
 // loop actions
     START_GAME:'START_GAME',
@@ -11,9 +11,7 @@ module.exports = {
     CHANGE_INTERVAL:'CHANGE_INTERVAL',
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',
-    ENQUEUE_TURN: 'ENQUEUE_TURN',
-    EAT_FOOD: 'EAT_FOOD', // not used
-    HIT_BODY: 'HIT_BODY' // not used
+    ENQUEUE_TURN: 'ENQUEUE_TURN'
 };
 },{}],2:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
@@ -67,8 +65,7 @@ module.exports = {
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
-    ENQUEUE_TURN,
-    CHANGE_DIRECTION
+    ENQUEUE_TURN
 } = require('./constants');
 
 function moveForward() {
@@ -84,16 +81,9 @@ function enqueueTurn(turn) {
     });
 };
 
-function changeDirection() {
-    return dispatch({
-        type: CHANGE_DIRECTION
-    });   
-};
-
 module.exports = {
     moveForward,
-    enqueueTurn,
-    changeDirection
+    enqueueTurn
 };
 },{"../store":21,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
@@ -643,13 +633,9 @@ module.exports = function(state, action) {
 },{"../actions/constants":1,"../logic/initialState":14}],18:[function(require,module,exports){
 const {
     MOVE_FORWARD,
-    ENQUEUE_TURN,
-    EAT_FOOD,
-    HIT_BODY
+    ENQUEUE_TURN
 } = require('../actions/constants');
-const {
-    directions
-} = require('../logic/directions');
+const { directions } = require('../logic/directions');
 const {
     turnIsValid,
     nextHead,
@@ -660,43 +646,38 @@ const {
   
 module.exports = function(state, action) {
     let nextState = {};
-if(!action) {
-    action = {};
-};
-
-if(action.type === MOVE_FORWARD) {
-    const { directions } = state;
-    // remove last move from the queue
-    if(directions.length > 1) {
-        nextState.directions = directions.slice(1, directions.length)
+    if(!action) {
+        action = {};
     };
-    // check for game over condition
-    if(willCrash(state)) {
-        nextState.isOver = true
-    } else {
-        // place new food if food eaten and make the snake longer
-        if(willEat(state)) {
-            nextState.food = placeFood(state);
-            nextState.snake = [ nextHead(state) ].concat(state.snake);
-            nextState.score = state.score + state.snake.length;
-        // let the head be followed by the rest of the snake
+
+    if(action.type === MOVE_FORWARD) {
+        const { directions } = state;
+        // remove last move from the queue
+        if(directions.length > 1) {
+            nextState.directions = directions.slice(1, directions.length)
+        };
+        // check for game over condition
+        if(willCrash(state)) {
+            nextState.isOver = true
         } else {
-            nextState.snake =  [ nextHead(state) ].concat(state.snake).slice(0, state.snake.length)
+            // place new food if food eaten and make the snake longer
+            if(willEat(state)) {
+                nextState.food = placeFood(state);
+                nextState.snake = [ nextHead(state) ].concat(state.snake);
+                nextState.score = state.score + state.snake.length;
+            // let the head be followed by the rest of the snake
+            } else {
+                nextState.snake =  [ nextHead(state) ].concat(state.snake).slice(0, state.snake.length)
+            };
+        };
+
+    } else if(action.type === ENQUEUE_TURN) {
+        const nextDirection = directions[action.payload];
+        if(turnIsValid(state, nextDirection)) {
+            nextState.directions = state.directions.concat(nextDirection);
         };
     };
 
-} else if(action.type === ENQUEUE_TURN) {
-    const nextDirection = directions[action.payload];
-    if(turnIsValid(state, nextDirection)) {
-        nextState.directions = state.directions.concat(nextDirection);
-    };    
-} else if(action.type === EAT_FOOD) {
-    // console.log("EAT_FOOD from reducer")
-} else if(action.type === HIT_BODY) {
-    // console.log("HIT_BODY from reducer")
-}
-
-    // console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
 },{"../actions/constants":1,"../logic/directions":13,"../logic/logicHelpers":15}],19:[function(require,module,exports){
