@@ -65,7 +65,8 @@ if(action.type === MOVE_FORWARD) {
         // place new food if food eaten and make the snake longer
         if(willEat(state)) {
             nextState.food = placeFood(state);
-            nextState.snake = [ nextHead(state) ].concat(state.snake)
+            nextState.snake = [ nextHead(state) ].concat(state.snake);
+            nextState.score = state.score + state.snake.length;
         // let the head be followed by the rest of the snake
         } else {
             nextState.snake =  [ nextHead(state) ].concat(state.snake).slice(0, state.snake.length)

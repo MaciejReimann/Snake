@@ -11,4 +11,5 @@ module.exports = {
     isOver: false,
     isStarted: false,
     isPaused: true,
+    score: 0
 };

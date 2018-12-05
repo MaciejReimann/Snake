@@ -73,7 +73,7 @@ function updateMessage() {
 };
 
 function updateScore() {
-    document.querySelector(".score").textContent = getState().score || 0;
+    document.querySelector(".score").textContent = getState().score;
 };
 
 function render() {

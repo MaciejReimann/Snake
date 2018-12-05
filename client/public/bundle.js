@@ -19,7 +19,7 @@ module.exports = {
     HIT_BODY: 'HIT_BODY'
 };
 },{}],2:[function(require,module,exports){
-const { dispatch } = require('../store');
+const { dispatch, getState } = require('../store');
 const {
     START_GAME,
     PAUSE_GAME,
@@ -29,7 +29,7 @@ const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
 
 // Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(moveForward);
+const gameloop = Gameloop(getState().tempo, moveForward);
 
 const startGame = () => {
     gameloop.start();
@@ -197,8 +197,8 @@ module.exports = {
 };
 
 },{}],6:[function(require,module,exports){
-module.exports = function Gameloop(callback) {
-    let interval = 1000;
+module.exports = function Gameloop(initialInterval, callback) {
+    let interval = initialInterval;
     let lastTime;
     let id;
     let loopCallback = callback;
@@ -511,7 +511,7 @@ module.exports = {
 const { RIGHT } = require('./directions').directions
 
 module.exports = {
-    tempo: 1000,
+    tempo: 500,
     increaseRate: .95,
     resolution: 20,
     directions: [ RIGHT ],
@@ -521,6 +521,7 @@ module.exports = {
     isOver: false,
     isStarted: false,
     isPaused: true,
+    score: 0
 };
 },{"./directions":13}],15:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
@@ -627,7 +628,8 @@ if(action.type === MOVE_FORWARD) {
         // place new food if food eaten and make the snake longer
         if(willEat(state)) {
             nextState.food = placeFood(state);
-            nextState.snake = [ nextHead(state) ].concat(state.snake)
+            nextState.snake = [ nextHead(state) ].concat(state.snake);
+            nextState.score = state.score + state.snake.length;
         // let the head be followed by the rest of the snake
         } else {
             nextState.snake =  [ nextHead(state) ].concat(state.snake).slice(0, state.snake.length)
@@ -748,7 +750,7 @@ function updateMessage() {
 };
 
 function updateScore() {
-    document.querySelector(".score").textContent = getState().score || 0;
+    document.querySelector(".score").textContent = getState().score;
 };
 
 function render() {
