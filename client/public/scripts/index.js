@@ -7,7 +7,7 @@ const {
     addControls
 } = require('./actions/viewActions');
 
-store.subscribe(render);
+store.subscribe(render); // changeInterval should passed as an item of an array of functions
 
 window.addEventListener("load", () => {
     addControls();

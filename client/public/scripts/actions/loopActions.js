@@ -32,7 +32,7 @@ function resumeGame() {
     });
 };
 
-function changeInterval(rate) {
+function changeInterval(rate) { // this should be setIntercal instead, with the value taken as a par from state
     gameloop.changeInterval(rate);
     return dispatch({
         type: CHANGE_INTERVAL

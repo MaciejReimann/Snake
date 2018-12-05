@@ -12,8 +12,8 @@ module.exports = function createStore(reducer, initialState) {
     listeners.forEach(listener => listener());
   };
 
-  function subscribe(listener) {
-    listeners.push(listener);
+  function subscribe(listenersArray) {
+    listenersArray.forEach(listener => listeners.push(listener));
 
     // To unsubscribe execute what subscribe returns
     return () => {
