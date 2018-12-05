@@ -8,9 +8,9 @@ const snakeGame = ( () => {
   // const getLastItem = array => array.length > 0
   //   ? array[array.length - 1]
   //   : null
-  const dropFirst = array => array.slice(1, array.length);
-  const dropFirstIfLongerThanOne = array => array.length > 1
-   ? dropFirst(array) : array
+  // const dropFirst = array => array.slice(1, array.length);
+  // const dropFirstIfLongerThanOne = array => array.length > 1
+  //  ? dropFirst(array) : array
 
   // // snake navigation constants definition
   // const UP = { x: 0, y:-1 };
@@ -45,23 +45,23 @@ const snakeGame = ( () => {
   //   })
 
   // point operations
-  const pointsAreEqual = p1 => p2 => p1.x === p2.x && p1.y === p2.y;
-  const widthInPIxels = state => state.width / state.pixel;
-  const heightInPixels = state => state.height / state.pixel;
-  const getRandomPoint = state => {
-    return {
-      x: Math.floor( (Math.random() * widthInPIxels(state) )) - 1,
-      y: Math.floor( (Math.random() * heightInPixels(state) )) - 1
-    }
-  }
-  const mod =  x => y => ((y % x) + x) % x // http://bit.ly/2oF4mQ7
+  // const pointsAreEqual = p1 => p2 => p1.x === p2.x && p1.y === p2.y;
+  // const widthInPIxels = state => state.width / state.pixel;
+  // const heightInPixels = state => state.height / state.pixel;
+  // const getRandomPoint = state => {
+  //   return {
+  //     x: Math.floor( (Math.random() * widthInPIxels(state) )) - 1,
+  //     y: Math.floor( (Math.random() * heightInPixels(state) )) - 1
+  //   }
+  // }
+  // const mod =  x => y => ((y % x) + x) % x // http://bit.ly/2oF4mQ7
 
    // game conditionals
   // const turnIsValid = direction => state =>
   //   direction.x + getLastItem(state.directions).x !== 0 ||
   //   direction.y + getLastItem(state.directions).y !== 0
-  const willEatWorm = state => pointsAreEqual( nextHead(state) )(state.worm);
-  const willCrash = state => state.body.find( pointsAreEqual( nextHead(state) ) )
+  // const willEatWorm = state => pointsAreEqual( nextHead(state) )(state.worm);
+  // const willCrash = state => state.body.find( pointsAreEqual( nextHead(state) ) )
   // calls ointsAreEqual( nextHead(state) ) (ELEMENT of the state.body array, which are points) for each ELEMENT
   // if finds any, breaks and returns the value
 
@@ -74,37 +74,37 @@ const snakeGame = ( () => {
   //     )
   //   : state
 
-  const nextWorm = state => ! willEatWorm(state)
-    ? state.worm
-    : getRandomPoint(state)
+  // const nextWorm = state => ! willEatWorm(state)
+  //   ? state.worm
+  //   : getRandomPoint(state)
 
-  const nextHead = state => {
-    return {
-      x: mod(state.width / state.pixel) (state.body[0].x + state.directions[0].x),
-      y: mod(state.height / state.pixel) (state.body[0].y + state.directions[0].y)
-    }
-  }
+  // const nextHead = state => {
+  //   return {
+  //     x: mod(state.width / state.pixel) (state.body[0].x + state.directions[0].x),
+  //     y: mod(state.height / state.pixel) (state.body[0].y + state.directions[0].y)
+  //   }
+  // }
 
-  const moveSnake = state => !willCrash(state)
-    ? Object.assign(
-        {}, state, {
-          body: ! willEatWorm(state) ? (
-            [nextHead(state)]
-            .concat(state.body)
-            .slice(0, state.body.length)
-          ) : (
-            [nextHead(state)]
-            .concat(state.body)
-          ),
-          directions: dropFirstIfLongerThanOne(state.directions),
-          worm: nextWorm(state)
-        }
-      )
-    : Object.assign(
-      {}, state, {
-        isOver: true
-      }
-    )
+  // const moveSnake = state => !willCrash(state)
+  //   ? Object.assign(
+  //       {}, state, {
+  //         body: ! willEatWorm(state) ? (
+  //           [nextHead(state)]
+  //           .concat(state.body)
+  //           .slice(0, state.body.length)
+  //         ) : (
+  //           [nextHead(state)]
+  //           .concat(state.body)
+  //         ),
+  //         // directions: dropFirstIfLongerThanOne(state.directions),
+  //         // worm: nextWorm(state)
+  //       }
+  //     )
+  //   // : Object.assign(
+  //   //   {}, state, {
+  //   //     isOver: true
+  //   //   }
+  //   )
 
   const nextScore = state => willEatWorm(state)
     ? state.score + 1
