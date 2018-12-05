@@ -17,6 +17,10 @@ const {
     createElement,
     resizeCanvas
 } = require('../helpers/DOMHelpers');
+const addKeydownListeners = () => require('../helpers/addKeydownListeners')
+    (getState, startGame, resumeGame, pauseGame, enqueueTurn);
+const addSwipeListeners = () => require('../helpers/addSwipeListeners')
+    (getState, startGame, resumeGame, pauseGame, enqueueTurn);
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
@@ -40,47 +44,15 @@ function resizeBoard() {
     });
 };
 
-function addKeydownListeners() {
-    window.addEventListener('keydown', e => {
-        if(e.key === ' ') {
-            if(!getState().isStarted) {
-                startGame();
-            } else if(getState().isPaused) {
-                resumeGame();
-            } else {
-                pauseGame();
-            }            
-        } else if(e.key === 'Enter') {
-            if(getState().isOver) {
-                console.log(
-                    getState().isOver, 
-                    getState().isPaused
-                )
-                startGame();
-            };
-        };
-        switch (e.key) {
-            case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
-            case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
-            case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
-            case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
-        };
-    });
-}
-
-function addSwipeListeners() {
-    window.addEventListener('keydown', e => {
-
-    });
-}
-
 function addControls() {    
 
     function onMobile() {
         addSwipeListeners();
         return dispatch({
             type: ADD_CONTROLS,
-            deviceType: 'mobile'
+            payload: {
+                deviceType: 'mobile'
+            }
         });
     };
 
@@ -89,11 +61,13 @@ function addControls() {
         addKeydownListeners();
         return dispatch({
             type: ADD_CONTROLS,
-            deviceType: 'desktop'
+            payload: {
+                deviceType: 'desktop'
+            }
         });
     };
     return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
-}
+};
 
 module.exports = {
     resizeBoard,
