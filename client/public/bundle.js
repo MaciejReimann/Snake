@@ -63,7 +63,7 @@ module.exports = {
     resumeGame,
     changeInterval
 };
-},{"../helpers/Gameloop":6,"../logic/initialState":14,"../store":20,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../logic/initialState":14,"../store":21,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
@@ -95,7 +95,7 @@ module.exports = {
     enqueueTurn,
     changeDirection
 };
-},{"../store":20,"./constants":1}],4:[function(require,module,exports){
+},{"../store":21,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
 const {
     NEW_VIEW,
@@ -197,7 +197,7 @@ module.exports = {
     resizeBoard,
     addControls    
 };
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":20}],5:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":21}],5:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -528,7 +528,7 @@ window.addEventListener("load", () => {
 window.addEventListener('resize', () => {
     resizeBoard();
 });
-},{"./actions/viewActions":4,"./render":19,"./store":20}],13:[function(require,module,exports){
+},{"./actions/viewActions":4,"./render":20,"./store":21}],13:[function(require,module,exports){
 module.exports = {
     directions: {
         UP:     { x: 0, y:-1 },
@@ -554,6 +554,53 @@ module.exports = {
     score: 0
 };
 },{"./directions":13}],15:[function(require,module,exports){
+const {
+    getLastItem
+} = require('../helpers/arrayHelpers');
+const {
+    createPoint,
+    createRandomPoint,
+    arePointsEqual
+} = require('../helpers/pointHelpers');
+
+function turnIsValid(state, nextDirection) {
+    return (
+        nextDirection.x + getLastItem(state.directions).x !== 0 ||
+        nextDirection.y + getLastItem(state.directions).y !== 0
+    );
+};
+
+function nextHead(state) {
+    const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
+    return createPoint(
+        mod(state.boardWidth  / state.resolution, state.snake[0].x + state.directions[0].x),
+        mod(state.boardHeight / state.resolution, state.snake[0].y + state.directions[0].y)
+    );
+};
+
+function willCrash(state) {
+    return state.snake.find(p => arePointsEqual(p, nextHead(state) ));
+};
+
+function willEat(state) {
+    return arePointsEqual( nextHead(state), state.food);
+};
+
+function placeFood(state) {
+    const { boardWidth, boardHeight, resolution } = state;
+    const newFood = createRandomPoint(boardWidth / resolution, boardHeight / resolution, "food")
+    return state.snake.find(p => arePointsEqual(newFood,p)) 
+        ? placeFood(state) : newFood   
+};
+
+module.exports = {
+    turnIsValid,
+    nextHead,
+    willCrash,
+    willEat,
+    placeFood
+};
+},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],16:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -564,7 +611,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":8,"./loopReducer":16,"./snakeReducer":17,"./viewReducer":18}],16:[function(require,module,exports){
+},{"../helpers/combineReducers":8,"./loopReducer":17,"./snakeReducer":18,"./viewReducer":19}],17:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -593,7 +640,7 @@ module.exports = function(state, action) {
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1,"../logic/initialState":14}],17:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":14}],18:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
@@ -604,44 +651,13 @@ const {
     directions
 } = require('../logic/directions');
 const {
-    getLastItem
-} = require('../helpers/arrayHelpers');
-const {
-    createPoint,
-    createRandomPoint,
-    arePointsEqual
-} = require('../helpers/pointHelpers');
+    turnIsValid,
+    nextHead,
+    willCrash,
+    willEat,
+    placeFood
+} = require('../logic/logicHelpers');
   
-function turnIsValid(state, nextDirection) {
-    return (
-        nextDirection.x + getLastItem(state.directions).x !== 0 ||
-        nextDirection.y + getLastItem(state.directions).y !== 0
-    );
-};
-
-function willCrash(state) {
-    return state.snake.find(p => arePointsEqual(p, nextHead(state) ));
-};
-
-function willEat(state) {
-    return arePointsEqual( nextHead(state), state.food);
-};
-
-function nextHead(state) {
-    const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
-    return createPoint(
-        mod(state.boardWidth  / state.resolution, state.snake[0].x + state.directions[0].x),
-        mod(state.boardHeight / state.resolution, state.snake[0].y + state.directions[0].y)
-    );
-};
-
-function placeFood(state) {
-    const { boardWidth, boardHeight, resolution } = state;
-    const newFood = createRandomPoint(boardWidth / resolution, boardHeight / resolution, "food")
-    return state.snake.find(p => arePointsEqual(newFood,p)) 
-        ? placeFood(state) : newFood   
-};
-
 module.exports = function(state, action) {
     let nextState = {};
 if(!action) {
@@ -683,7 +699,7 @@ if(action.type === MOVE_FORWARD) {
     // console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
-},{"../actions/constants":1,"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10,"../logic/directions":13}],18:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/directions":13,"../logic/logicHelpers":15}],19:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -707,7 +723,7 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],19:[function(require,module,exports){
+},{"../actions/constants":1}],20:[function(require,module,exports){
 const { getState } = require('./store');
 const {
     fill,
@@ -790,14 +806,14 @@ module.exports = {
     render
 };
 
-},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":11,"./store":20,"./view/colorPalette":21}],20:[function(require,module,exports){
+},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":11,"./store":21,"./view/colorPalette":22}],21:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":9,"./logic/initialState":14,"./reducers":15}],21:[function(require,module,exports){
+},{"./helpers/createStore":9,"./logic/initialState":14,"./reducers":16}],22:[function(require,module,exports){
 module.exports = {
     darkViolet: {
         snakeColor: "rgba(133, 201, 35, 0.78)",

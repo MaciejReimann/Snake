@@ -8,44 +8,13 @@ const {
     directions
 } = require('../logic/directions');
 const {
-    getLastItem
-} = require('../helpers/arrayHelpers');
-const {
-    createPoint,
-    createRandomPoint,
-    arePointsEqual
-} = require('../helpers/pointHelpers');
+    turnIsValid,
+    nextHead,
+    willCrash,
+    willEat,
+    placeFood
+} = require('../logic/logicHelpers');
   
-function turnIsValid(state, nextDirection) {
-    return (
-        nextDirection.x + getLastItem(state.directions).x !== 0 ||
-        nextDirection.y + getLastItem(state.directions).y !== 0
-    );
-};
-
-function willCrash(state) {
-    return state.snake.find(p => arePointsEqual(p, nextHead(state) ));
-};
-
-function willEat(state) {
-    return arePointsEqual( nextHead(state), state.food);
-};
-
-function nextHead(state) {
-    const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
-    return createPoint(
-        mod(state.boardWidth  / state.resolution, state.snake[0].x + state.directions[0].x),
-        mod(state.boardHeight / state.resolution, state.snake[0].y + state.directions[0].y)
-    );
-};
-
-function placeFood(state) {
-    const { boardWidth, boardHeight, resolution } = state;
-    const newFood = createRandomPoint(boardWidth / resolution, boardHeight / resolution, "food")
-    return state.snake.find(p => arePointsEqual(newFood,p)) 
-        ? placeFood(state) : newFood   
-};
-
 module.exports = function(state, action) {
     let nextState = {};
 if(!action) {
