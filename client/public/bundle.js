@@ -26,16 +26,10 @@ const {
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
+ // Initialize gameloop with a callback to be fired from inside the gameloop functions
 const gameloop = Gameloop(tempo, moveForward);    
 
 function startGame() {
-    // Reload window to clear all intervals => I KNOW I CAN DO BETTER THAN THAT!
-    // if(getState().isOver) {
-    //     location.reload()
-    // };
-    // Initialize gameloop with a callback to be fired from inside the gameloop functions
-
-    // gameloop.stop();
     gameloop.start();
     return dispatch({
         type: START_GAME
@@ -727,7 +721,8 @@ const {
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
 
-
+document.querySelector(".page")
+        .appendChild(createElement('div', 'page-foreground'));
 
 function applyColorsToStyle() {
     document.querySelector(".header").style.backgroundColor = gridColor;
@@ -736,12 +731,8 @@ function applyColorsToStyle() {
     document.querySelector(".header").style.color = textColor;
 };
 
-function showGameOver() {
-    const CANVAS = document.querySelector(".canvas");    
-    fill(CANVAS, gameOverColor);
-    document.querySelector(".page")
-        .appendChild(createElement('div', 'game-over'))
-        .textContent = 'Game Over!';
+function displayOnTopOfThePage(text) {    
+    document.querySelector(".page-foreground").textContent = text;
     // text color should be assigned here, but style.color wouldnt work...
 };
 
@@ -752,7 +743,10 @@ function renderCanvas() {
     clear(CANVAS);
     // when game is over
     if(isOver) {
-        showGameOver();
+        fill(CANVAS, gameOverColor);
+        displayOnTopOfThePage('Game Over!');
+    } else {
+        displayOnTopOfThePage('')
     };
     // draw snake
     snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));

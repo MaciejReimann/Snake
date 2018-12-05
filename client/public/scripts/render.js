@@ -17,7 +17,8 @@ const {
     gameOverColor
 } = require('./view/colorPalette').darkViolet;
 
-
+document.querySelector(".page")
+        .appendChild(createElement('div', 'page-foreground'));
 
 function applyColorsToStyle() {
     document.querySelector(".header").style.backgroundColor = gridColor;
@@ -26,12 +27,8 @@ function applyColorsToStyle() {
     document.querySelector(".header").style.color = textColor;
 };
 
-function showGameOver() {
-    const CANVAS = document.querySelector(".canvas");    
-    fill(CANVAS, gameOverColor);
-    document.querySelector(".page")
-        .appendChild(createElement('div', 'game-over'))
-        .textContent = 'Game Over!';
+function displayOnTopOfThePage(text) {    
+    document.querySelector(".page-foreground").textContent = text;
     // text color should be assigned here, but style.color wouldnt work...
 };
 
@@ -42,7 +39,10 @@ function renderCanvas() {
     clear(CANVAS);
     // when game is over
     if(isOver) {
-        showGameOver();
+        fill(CANVAS, gameOverColor);
+        displayOnTopOfThePage('Game Over!');
+    } else {
+        displayOnTopOfThePage('')
     };
     // draw snake
     snake.forEach(square => drawSquareFromCorner(CANVAS, resolution, snakeColor, square));
