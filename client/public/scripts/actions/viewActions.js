@@ -9,7 +9,8 @@ const {
 } = require('../actions/snakeActions');
 const {
     startGame,
-    pauseGame    
+    pauseGame,
+    resumeGame
 } = require('../actions/loopActions');
 const {
     createElement,
@@ -40,8 +41,21 @@ function resizeBoard() {
 
 function addKeydownListeners() {
     window.addEventListener('keydown', e => {
+        if(e.key === ' ') {
+            if(!getState().isStarted) {
+                startGame();
+            } else if(getState().isPaused) {
+                resumeGame();
+            } else {
+                pauseGame();
+            } 
+            console.log(
+                getState().isStarted, 
+                getState().isPaused
+            )
+            
+        };
         switch (e.key) {
-            case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
             case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
             case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
             case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break

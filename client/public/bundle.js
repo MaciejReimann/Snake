@@ -10,6 +10,7 @@ module.exports = {
 // loop actions
     START_GAME:'START_GAME',
     PAUSE_GAME:'PAUSE_GAME',
+    RESUME_GAME: 'RESUME_GAME',
     CHANGE_INTERVAL:'CHANGE_INTERVAL',
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',
@@ -23,15 +24,16 @@ const { dispatch, getState } = require('../store');
 const {
     START_GAME,
     PAUSE_GAME,
+    RESUME_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
-
-// Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(getState().tempo, moveForward);
+let gameloop;
 
 const startGame = () => {
+    // Initialize gameloop with a callback to be fired from inside the gameloop functions
+    gameloop = Gameloop(getState().tempo, moveForward);
     gameloop.start();
     return dispatch({
         type: START_GAME
@@ -45,6 +47,13 @@ function pauseGame() {
     });
 };
 
+const resumeGame = () => {
+    gameloop.start();
+    return dispatch({
+        type: RESUME_GAME
+    });
+};
+
 function changeInterval(rate) {
     gameloop.changeInterval(rate);
     return dispatch({
@@ -55,6 +64,7 @@ function changeInterval(rate) {
 module.exports = {
     startGame,
     pauseGame,
+    resumeGame,
     changeInterval
 };
 },{"../helpers/Gameloop":6,"../store":20,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
@@ -102,7 +112,8 @@ const {
 } = require('../actions/snakeActions');
 const {
     startGame,
-    pauseGame    
+    pauseGame,
+    resumeGame
 } = require('../actions/loopActions');
 const {
     createElement,
@@ -133,8 +144,21 @@ function resizeBoard() {
 
 function addKeydownListeners() {
     window.addEventListener('keydown', e => {
+        if(e.key === ' ') {
+            if(!getState().isStarted) {
+                startGame();
+            } else if(getState().isPaused) {
+                resumeGame();
+            } else {
+                pauseGame();
+            } 
+            console.log(
+                getState().isStarted, 
+                getState().isPaused
+            )
+            
+        };
         switch (e.key) {
-            case 'Enter': case ' ':  getState().isPaused ? startGame() : pauseGame(); break
             case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
             case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
             case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
@@ -264,7 +288,6 @@ module.exports = function createStore(reducer, initialState) {
   };
 
   function dispatch(action) {
-    console.log(action)
     state = reducer(state, action);
     listeners.forEach(listener => listener());
   };
@@ -520,7 +543,7 @@ module.exports = {
     food: { x: 7, y: 1 },
     isOver: false,
     isStarted: false,
-    isPaused: true,
+    isPaused: false,
     score: 0
 };
 },{"./directions":13}],15:[function(require,module,exports){
@@ -538,29 +561,32 @@ module.exports = combineReducers({
 const {
   START_GAME,
   PAUSE_GAME,
+  RESUME_GAME,
   CHANGE_INTERVAL
 } = require('../actions/constants');
+const { initialState } = require('../logic/initialState');
 
 module.exports = function(state, action) {
   let nextState = {};
   if(!action) {
     action = {};
   };
-
   if(action.type === START_GAME) {
-    console.log("Game started from the reducer")
+    // if(state.isOver) {
+    //   nextState = initialState;
+    // };
     nextState.isStarted = true;
-    nextState.isPaused = false;
   } else if(action.type === PAUSE_GAME) {
-    console.log("Game paused from the reducer")
     nextState.isPaused = true;
+  } else if(action.type === RESUME_GAME) {
+    nextState.isPaused = false;
   } else if(action.type === CHANGE_INTERVAL) {
     nextState.tempo = state.tempo * state.increaseRate;
-  }
+  };
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1}],17:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":14}],17:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
@@ -642,12 +668,12 @@ if(action.type === MOVE_FORWARD) {
         nextState.directions = state.directions.concat(nextDirection);
     };    
 } else if(action.type === EAT_FOOD) {
-    console.log("EAT_FOOD from reducer")
+    // console.log("EAT_FOOD from reducer")
 } else if(action.type === HIT_BODY) {
-    console.log("HIT_BODY from reducer")
+    // console.log("HIT_BODY from reducer")
 }
 
-    console.log(Object.assign(state, nextState))
+    // console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
 },{"../actions/constants":1,"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10,"../logic/directions":13}],18:[function(require,module,exports){
@@ -737,13 +763,13 @@ function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
     let message;
     if (isOver) {
-        message = 'To restart press "q" ';
+        message = 'To restart press Enter ';
     } else if(!isStarted) {
-        message = 'To start press spacebar';
+        message = 'To start press Spacebar';
     } else if(isStarted && isPaused) {
-        message = 'To resume press spacebar';
+        message = 'To resume press Spacebar';
     } else {
-        message = 'To pause press spacebar. To restart press q';
+        message = 'To pause press Spacebar';
     };
 
     document.querySelector(".message").textContent = message;

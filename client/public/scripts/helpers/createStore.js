@@ -8,7 +8,6 @@ module.exports = function createStore(reducer, initialState) {
   };
 
   function dispatch(action) {
-    console.log(action)
     state = reducer(state, action);
     listeners.forEach(listener => listener());
   };

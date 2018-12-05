@@ -79,11 +79,11 @@ if(action.type === MOVE_FORWARD) {
         nextState.directions = state.directions.concat(nextDirection);
     };    
 } else if(action.type === EAT_FOOD) {
-    console.log("EAT_FOOD from reducer")
+    // console.log("EAT_FOOD from reducer")
 } else if(action.type === HIT_BODY) {
-    console.log("HIT_BODY from reducer")
+    // console.log("HIT_BODY from reducer")
 }
 
-    console.log(Object.assign(state, nextState))
+    // console.log(Object.assign(state, nextState))
     return Object.assign(state, nextState)
 };
