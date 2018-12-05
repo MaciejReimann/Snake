@@ -9,7 +9,7 @@ const {
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
  // Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(tempo, moveForward);    
+const gameloop = Gameloop(tempo, moveForward);
 
 function startGame() {
     gameloop.start();

@@ -22,9 +22,7 @@ module.exports = function Gameloop(initialInterval, callback) {
 
     function start() {
         lastTime = Date.now();
-        // if(!id) {
-            intervals.push(setInterval(_hasIntervalPassed, 10)) ;
-        // }
+        intervals.push(setInterval(_hasIntervalPassed, 10));
     };
 
     function stop() {

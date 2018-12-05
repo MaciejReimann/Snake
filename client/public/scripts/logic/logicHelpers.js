@@ -31,8 +31,13 @@ function willEat(state) {
 };
 
 function placeFood(state) {
-    const { boardWidth, boardHeight, resolution } = state;
-    const newFood = createRandomPoint(boardWidth / resolution, boardHeight / resolution, "food")
+    const { boardWidth, boardHeight, resolution, food } = state;
+    const nextId = food.prop.id + 1;
+    const newFood = createRandomPoint(
+        boardWidth / resolution, 
+        boardHeight / resolution, 
+        {id: nextId}
+    );
     return state.snake.find(p => arePointsEqual(newFood,p)) 
         ? placeFood(state) : newFood   
 };

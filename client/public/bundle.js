@@ -25,7 +25,7 @@ const {
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
  // Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(tempo, moveForward);    
+const gameloop = Gameloop(tempo, moveForward);
 
 function startGame() {
     gameloop.start();
@@ -62,19 +62,25 @@ module.exports = {
     changeInterval
 };
 },{"../helpers/Gameloop":6,"../logic/initialState":14,"../store":21,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
-const { dispatch } = require('../store');
+const { dispatch, getState } = require('../store');
+// const { changeInterval } = require('./loopActions');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
 } = require('./constants');
 
 function moveForward() {
+    // console.log(
+    //     getState().food.props.id
+    // ) 
+    
     return dispatch({
         type: MOVE_FORWARD
     });
 };
 
 function enqueueTurn(turn) {
+    // dispatch(changeInterval(.8))
     return dispatch({
         type: ENQUEUE_TURN,
         payload: turn
@@ -240,9 +246,7 @@ module.exports = function Gameloop(initialInterval, callback) {
 
     function start() {
         lastTime = Date.now();
-        // if(!id) {
-            intervals.push(setInterval(_hasIntervalPassed, 10)) ;
-        // }
+        intervals.push(setInterval(_hasIntervalPassed, 10));
     };
 
     function stop() {
@@ -529,6 +533,7 @@ module.exports = {
 };
 },{}],14:[function(require,module,exports){
 const { RIGHT } = require('./directions').directions
+const { createPoint } = require('../helpers/pointHelpers');
 
 module.exports = {
     tempo: 500,
@@ -537,13 +542,13 @@ module.exports = {
     directions: [ RIGHT ],
     snake: Array(4).fill()
         .map((_, i) => {return  {x: 4 - i, y: 1}   }),
-    food: { x: 7, y: 1 },
+    food: createPoint(7, 1, {id: 1}),
     isOver: false,
     isStarted: false,
     isPaused: false,
     score: 0
 };
-},{"./directions":13}],15:[function(require,module,exports){
+},{"../helpers/pointHelpers":10,"./directions":13}],15:[function(require,module,exports){
 const {
     getLastItem
 } = require('../helpers/arrayHelpers');
@@ -577,8 +582,13 @@ function willEat(state) {
 };
 
 function placeFood(state) {
-    const { boardWidth, boardHeight, resolution } = state;
-    const newFood = createRandomPoint(boardWidth / resolution, boardHeight / resolution, "food")
+    const { boardWidth, boardHeight, resolution, food } = state;
+    const nextId = food.prop.id + 1;
+    const newFood = createRandomPoint(
+        boardWidth / resolution, 
+        boardHeight / resolution, 
+        {id: nextId}
+    );
     return state.snake.find(p => arePointsEqual(newFood,p)) 
         ? placeFood(state) : newFood   
 };
