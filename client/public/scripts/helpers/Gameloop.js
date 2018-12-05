@@ -1,5 +1,5 @@
-module.exports = function Gameloop(callback) {
-    let interval = 1000;
+module.exports = function Gameloop(initialInterval, callback) {
+    let interval = initialInterval;
     let lastTime;
     let id;
     let loopCallback = callback;

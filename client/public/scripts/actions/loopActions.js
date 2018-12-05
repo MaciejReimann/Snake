@@ -1,4 +1,4 @@
-const { dispatch } = require('../store');
+const { dispatch, getState } = require('../store');
 const {
     START_GAME,
     PAUSE_GAME,
@@ -8,7 +8,7 @@ const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
 
 // Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(moveForward);
+const gameloop = Gameloop(getState().tempo, moveForward);
 
 const startGame = () => {
     gameloop.start();

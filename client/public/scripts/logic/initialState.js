@@ -1,7 +1,7 @@
 const { RIGHT } = require('./directions').directions
 
 module.exports = {
-    tempo: 1000,
+    tempo: 500,
     increaseRate: .95,
     resolution: 20,
     directions: [ RIGHT ],
