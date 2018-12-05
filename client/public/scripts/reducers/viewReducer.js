@@ -4,12 +4,8 @@ const {
     ADD_CONTROLS
   } = require('../actions/constants');
   
-  module.exports = function(state, action) {
-    let nextState = {};
-    if(!action) {
-      action = {};
-    };
-    
+  module.exports = function(state, action = {}) {
+    let nextState = {};    
     if(action.type === RESIZE_BOARD) {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;

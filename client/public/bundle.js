@@ -610,11 +610,8 @@ const {
 } = require('../actions/constants');
 const initialState  = require('../logic/initialState');
 
-module.exports = function(state, action) {
+module.exports = function(state, action = {}) {
   let nextState = {};
-  if(!action) {
-    action = {};
-  };
   if(action.type === START_GAME) {
     if(state.isOver) {
       return initialState;
@@ -644,12 +641,8 @@ const {
     placeFood
 } = require('../logic/logicHelpers');
   
-module.exports = function(state, action) {
+module.exports = function(state, action = {}) {
     let nextState = {};
-    if(!action) {
-        action = {};
-    };
-
     if(action.type === MOVE_FORWARD) {
         const { directions } = state;
         // remove last move from the queue
@@ -687,12 +680,8 @@ const {
     ADD_CONTROLS
   } = require('../actions/constants');
   
-  module.exports = function(state, action) {
-    let nextState = {};
-    if(!action) {
-      action = {};
-    };
-    
+  module.exports = function(state, action = {}) {
+    let nextState = {};    
     if(action.type === RESIZE_BOARD) {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;

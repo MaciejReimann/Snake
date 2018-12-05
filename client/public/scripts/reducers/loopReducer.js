@@ -6,11 +6,8 @@ const {
 } = require('../actions/constants');
 const initialState  = require('../logic/initialState');
 
-module.exports = function(state, action) {
+module.exports = function(state, action = {}) {
   let nextState = {};
-  if(!action) {
-    action = {};
-  };
   if(action.type === START_GAME) {
     if(state.isOver) {
       return initialState;

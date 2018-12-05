@@ -11,12 +11,8 @@ const {
     placeFood
 } = require('../logic/logicHelpers');
   
-module.exports = function(state, action) {
+module.exports = function(state, action = {}) {
     let nextState = {};
-    if(!action) {
-        action = {};
-    };
-
     if(action.type === MOVE_FORWARD) {
         const { directions } = state;
         // remove last move from the queue
