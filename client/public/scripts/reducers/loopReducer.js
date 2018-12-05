@@ -4,7 +4,7 @@ const {
   RESUME_GAME,
   CHANGE_INTERVAL
 } = require('../actions/constants');
-const { initialState } = require('../logic/initialState');
+const initialState  = require('../logic/initialState');
 
 module.exports = function(state, action) {
   let nextState = {};
@@ -12,9 +12,6 @@ module.exports = function(state, action) {
     action = {};
   };
   if(action.type === START_GAME) {
-    // if(state.isOver) {
-    //   nextState = initialState;
-    // };
     nextState.isStarted = true;
   } else if(action.type === PAUSE_GAME) {
     nextState.isPaused = true;

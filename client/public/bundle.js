@@ -2,11 +2,8 @@
 module.exports = {
 // view actions
     RESIZE_BOARD: 'RESIZE_BOARD',
-    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION',
+    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION', // still to do 
     ADD_CONTROLS: 'ADD_CONTROLS',
-// render actions
-    RENDER_CANVAS: 'RENDER_CANVAS',
-    UPDATE_SCORE: 'UPDATE_SCORE',
 // loop actions
     START_GAME:'START_GAME',
     PAUSE_GAME:'PAUSE_GAME',
@@ -14,13 +11,13 @@ module.exports = {
     CHANGE_INTERVAL:'CHANGE_INTERVAL',
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',
-    CHANGE_DIRECTION:'CHANGE_DIRECTION',
     ENQUEUE_TURN: 'ENQUEUE_TURN',
-    EAT_FOOD: 'EAT_FOOD',
-    HIT_BODY: 'HIT_BODY'
+    EAT_FOOD: 'EAT_FOOD', // not used
+    HIT_BODY: 'HIT_BODY' // not used
 };
 },{}],2:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
+const { tempo }  = require('../logic/initialState');
 const {
     START_GAME,
     PAUSE_GAME,
@@ -31,9 +28,14 @@ const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
 let gameloop;
 
-const startGame = () => {
+function startGame() {
+    // Reload window to clear all intervals => I KNOW I CAN DO BETTER THAN THAT!
+    if(getState().isOver) {
+        location.reload()
+    };
     // Initialize gameloop with a callback to be fired from inside the gameloop functions
-    gameloop = Gameloop(getState().tempo, moveForward);
+    gameloop = Gameloop(tempo, moveForward);    
+    // gameloop.stop();
     gameloop.start();
     return dispatch({
         type: START_GAME
@@ -47,7 +49,7 @@ function pauseGame() {
     });
 };
 
-const resumeGame = () => {
+function resumeGame() {
     gameloop.start();
     return dispatch({
         type: RESUME_GAME
@@ -67,14 +69,13 @@ module.exports = {
     resumeGame,
     changeInterval
 };
-},{"../helpers/Gameloop":6,"../store":20,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../logic/initialState":14,"../store":20,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
 const { dispatch } = require('../store');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN,
     CHANGE_DIRECTION
 } = require('./constants');
-
 
 function moveForward() {
     return dispatch({
@@ -103,6 +104,7 @@ module.exports = {
 },{"../store":20,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
 const {
+    NEW_VIEW,
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
     ADD_CONTROLS
@@ -151,12 +153,15 @@ function addKeydownListeners() {
                 resumeGame();
             } else {
                 pauseGame();
-            } 
-            console.log(
-                getState().isStarted, 
-                getState().isPaused
-            )
-            
+            }            
+        } else if(e.key === 'Enter') {
+            if(getState().isOver) {
+                console.log(
+                    getState().isOver, 
+                    getState().isPaused
+                )
+                startGame();
+            };
         };
         switch (e.key) {
             case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
@@ -223,9 +228,9 @@ module.exports = {
 },{}],6:[function(require,module,exports){
 module.exports = function Gameloop(initialInterval, callback) {
     let interval = initialInterval;
+    let loopCallback = callback;
     let lastTime;
     let id;
-    let loopCallback = callback;
 
     function _hasIntervalPassed() {
         const intervalHasPassed = Date.now() > lastTime + interval;
@@ -244,8 +249,8 @@ module.exports = function Gameloop(initialInterval, callback) {
     function start() {
         lastTime = Date.now();
         if(!id) {
-            id = setInterval(_hasIntervalPassed, 10)
-        };        
+            id = setInterval(_hasIntervalPassed, 10);
+        }
     };
 
     function stop() {
@@ -564,7 +569,7 @@ const {
   RESUME_GAME,
   CHANGE_INTERVAL
 } = require('../actions/constants');
-const { initialState } = require('../logic/initialState');
+const initialState  = require('../logic/initialState');
 
 module.exports = function(state, action) {
   let nextState = {};
@@ -572,9 +577,6 @@ module.exports = function(state, action) {
     action = {};
   };
   if(action.type === START_GAME) {
-    // if(state.isOver) {
-    //   nextState = initialState;
-    // };
     nextState.isStarted = true;
   } else if(action.type === PAUSE_GAME) {
     nextState.isPaused = true;
@@ -688,7 +690,7 @@ const {
     if(!action) {
       action = {};
     };
-  
+    
     if(action.type === RESIZE_BOARD) {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;

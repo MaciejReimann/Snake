@@ -1,5 +1,6 @@
 const { dispatch, getState } = require('../store');
 const {
+    NEW_VIEW,
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
     ADD_CONTROLS
@@ -48,12 +49,15 @@ function addKeydownListeners() {
                 resumeGame();
             } else {
                 pauseGame();
-            } 
-            console.log(
-                getState().isStarted, 
-                getState().isPaused
-            )
-            
+            }            
+        } else if(e.key === 'Enter') {
+            if(getState().isOver) {
+                console.log(
+                    getState().isOver, 
+                    getState().isPaused
+                )
+                startGame();
+            };
         };
         switch (e.key) {
             case 'w': case 'ArrowUp':    enqueueTurn('UP'); break

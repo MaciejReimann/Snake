@@ -1,11 +1,8 @@
 module.exports = {
 // view actions
     RESIZE_BOARD: 'RESIZE_BOARD',
-    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION',
+    CHANGE_RESOLUTION: 'CHANGE_RESOLUTION', // still to do 
     ADD_CONTROLS: 'ADD_CONTROLS',
-// render actions
-    RENDER_CANVAS: 'RENDER_CANVAS',
-    UPDATE_SCORE: 'UPDATE_SCORE',
 // loop actions
     START_GAME:'START_GAME',
     PAUSE_GAME:'PAUSE_GAME',
@@ -13,8 +10,7 @@ module.exports = {
     CHANGE_INTERVAL:'CHANGE_INTERVAL',
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',
-    CHANGE_DIRECTION:'CHANGE_DIRECTION',
     ENQUEUE_TURN: 'ENQUEUE_TURN',
-    EAT_FOOD: 'EAT_FOOD',
-    HIT_BODY: 'HIT_BODY'
+    EAT_FOOD: 'EAT_FOOD', // not used
+    HIT_BODY: 'HIT_BODY' // not used
 };

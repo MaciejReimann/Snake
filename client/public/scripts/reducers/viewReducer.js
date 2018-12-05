@@ -9,7 +9,7 @@ const {
     if(!action) {
       action = {};
     };
-  
+    
     if(action.type === RESIZE_BOARD) {
         nextState.boardWidth = action.payload.width;
         nextState.boardHeight = action.payload.height;

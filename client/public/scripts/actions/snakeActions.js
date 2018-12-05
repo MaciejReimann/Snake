@@ -5,7 +5,6 @@ const {
     CHANGE_DIRECTION
 } = require('./constants');
 
-
 function moveForward() {
     return dispatch({
         type: MOVE_FORWARD

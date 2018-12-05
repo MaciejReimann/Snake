@@ -1,8 +1,8 @@
 module.exports = function Gameloop(initialInterval, callback) {
     let interval = initialInterval;
+    let loopCallback = callback;
     let lastTime;
     let id;
-    let loopCallback = callback;
 
     function _hasIntervalPassed() {
         const intervalHasPassed = Date.now() > lastTime + interval;
@@ -21,8 +21,8 @@ module.exports = function Gameloop(initialInterval, callback) {
     function start() {
         lastTime = Date.now();
         if(!id) {
-            id = setInterval(_hasIntervalPassed, 10)
-        };        
+            id = setInterval(_hasIntervalPassed, 10);
+        }
     };
 
     function stop() {
