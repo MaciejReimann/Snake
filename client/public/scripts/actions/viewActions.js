@@ -1,8 +1,7 @@
 const { dispatch, getState } = require('../store');
 const {
-    NEW_VIEW,
     RESIZE_BOARD,
-    CHANGE_RESOLUTION,
+    CHANGE_RESOLUTION, // TODO!!!
     ADD_CONTROLS
     } = require('../actions/constants');
 const {
@@ -34,39 +33,31 @@ function resizeBoard() {
         canvasContainer.appendChild(CANVAS);
     }
     resizeCanvas(CANVAS, width, height);
-    const payload = {
-        width,
-        height,
-    };
     return dispatch({
         type: RESIZE_BOARD,
-        payload
+        payload: {
+            width,
+            height,
+        }
     });
 };
 
-function addControls() {    
-
-    function onMobile() {
-        addSwipeListeners();
-        return dispatch({
-            type: ADD_CONTROLS,
-            payload: {
-                deviceType: 'mobile'
-            }
-        });
-    };
-
-    function onDesktop() {
+function addControls() {
+    let deviceType;
+    if(document.body.clientWidth > 1024) {
+        deviceType = 'desktop';
         resizeBoard();
         addKeydownListeners();
-        return dispatch({
-            type: ADD_CONTROLS,
-            payload: {
-                deviceType: 'desktop'
-            }
-        });
+    } else {
+        deviceType = 'mobile';
+        addSwipeListeners();
     };
-    return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
+    return dispatch({
+        type: ADD_CONTROLS,
+        payload: {
+            deviceType
+        }
+    });    
 };
 
 module.exports = {
