@@ -26,15 +26,15 @@ const {
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
-let gameloop;
+const gameloop = Gameloop(tempo, moveForward);    
 
 function startGame() {
     // Reload window to clear all intervals => I KNOW I CAN DO BETTER THAN THAT!
-    if(getState().isOver) {
-        location.reload()
-    };
+    // if(getState().isOver) {
+    //     location.reload()
+    // };
     // Initialize gameloop with a callback to be fired from inside the gameloop functions
-    gameloop = Gameloop(tempo, moveForward);    
+
     // gameloop.stop();
     gameloop.start();
     return dispatch({
@@ -226,6 +226,8 @@ module.exports = {
 };
 
 },{}],6:[function(require,module,exports){
+const intervals = [];
+
 module.exports = function Gameloop(initialInterval, callback) {
     let interval = initialInterval;
     let loopCallback = callback;
@@ -248,13 +250,13 @@ module.exports = function Gameloop(initialInterval, callback) {
 
     function start() {
         lastTime = Date.now();
-        if(!id) {
-            id = setInterval(_hasIntervalPassed, 10);
-        }
+        // if(!id) {
+            intervals.push(setInterval(_hasIntervalPassed, 10)) ;
+        // }
     };
 
     function stop() {
-       id = clearInterval(id);
+        intervals.forEach(id => clearInterval(id))
     };
 
     return {start, stop, changeInterval}
@@ -577,6 +579,9 @@ module.exports = function(state, action) {
     action = {};
   };
   if(action.type === START_GAME) {
+    if(state.isOver) {
+      return initialState;
+    }
     nextState.isStarted = true;
   } else if(action.type === PAUSE_GAME) {
     nextState.isPaused = true;

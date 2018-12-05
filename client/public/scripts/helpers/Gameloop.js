@@ -1,3 +1,5 @@
+const intervals = [];
+
 module.exports = function Gameloop(initialInterval, callback) {
     let interval = initialInterval;
     let loopCallback = callback;
@@ -20,13 +22,13 @@ module.exports = function Gameloop(initialInterval, callback) {
 
     function start() {
         lastTime = Date.now();
-        if(!id) {
-            id = setInterval(_hasIntervalPassed, 10);
-        }
+        // if(!id) {
+            intervals.push(setInterval(_hasIntervalPassed, 10)) ;
+        // }
     };
 
     function stop() {
-       id = clearInterval(id);
+        intervals.forEach(id => clearInterval(id))
     };
 
     return {start, stop, changeInterval}

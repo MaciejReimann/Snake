@@ -12,6 +12,9 @@ module.exports = function(state, action) {
     action = {};
   };
   if(action.type === START_GAME) {
+    if(state.isOver) {
+      return initialState;
+    }
     nextState.isStarted = true;
   } else if(action.type === PAUSE_GAME) {
     nextState.isPaused = true;

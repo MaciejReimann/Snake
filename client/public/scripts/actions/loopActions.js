@@ -8,16 +8,10 @@ const {
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
-let gameloop;
+ // Initialize gameloop with a callback to be fired from inside the gameloop functions
+const gameloop = Gameloop(tempo, moveForward);    
 
 function startGame() {
-    // Reload window to clear all intervals => I KNOW I CAN DO BETTER THAN THAT!
-    if(getState().isOver) {
-        location.reload()
-    };
-    // Initialize gameloop with a callback to be fired from inside the gameloop functions
-    gameloop = Gameloop(tempo, moveForward);    
-    // gameloop.stop();
     gameloop.start();
     return dispatch({
         type: START_GAME
