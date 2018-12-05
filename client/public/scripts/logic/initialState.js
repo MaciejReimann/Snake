@@ -10,6 +10,6 @@ module.exports = {
     food: { x: 7, y: 1 },
     isOver: false,
     isStarted: false,
-    isPaused: true,
+    isPaused: false,
     score: 0
 };

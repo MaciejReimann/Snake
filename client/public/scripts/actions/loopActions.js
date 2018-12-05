@@ -2,15 +2,16 @@ const { dispatch, getState } = require('../store');
 const {
     START_GAME,
     PAUSE_GAME,
+    RESUME_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
 const { moveForward } = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
-
-// Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(getState().tempo, moveForward);
+let gameloop;
 
 const startGame = () => {
+    // Initialize gameloop with a callback to be fired from inside the gameloop functions
+    gameloop = Gameloop(getState().tempo, moveForward);
     gameloop.start();
     return dispatch({
         type: START_GAME
@@ -24,6 +25,13 @@ function pauseGame() {
     });
 };
 
+const resumeGame = () => {
+    gameloop.start();
+    return dispatch({
+        type: RESUME_GAME
+    });
+};
+
 function changeInterval(rate) {
     gameloop.changeInterval(rate);
     return dispatch({
@@ -34,5 +42,6 @@ function changeInterval(rate) {
 module.exports = {
     startGame,
     pauseGame,
+    resumeGame,
     changeInterval
 };

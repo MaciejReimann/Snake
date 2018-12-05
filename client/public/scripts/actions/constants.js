@@ -9,6 +9,7 @@ module.exports = {
 // loop actions
     START_GAME:'START_GAME',
     PAUSE_GAME:'PAUSE_GAME',
+    RESUME_GAME: 'RESUME_GAME',
     CHANGE_INTERVAL:'CHANGE_INTERVAL',
 // snake actions
     MOVE_FORWARD:'MOVE_FORWARD',

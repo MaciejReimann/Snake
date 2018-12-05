@@ -60,13 +60,13 @@ function updateMessage() {
     const { isStarted, isPaused, isOver } = getState();
     let message;
     if (isOver) {
-        message = 'To restart press "q" ';
+        message = 'To restart press Enter ';
     } else if(!isStarted) {
-        message = 'To start press spacebar';
+        message = 'To start press Spacebar';
     } else if(isStarted && isPaused) {
-        message = 'To resume press spacebar';
+        message = 'To resume press Spacebar';
     } else {
-        message = 'To pause press spacebar. To restart press q';
+        message = 'To pause press Spacebar';
     };
 
     document.querySelector(".message").textContent = message;
