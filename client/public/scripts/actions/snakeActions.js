@@ -1,5 +1,7 @@
-const { dispatch, getState } = require('../store');
-// const { changeInterval } = require('./loopActions');
+const {
+    dispatch,
+    getState
+} = require('../store');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
@@ -8,8 +10,7 @@ const {
 function moveForward() {
     // console.log(
     //     getState().food.props.id
-    // ) 
-    
+    // )     
     return dispatch({
         type: MOVE_FORWARD
     });

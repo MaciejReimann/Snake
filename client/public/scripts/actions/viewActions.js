@@ -1,9 +1,12 @@
-const { dispatch, getState } = require('../store');
+const {
+    dispatch,
+    getState
+} = require('../store');
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION, // TODO!!!
     ADD_CONTROLS
-    } = require('../actions/constants');
+} = require('../actions/constants');
 const {
     enqueueTurn
 } = require('../actions/snakeActions');
@@ -26,9 +29,9 @@ let CANVAS;
 
 function resizeBoard() {
     const res = getState().resolution;
-    const width = Math.floor(canvasContainer.clientWidth / res ) * res - 2 * res;
+    const width = Math.floor(canvasContainer.clientWidth / res) * res - 2 * res;
     const height = Math.floor(canvasContainer.clientHeight / res) * res - res;
-    if(!CANVAS) {
+    if (!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);
     }
@@ -44,7 +47,7 @@ function resizeBoard() {
 
 function addControls() {
     let deviceType;
-    if(document.body.clientWidth > 1024) {
+    if (document.body.clientWidth > 1024) {
         deviceType = 'desktop';
         resizeBoard();
         addKeydownListeners();
@@ -57,10 +60,10 @@ function addControls() {
         payload: {
             deviceType
         }
-    });    
+    });
 };
 
 module.exports = {
     resizeBoard,
-    addControls    
+    addControls
 };

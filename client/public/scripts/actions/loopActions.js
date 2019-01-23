@@ -1,14 +1,21 @@
-const { dispatch, getState } = require('../store');
-const { tempo }  = require('../logic/initialState');
+const {
+    dispatch,
+    getState
+} = require('../store');
+const {
+    tempo
+} = require('../logic/initialState');
 const {
     START_GAME,
     PAUSE_GAME,
     RESUME_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
-const { moveForward } = require('./snakeActions');
+const {
+    moveForward
+} = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
- // Initialize gameloop with a callback to be fired from inside the gameloop functions
+// Initialize gameloop with a callback to be fired from inside the gameloop functions
 const gameloop = Gameloop(tempo, moveForward);
 
 function startGame() {

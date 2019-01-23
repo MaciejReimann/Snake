@@ -61,9 +61,8 @@ module.exports = {
     resumeGame,
     changeInterval
 };
-},{"../helpers/Gameloop":6,"../logic/initialState":14,"../store":21,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../logic/initialState":16,"../store":23,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
-// const { changeInterval } = require('./loopActions');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
@@ -72,8 +71,7 @@ const {
 function moveForward() {
     // console.log(
     //     getState().food.props.id
-    // ) 
-    
+    // )     
     return dispatch({
         type: MOVE_FORWARD
     });
@@ -91,12 +89,11 @@ module.exports = {
     moveForward,
     enqueueTurn
 };
-},{"../store":21,"./constants":1}],4:[function(require,module,exports){
+},{"../store":23,"./constants":1}],4:[function(require,module,exports){
 const { dispatch, getState } = require('../store');
 const {
-    NEW_VIEW,
     RESIZE_BOARD,
-    CHANGE_RESOLUTION,
+    CHANGE_RESOLUTION, // TODO!!!
     ADD_CONTROLS
     } = require('../actions/constants');
 const {
@@ -111,6 +108,10 @@ const {
     createElement,
     resizeCanvas
 } = require('../helpers/DOMHelpers');
+const addKeydownListeners = () => require('../helpers/addKeydownListeners')
+    (getState, startGame, resumeGame, pauseGame, enqueueTurn);
+const addSwipeListeners = () => require('../helpers/addSwipeListeners')
+    (getState, startGame, resumeGame, pauseGame, enqueueTurn);
 
 const canvasContainer = document.querySelector(".canvas-container");
 let CANVAS;
@@ -134,66 +135,29 @@ function resizeBoard() {
     });
 };
 
-function addKeydownListeners() {
-    window.addEventListener('keydown', e => {
-        if(e.key === ' ') {
-            if(!getState().isStarted) {
-                startGame();
-            } else if(getState().isPaused) {
-                resumeGame();
-            } else {
-                pauseGame();
-            }            
-        } else if(e.key === 'Enter') {
-            if(getState().isOver) {
-                console.log(
-                    getState().isOver, 
-                    getState().isPaused
-                )
-                startGame();
-            };
-        };
-        switch (e.key) {
-            case 'w': case 'ArrowUp':    enqueueTurn('UP'); break
-            case 'a': case 'ArrowLeft':  enqueueTurn('LEFT');  break
-            case 's': case 'ArrowDown':  enqueueTurn('DOWN'); break
-            case 'd': case 'ArrowRight': enqueueTurn('RIGHT');  break
-        };
-    });
-}
-
-function addSwipeListeners() {
-    window.addEventListener('keydown', e => {
-
-    });
-}
-
-function addControls() {    
-
-    function onMobile() {
-        addSwipeListeners();
-        return dispatch({
-            type: ADD_CONTROLS,
-            deviceType: 'mobile'
-        });
-    };
-
-    function onDesktop() {
+function addControls() {
+    let deviceType;
+    if(document.body.clientWidth > 1024) {
+        deviceType = 'desktop';
         resizeBoard();
         addKeydownListeners();
-        return dispatch({
-            type: ADD_CONTROLS,
-            deviceType: 'desktop'
-        });
+    } else {
+        deviceType = 'mobile';
+        addSwipeListeners();
     };
-    return document.body.clientWidth > 1024 ? onDesktop() : onMobile();
-}
+    return dispatch({
+        type: ADD_CONTROLS,
+        payload: {
+            deviceType
+        }
+    });    
+};
 
 module.exports = {
     resizeBoard,
     addControls    
 };
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../store":21}],5:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../helpers/addKeydownListeners":7,"../helpers/addSwipeListeners":8,"../store":23}],5:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -256,6 +220,39 @@ module.exports = function Gameloop(initialInterval, callback) {
     return {start, stop, changeInterval}
 };
 },{}],7:[function(require,module,exports){
+module.exports = (state, start, resume, pause, turn) => window
+    .addEventListener('keydown', e => {
+        if(e.key === ' ') {
+            if(!state().isStarted) {
+                start();
+            } else if(state().isPaused) {
+                resume();
+            } else {
+                pause();
+            }            
+        } else if(e.key === 'Enter') {
+            if(state().isOver) {
+                console.log(
+                    state().isOver, 
+                    state().isPaused
+                )
+                start();
+            };
+        };
+        switch (e.key) {
+            case 'w': case 'ArrowUp':    turn('UP'); break
+            case 'a': case 'ArrowLeft':  turn('LEFT');  break
+            case 's': case 'ArrowDown':  turn('DOWN'); break
+            case 'd': case 'ArrowRight': turn('RIGHT');  break
+        };
+    });
+
+},{}],8:[function(require,module,exports){
+module.exports = (state, start, resume, pause, turn) => window
+    .addEventListener('swipe', e => {
+
+    });
+},{}],9:[function(require,module,exports){
 
 function getLastItem(array) {
     return array.length > 0
@@ -266,7 +263,7 @@ function getLastItem(array) {
 module.exports = {
     getLastItem
 }
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
     let combinedState = {};
     // Leave only valid reducers, 
@@ -278,7 +275,7 @@ module.exports = function combineReducers(reducers) {
         return combinedState;
     };
 };
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // redux-like state store
 module.exports = function createStore(reducer, initialState) {
   let state = initialState || {};
@@ -304,7 +301,7 @@ module.exports = function createStore(reducer, initialState) {
 
   return { getState, dispatch, subscribe };
 };
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 function isPoint(something) {
     return typeof something === "object"
         && something.hasOwnProperty("x") 
@@ -400,7 +397,7 @@ module.exports = {
     translatePointToCartesian,
     rotatePointOnGlobalZero
 } 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -503,7 +500,7 @@ module.exports = {
 
 
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 const store = require('./store');
 const {
     render
@@ -522,7 +519,7 @@ window.addEventListener("load", () => {
 window.addEventListener('resize', () => {
     resizeBoard();
 });
-},{"./actions/viewActions":4,"./render":20,"./store":21}],13:[function(require,module,exports){
+},{"./actions/viewActions":4,"./render":22,"./store":23}],15:[function(require,module,exports){
 module.exports = {
     directions: {
         UP:     { x: 0, y:-1 },
@@ -531,24 +528,24 @@ module.exports = {
         LEFT:   { x:-1, y: 0 }
     }
 };
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 const { RIGHT } = require('./directions').directions
 const { createPoint } = require('../helpers/pointHelpers');
 
 module.exports = {
-    tempo: 500,
+    tempo: 100,
     increaseRate: .95,
-    resolution: 20,
+    resolution: 40,
     directions: [ RIGHT ],
-    snake: Array(4).fill()
-        .map((_, i) => {return  {x: 4 - i, y: 1}   }),
+    snake: Array(3).fill()
+        .map((_, i) => {return  {x: 3 - i, y: 1}   }),
     food: createPoint(7, 1, {id: 1}),
     isOver: false,
     isStarted: false,
     isPaused: false,
     score: 0
 };
-},{"../helpers/pointHelpers":10,"./directions":13}],15:[function(require,module,exports){
+},{"../helpers/pointHelpers":12,"./directions":15}],17:[function(require,module,exports){
 const {
     getLastItem
 } = require('../helpers/arrayHelpers');
@@ -600,7 +597,7 @@ module.exports = {
     willEat,
     placeFood
 };
-},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],16:[function(require,module,exports){
+},{"../helpers/arrayHelpers":9,"../helpers/pointHelpers":12}],18:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -611,7 +608,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":8,"./loopReducer":17,"./snakeReducer":18,"./viewReducer":19}],17:[function(require,module,exports){
+},{"../helpers/combineReducers":10,"./loopReducer":19,"./snakeReducer":20,"./viewReducer":21}],19:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -637,7 +634,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1,"../logic/initialState":14}],18:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":16}],20:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
@@ -683,7 +680,7 @@ module.exports = function(state, action = {}) {
 
     return Object.assign(state, nextState)
 };
-},{"../actions/constants":1,"../logic/directions":13,"../logic/logicHelpers":15}],19:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/directions":15,"../logic/logicHelpers":17}],21:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -703,7 +700,7 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],20:[function(require,module,exports){
+},{"../actions/constants":1}],22:[function(require,module,exports){
 const { getState } = require('./store');
 const {
     fill,
@@ -786,14 +783,14 @@ module.exports = {
     render
 };
 
-},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":11,"./store":21,"./view/colorPalette":22}],21:[function(require,module,exports){
+},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":13,"./store":23,"./view/colorPalette":24}],23:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":9,"./logic/initialState":14,"./reducers":16}],22:[function(require,module,exports){
+},{"./helpers/createStore":11,"./logic/initialState":16,"./reducers":18}],24:[function(require,module,exports){
 module.exports = {
     darkViolet: {
         snakeColor: "rgba(133, 201, 35, 0.78)",
@@ -803,4 +800,4 @@ module.exports = {
         gameOverColor: "rgba(237, 54, 21, 0.86)"
     }
 }
-},{}]},{},[12]);
+},{}]},{},[14]);
