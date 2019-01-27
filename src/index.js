@@ -1,15 +1,45 @@
-const store = require("./store");
-const { render } = require("./render");
-const { resizeBoard, addControls } = require("./actions/viewActions");
+const { getState, subscribe } = require("./store");
+const { render } = require("./presentation");
+const addKeydownListeners = require("./presentation/helpers/addKeydownListeners");
+const {
+  enqueueTurn,
+  startGame,
+  pauseGame,
+  resumeGame,
+  resizeBoard
+} = require("./actions");
 
-// store.subscribe(render); // changeInterval should passed as an item of an array of functions
+const canvasContainer = document.querySelector(".canvas-container");
+const CANVAS = document.querySelector(".canvas");
 
-// window.addEventListener("load", () => {
-//     addControls();
+let onLoad;
+const renderOnCanvas = () => render(getState(), CANVAS);
+
+if (document.body.clientWidth > 1024) {
+  onLoad = () => {
+    console.log("loaded");
+    console.log(CANVAS);
+    addKeydownListeners(
+      getState(),
+      startGame,
+      resumeGame,
+      pauseGame,
+      enqueueTurn
+    );
+    resizeBoard(
+      canvasContainer.clientWidth,
+      canvasContainer.clientHeight,
+      getState(),
+      CANVAS
+    );
+    renderOnCanvas();
+  };
+}
+
+subscribe([renderOnCanvas]); // changeInterval should passed as an item of an array of functions
+
+window.addEventListener("load", onLoad);
+
+// window.addEventListener("resize", () => {
+//   resizeBoard();
 // });
-
-window.addEventListener("resize", () => {
-  resizeBoard();
-});
-
-console.log("dupa");
