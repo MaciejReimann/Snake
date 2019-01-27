@@ -14,17 +14,24 @@ module.exports = {
     ENQUEUE_TURN: 'ENQUEUE_TURN'
 };
 },{}],2:[function(require,module,exports){
-const { dispatch, getState } = require('../store');
-const { tempo }  = require('../logic/initialState');
+const {
+    dispatch,
+    getState
+} = require('../store');
+const {
+    tempo
+} = require('../logic/initialState');
 const {
     START_GAME,
     PAUSE_GAME,
     RESUME_GAME,
     CHANGE_INTERVAL
 } = require('./constants');
-const { moveForward } = require('./snakeActions');
+const {
+    moveForward
+} = require('./snakeActions');
 const Gameloop = require('../helpers/Gameloop');
- // Initialize gameloop with a callback to be fired from inside the gameloop functions
+// Initialize gameloop with a callback to be fired from inside the gameloop functions
 const gameloop = Gameloop(tempo, moveForward);
 
 function startGame() {
@@ -48,7 +55,7 @@ function resumeGame() {
     });
 };
 
-function changeInterval(rate) {
+function changeInterval(rate) { // this should be setIntercal instead, with the value taken as a par from state
     gameloop.changeInterval(rate);
     return dispatch({
         type: CHANGE_INTERVAL
@@ -61,8 +68,11 @@ module.exports = {
     resumeGame,
     changeInterval
 };
-},{"../helpers/Gameloop":6,"../logic/initialState":16,"../store":23,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
-const { dispatch, getState } = require('../store');
+},{"../helpers/Gameloop":6,"../logic/initialState":15,"../store":22,"./constants":1,"./snakeActions":3}],3:[function(require,module,exports){
+const {
+    dispatch,
+    getState
+} = require('../store');
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
@@ -89,13 +99,16 @@ module.exports = {
     moveForward,
     enqueueTurn
 };
-},{"../store":23,"./constants":1}],4:[function(require,module,exports){
-const { dispatch, getState } = require('../store');
+},{"../store":22,"./constants":1}],4:[function(require,module,exports){
+const {
+    dispatch,
+    getState
+} = require('../store');
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION, // TODO!!!
     ADD_CONTROLS
-    } = require('../actions/constants');
+} = require('../actions/constants');
 const {
     enqueueTurn
 } = require('../actions/snakeActions');
@@ -118,26 +131,25 @@ let CANVAS;
 
 function resizeBoard() {
     const res = getState().resolution;
-    const width = Math.floor(canvasContainer.clientWidth / res ) * res - 2 * res;
+    const width = Math.floor(canvasContainer.clientWidth / res) * res - 2 * res;
     const height = Math.floor(canvasContainer.clientHeight / res) * res - res;
-    if(!CANVAS) {
+    if (!CANVAS) {
         CANVAS = createElement('canvas');
         canvasContainer.appendChild(CANVAS);
     }
     resizeCanvas(CANVAS, width, height);
-    const payload = {
-        width,
-        height,
-    };
     return dispatch({
         type: RESIZE_BOARD,
-        payload
+        payload: {
+            width,
+            height,
+        }
     });
 };
 
 function addControls() {
     let deviceType;
-    if(document.body.clientWidth > 1024) {
+    if (document.body.clientWidth > 1024) {
         deviceType = 'desktop';
         resizeBoard();
         addKeydownListeners();
@@ -150,14 +162,14 @@ function addControls() {
         payload: {
             deviceType
         }
-    });    
+    });
 };
 
 module.exports = {
     resizeBoard,
-    addControls    
+    addControls
 };
-},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../helpers/addKeydownListeners":7,"../helpers/addSwipeListeners":8,"../store":23}],5:[function(require,module,exports){
+},{"../actions/constants":1,"../actions/loopActions":2,"../actions/snakeActions":3,"../helpers/DOMHelpers":5,"../helpers/addKeydownListeners":7,"../helpers/addSwipeListeners":8,"../store":22}],5:[function(require,module,exports){
 function createElement (element, className) {
   if(!className) {
     className = element;
@@ -290,8 +302,8 @@ module.exports = function createStore(reducer, initialState) {
     listeners.forEach(listener => listener());
   };
 
-  function subscribe(listener) {
-    listeners.push(listener);
+  function subscribe(listenersArray) {
+    listenersArray.forEach(listener => listeners.push(listener));
 
     // To unsubscribe execute what subscribe returns
     return () => {
@@ -501,51 +513,55 @@ module.exports = {
 
 
 },{}],14:[function(require,module,exports){
-const store = require('./store');
-const {
-    render
-} = require('./render');
-const {
-    resizeBoard,
-    addControls
-} = require('./actions/viewActions');
-
-store.subscribe(render);
-
-window.addEventListener("load", () => {
-    addControls();
-});
-
-window.addEventListener('resize', () => {
-    resizeBoard();
-});
-},{"./actions/viewActions":4,"./render":22,"./store":23}],15:[function(require,module,exports){
 module.exports = {
     directions: {
-        UP:     { x: 0, y:-1 },
-        RIGHT:  { x: 1, y: 0 },
-        DOWN:   { x: 0, y: 1 },
-        LEFT:   { x:-1, y: 0 }
+        UP: {
+            x: 0,
+            y: -1
+        },
+        RIGHT: {
+            x: 1,
+            y: 0
+        },
+        DOWN: {
+            x: 0,
+            y: 1
+        },
+        LEFT: {
+            x: -1,
+            y: 0
+        }
     }
 };
-},{}],16:[function(require,module,exports){
-const { RIGHT } = require('./directions').directions
-const { createPoint } = require('../helpers/pointHelpers');
+},{}],15:[function(require,module,exports){
+const {
+    RIGHT
+} = require('./directions').directions
+const {
+    createPoint
+} = require('../helpers/pointHelpers');
 
 module.exports = {
     tempo: 100,
     increaseRate: .95,
     resolution: 40,
-    directions: [ RIGHT ],
+    directions: [RIGHT],
     snake: Array(3).fill()
-        .map((_, i) => {return  {x: 3 - i, y: 1}   }),
-    food: createPoint(7, 1, {id: 1}),
+        .map((_, i) => {
+            return {
+                x: 3 - i,
+                y: 1
+            }
+        }),
+    food: createPoint(7, 1, {
+        id: 1
+    }),
     isOver: false,
     isStarted: false,
     isPaused: false,
     score: 0
 };
-},{"../helpers/pointHelpers":12,"./directions":15}],17:[function(require,module,exports){
+},{"../helpers/pointHelpers":12,"./directions":14}],16:[function(require,module,exports){
 const {
     getLastItem
 } = require('../helpers/arrayHelpers');
@@ -558,6 +574,8 @@ const {
 function turnIsValid(state, nextDirection) {
     return (
         nextDirection.x + getLastItem(state.directions).x !== 0 ||
+
+
         nextDirection.y + getLastItem(state.directions).y !== 0
     );
 };
@@ -565,29 +583,35 @@ function turnIsValid(state, nextDirection) {
 function nextHead(state) {
     const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
     return createPoint(
-        mod(state.boardWidth  / state.resolution, state.snake[0].x + state.directions[0].x),
+        mod(state.boardWidth / state.resolution, state.snake[0].x + state.directions[0].x),
         mod(state.boardHeight / state.resolution, state.snake[0].y + state.directions[0].y)
     );
 };
 
 function willCrash(state) {
-    return state.snake.find(p => arePointsEqual(p, nextHead(state) ));
+    return state.snake.find(p => arePointsEqual(p, nextHead(state)));
 };
 
 function willEat(state) {
-    return arePointsEqual( nextHead(state), state.food);
+    return arePointsEqual(nextHead(state), state.food);
 };
 
 function placeFood(state) {
-    const { boardWidth, boardHeight, resolution, food } = state;
+    const {
+        boardWidth,
+        boardHeight,
+        resolution,
+        food
+    } = state;
     const nextId = food.prop.id + 1;
     const newFood = createRandomPoint(
-        boardWidth / resolution, 
-        boardHeight / resolution, 
-        {id: nextId}
+        boardWidth / resolution,
+        boardHeight / resolution, {
+            id: nextId
+        }
     );
-    return state.snake.find(p => arePointsEqual(newFood,p)) 
-        ? placeFood(state) : newFood   
+    return state.snake.find(p => arePointsEqual(newFood, p)) ?
+        placeFood(state) : newFood
 };
 
 module.exports = {
@@ -597,7 +621,7 @@ module.exports = {
     willEat,
     placeFood
 };
-},{"../helpers/arrayHelpers":9,"../helpers/pointHelpers":12}],18:[function(require,module,exports){
+},{"../helpers/arrayHelpers":9,"../helpers/pointHelpers":12}],17:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -608,7 +632,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":10,"./loopReducer":19,"./snakeReducer":20,"./viewReducer":21}],19:[function(require,module,exports){
+},{"../helpers/combineReducers":10,"./loopReducer":18,"./snakeReducer":19,"./viewReducer":20}],18:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -634,7 +658,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState)
 };
 
-},{"../actions/constants":1,"../logic/initialState":16}],20:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":15}],19:[function(require,module,exports){
 const {
     MOVE_FORWARD,
     ENQUEUE_TURN
@@ -680,7 +704,7 @@ module.exports = function(state, action = {}) {
 
     return Object.assign(state, nextState)
 };
-},{"../actions/constants":1,"../logic/directions":15,"../logic/logicHelpers":17}],21:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/directions":14,"../logic/logicHelpers":16}],20:[function(require,module,exports){
 const {
     RESIZE_BOARD,
     CHANGE_RESOLUTION,
@@ -700,7 +724,7 @@ const {
     return Object.assign(state, nextState)
   };
   
-},{"../actions/constants":1}],22:[function(require,module,exports){
+},{"../actions/constants":1}],21:[function(require,module,exports){
 const { getState } = require('./store');
 const {
     fill,
@@ -783,14 +807,14 @@ module.exports = {
     render
 };
 
-},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":13,"./store":23,"./view/colorPalette":24}],23:[function(require,module,exports){
+},{"./helpers/DOMHelpers":5,"./helpers/renderHelpers":13,"./store":22,"./view/colorPalette":23}],22:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":11,"./logic/initialState":16,"./reducers":18}],24:[function(require,module,exports){
+},{"./helpers/createStore":11,"./logic/initialState":15,"./reducers":17}],23:[function(require,module,exports){
 module.exports = {
     darkViolet: {
         snakeColor: "rgba(133, 201, 35, 0.78)",
@@ -800,4 +824,21 @@ module.exports = {
         gameOverColor: "rgba(237, 54, 21, 0.86)"
     }
 }
-},{}]},{},[14]);
+},{}],24:[function(require,module,exports){
+const store = require("./store");
+const { render } = require("./render");
+const { resizeBoard, addControls } = require("./actions/viewActions");
+
+// store.subscribe(render); // changeInterval should passed as an item of an array of functions
+
+// window.addEventListener("load", () => {
+//     addControls();
+// });
+
+window.addEventListener("resize", () => {
+  resizeBoard();
+});
+
+console.log("dupa");
+
+},{"./actions/viewActions":4,"./render":21,"./store":22}]},{},[24]);

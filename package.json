@@ -9,8 +9,9 @@
     "test": "jest --watch",
     "start": "node server",
     "server": "nodemon server",
-    "build": "cd client && cd public && browserify scripts/index.js -o bundle.js",
-    "publish": "git push heroku master && heroku open"
+    "watch": "watchify src -o public/bundle.js -v",
+    "dev": "concurrently \"npm run server\" \"npm run watch \"",
+    "build": "browserify src  | uglifyjs -mc warnings=false > public/bundle.js"
   },
   "cacheDirectories": [
     "node_modules"
@@ -20,7 +21,8 @@
   "dependencies": {
     "concurrently": "^4.1.0",
     "express": "^4.16.3",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "watchify": "^3.11.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
