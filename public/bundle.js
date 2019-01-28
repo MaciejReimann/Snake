@@ -85,7 +85,7 @@ module.exports = {
   controlInterval
 };
 
-},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":25,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":26,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
 const { dispatch } = require("../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
@@ -108,7 +108,7 @@ module.exports = {
   enqueueTurn
 };
 
-},{"../store":25,"./constants":1}],5:[function(require,module,exports){
+},{"../store":26,"./constants":1}],5:[function(require,module,exports){
 const { dispatch } = require("../store");
 const { RESIZE_BOARD } = require("../actions/constants");
 const { resizeCanvas } = require("../presentation/helpers/DOMHelpers");
@@ -131,7 +131,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":15,"../store":25}],6:[function(require,module,exports){
+},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":15,"../store":26}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -598,17 +598,19 @@ module.exports = {
 },{}],18:[function(require,module,exports){
 const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
+const { renderMessage } = require("./renderMessage");
 
 function render(state, dom) {
   renderCanvas(state, dom.canvas);
   renderScore(state, dom.scoreContainer);
+  renderMessage(state, dom.messageContainer);
 }
 
 module.exports = {
   render
 };
 
-},{"./renderCanvas":19,"./renderScore":20}],19:[function(require,module,exports){
+},{"./renderCanvas":19,"./renderMessage":20,"./renderScore":21}],19:[function(require,module,exports){
 const {
   fill,
   clear,
@@ -651,6 +653,26 @@ module.exports = {
 };
 
 },{"./colors":14,"./helpers/DOMHelpers":15,"./helpers/renderHelpers":17}],20:[function(require,module,exports){
+function renderMessage(state, container) {
+  const { isStarted, isPaused, isOver } = state;
+  let message;
+  if (isOver) {
+    message = "To restart press Enter ";
+  } else if (!isStarted) {
+    message = "To start press Spacebar";
+  } else if (isStarted && isPaused) {
+    message = "To resume press Spacebar";
+  } else {
+    message = "To pause press Spacebar";
+  }
+  container.textContent = message;
+}
+
+module.exports = {
+  renderMessage
+};
+
+},{}],21:[function(require,module,exports){
 function renderScore(state, container) {
   container.textContent = state.score;
 }
@@ -659,7 +681,7 @@ module.exports = {
   renderScore
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -670,7 +692,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":8,"./loopReducer":22,"./snakeReducer":23,"./viewReducer":24}],22:[function(require,module,exports){
+},{"../helpers/combineReducers":8,"./loopReducer":23,"./snakeReducer":24,"./viewReducer":25}],23:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -696,7 +718,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"../logic/initialState":12}],23:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":12}],24:[function(require,module,exports){
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
 const { directions } = require("../logic/directions");
 const {
@@ -746,7 +768,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],24:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],25:[function(require,module,exports){
 const {
   RESIZE_BOARD,
   // CHANGE_RESOLUTION,
@@ -766,14 +788,14 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1}],25:[function(require,module,exports){
+},{"../actions/constants":1}],26:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":21}],26:[function(require,module,exports){
+},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":22}],27:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const { render } = require("./presentation");
 const addKeydownListeners = require("./presentation/helpers/addKeydownListeners");
@@ -787,7 +809,8 @@ const {
 const DOM = {
   canvasContainer: document.querySelector(".canvas-container"),
   canvas: document.querySelector(".canvas"),
-  scoreContainer: document.querySelector(".score")
+  scoreContainer: document.querySelector(".score"),
+  messageContainer: document.querySelector(".message")
 };
 
 let onLoad;
@@ -820,4 +843,4 @@ window.addEventListener("load", onLoad);
 //   resizeBoard();
 // });
 
-},{"./actions":2,"./presentation":18,"./presentation/helpers/addKeydownListeners":16,"./store":25}]},{},[26]);
+},{"./actions":2,"./presentation":18,"./presentation/helpers/addKeydownListeners":16,"./store":26}]},{},[27]);

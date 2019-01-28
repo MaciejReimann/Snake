@@ -11,7 +11,8 @@ const {
 const DOM = {
   canvasContainer: document.querySelector(".canvas-container"),
   canvas: document.querySelector(".canvas"),
-  scoreContainer: document.querySelector(".score")
+  scoreContainer: document.querySelector(".score"),
+  messageContainer: document.querySelector(".message")
 };
 
 let onLoad;
