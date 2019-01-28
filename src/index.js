@@ -9,6 +9,7 @@ const {
   resizeBoard
 } = require("./logic/actions");
 const DOM = require("./presentation/dom");
+const resizeCanvas = require("./presentation/helpers/resizeCanvas");
 
 let onLoad;
 const renderOnCanvas = () => render(getState(), DOM);
@@ -26,7 +27,8 @@ if (document.body.clientWidth > 1024) {
       DOM.canvasContainer.clientWidth,
       DOM.canvasContainer.clientHeight,
       getState(),
-      DOM.canvas
+      DOM.canvas,
+      resizeCanvas
     );
     renderOnCanvas();
   };

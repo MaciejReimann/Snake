@@ -111,13 +111,12 @@ module.exports = {
 },{"../../store":29,"./constants":1}],5:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { RESIZE_BOARD } = require("../actions/constants");
-const resizeCanvas = require("../../presentation/helpers/resizeCanvas");
 
-function resizeBoard(containerWidth, containerHeight, state, canvas) {
+function resizeBoard(containerWidth, containerHeight, state, canvas, callback) {
   const res = state.resolution;
   const width = Math.floor(containerWidth / res) * res - 2 * res;
   const height = Math.floor(containerHeight / res) * res - res;
-  resizeCanvas(canvas, width, height);
+  callback(canvas, width, height);
   return dispatch({
     type: RESIZE_BOARD,
     payload: {
@@ -131,7 +130,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../../presentation/helpers/resizeCanvas":22,"../../store":29,"../actions/constants":1}],6:[function(require,module,exports){
+},{"../../store":29,"../actions/constants":1}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -823,6 +822,7 @@ const {
   resizeBoard
 } = require("./logic/actions");
 const DOM = require("./presentation/dom");
+const resizeCanvas = require("./presentation/helpers/resizeCanvas");
 
 let onLoad;
 const renderOnCanvas = () => render(getState(), DOM);
@@ -840,7 +840,8 @@ if (document.body.clientWidth > 1024) {
       DOM.canvasContainer.clientWidth,
       DOM.canvasContainer.clientHeight,
       getState(),
-      DOM.canvas
+      DOM.canvas,
+      resizeCanvas
     );
     renderOnCanvas();
   };
@@ -854,4 +855,4 @@ window.addEventListener("load", onLoad);
 //   resizeBoard();
 // });
 
-},{"./logic/actions":2,"./presentation":23,"./presentation/dom":19,"./presentation/helpers/addKeydownListeners":20,"./store":29}]},{},[30]);
+},{"./logic/actions":2,"./presentation":23,"./presentation/dom":19,"./presentation/helpers/addKeydownListeners":20,"./presentation/helpers/resizeCanvas":22,"./store":29}]},{},[30]);
