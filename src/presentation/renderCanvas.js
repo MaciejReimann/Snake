@@ -17,15 +17,9 @@ const { displayOnTopOfThePage } = require("./helpers/DOMHelpers");
 
 function renderCanvas(state, canvas) {
   const { snake, food, resolution, isOver } = state;
-  clear(canvas);
-
-  if (isOver) {
-    fill(canvas, gameOverColor);
-    displayOnTopOfThePage("Game Over!");
-  } else {
-    displayOnTopOfThePage("");
+  if (!isOver) {
+    clear(canvas);
   }
-
   snake.forEach(square =>
     drawSquareFromCorner(canvas, resolution, snakeColor, square)
   );

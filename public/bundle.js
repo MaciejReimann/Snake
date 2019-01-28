@@ -85,7 +85,7 @@ module.exports = {
   controlInterval
 };
 
-},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":26,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":28,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
 const { dispatch } = require("../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
@@ -108,7 +108,7 @@ module.exports = {
   enqueueTurn
 };
 
-},{"../store":26,"./constants":1}],5:[function(require,module,exports){
+},{"../store":28,"./constants":1}],5:[function(require,module,exports){
 const { dispatch } = require("../store");
 const { RESIZE_BOARD } = require("../actions/constants");
 const { resizeCanvas } = require("../presentation/helpers/DOMHelpers");
@@ -131,7 +131,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":15,"../store":26}],6:[function(require,module,exports){
+},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":16,"../store":28}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -419,6 +419,8 @@ module.exports = {
 };
 
 },{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],14:[function(require,module,exports){
+
+},{}],15:[function(require,module,exports){
 module.exports = {
   darkViolet: {
     snakeColor: "rgba(133, 201, 35, 0.78)",
@@ -429,7 +431,7 @@ module.exports = {
   }
 };
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 function createElement(element, className) {
   if (!className) {
     className = element;
@@ -452,11 +454,11 @@ function displayOnTopOfThePage(text) {
 
 module.exports = {
   createElement,
-  resizeCanvas,
-  displayOnTopOfThePage
+  resizeCanvas
+  // displayOnTopOfThePage
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
@@ -492,7 +494,7 @@ module.exports = (state, start, resume, pause, turn) =>
     }
   });
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -595,12 +597,16 @@ module.exports = {
 
 
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
+const { renderAlert } = require("./renderAlert");
+const { applyStyles } = require("./applyStyles");
 
 function render(state, dom) {
+  // applyStyles();
+  renderAlert(state, dom);
   renderCanvas(state, dom.canvas);
   renderScore(state, dom.scoreContainer);
   renderMessage(state, dom.messageContainer);
@@ -610,7 +616,26 @@ module.exports = {
   render
 };
 
-},{"./renderCanvas":19,"./renderMessage":20,"./renderScore":21}],19:[function(require,module,exports){
+},{"./applyStyles":14,"./renderAlert":20,"./renderCanvas":21,"./renderMessage":22,"./renderScore":23}],20:[function(require,module,exports){
+const { fill } = require("./helpers/renderHelpers");
+const { gameOverColor } = require("./colors").darkViolet;
+
+function renderAlert(state, dom) {
+  const { isOver } = state;
+  const { canvas, alertContainer } = dom;
+  if (isOver) {
+    fill(canvas, gameOverColor);
+    alertContainer.textContent = "Game Over!";
+  } else {
+    alertContainer.textContent = "";
+  }
+}
+
+module.exports = {
+  renderAlert
+};
+
+},{"./colors":15,"./helpers/renderHelpers":18}],21:[function(require,module,exports){
 const {
   fill,
   clear,
@@ -630,15 +655,9 @@ const { displayOnTopOfThePage } = require("./helpers/DOMHelpers");
 
 function renderCanvas(state, canvas) {
   const { snake, food, resolution, isOver } = state;
-  clear(canvas);
-
-  if (isOver) {
-    fill(canvas, gameOverColor);
-    displayOnTopOfThePage("Game Over!");
-  } else {
-    displayOnTopOfThePage("");
+  if (!isOver) {
+    clear(canvas);
   }
-
   snake.forEach(square =>
     drawSquareFromCorner(canvas, resolution, snakeColor, square)
   );
@@ -652,7 +671,7 @@ module.exports = {
   renderCanvas
 };
 
-},{"./colors":14,"./helpers/DOMHelpers":15,"./helpers/renderHelpers":17}],20:[function(require,module,exports){
+},{"./colors":15,"./helpers/DOMHelpers":16,"./helpers/renderHelpers":18}],22:[function(require,module,exports){
 function renderMessage(state, container) {
   const { isStarted, isPaused, isOver } = state;
   let message;
@@ -672,7 +691,7 @@ module.exports = {
   renderMessage
 };
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 function renderScore(state, container) {
   container.textContent = state.score;
 }
@@ -681,7 +700,7 @@ module.exports = {
   renderScore
 };
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -692,7 +711,7 @@ module.exports = combineReducers({
     snakeReducer,
     viewReducer
 })
-},{"../helpers/combineReducers":8,"./loopReducer":23,"./snakeReducer":24,"./viewReducer":25}],23:[function(require,module,exports){
+},{"../helpers/combineReducers":8,"./loopReducer":25,"./snakeReducer":26,"./viewReducer":27}],25:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -718,7 +737,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"../logic/initialState":12}],24:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/initialState":12}],26:[function(require,module,exports){
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
 const { directions } = require("../logic/directions");
 const {
@@ -768,7 +787,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],25:[function(require,module,exports){
+},{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],27:[function(require,module,exports){
 const {
   RESIZE_BOARD,
   // CHANGE_RESOLUTION,
@@ -788,14 +807,14 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1}],26:[function(require,module,exports){
+},{"../actions/constants":1}],28:[function(require,module,exports){
 const createStore = require('./helpers/createStore')
 const combinedReducers = require('./reducers');
 const initialState = require('./logic/initialState');
 
 module.exports = createStore( combinedReducers, initialState );
 
-},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":22}],27:[function(require,module,exports){
+},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":24}],29:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const { render } = require("./presentation");
 const addKeydownListeners = require("./presentation/helpers/addKeydownListeners");
@@ -810,7 +829,8 @@ const DOM = {
   canvasContainer: document.querySelector(".canvas-container"),
   canvas: document.querySelector(".canvas"),
   scoreContainer: document.querySelector(".score"),
-  messageContainer: document.querySelector(".message")
+  messageContainer: document.querySelector(".message"),
+  alertContainer: document.querySelector(".page-foreground")
 };
 
 let onLoad;
@@ -843,4 +863,4 @@ window.addEventListener("load", onLoad);
 //   resizeBoard();
 // });
 
-},{"./actions":2,"./presentation":18,"./presentation/helpers/addKeydownListeners":16,"./store":26}]},{},[27]);
+},{"./actions":2,"./presentation":19,"./presentation/helpers/addKeydownListeners":17,"./store":28}]},{},[29]);

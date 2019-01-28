@@ -20,6 +20,6 @@ function displayOnTopOfThePage(text) {
 
 module.exports = {
   createElement,
-  resizeCanvas,
-  displayOnTopOfThePage
+  resizeCanvas
+  // displayOnTopOfThePage
 };
