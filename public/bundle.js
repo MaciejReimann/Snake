@@ -538,16 +538,6 @@ module.exports = {
 };
 
 },{}],19:[function(require,module,exports){
-module.exports = {
-  header: document.querySelector(".header"),
-  canvasContainer: document.querySelector(".canvas-container"),
-  canvas: document.querySelector(".canvas"),
-  scoreContainer: document.querySelector(".score"),
-  messageContainer: document.querySelector(".message"),
-  alertContainer: document.querySelector(".page-foreground")
-};
-
-},{}],20:[function(require,module,exports){
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
@@ -582,6 +572,16 @@ module.exports = (state, start, resume, pause, turn) =>
         break;
     }
   });
+
+},{}],20:[function(require,module,exports){
+module.exports = {
+  header: document.querySelector(".header"),
+  canvasContainer: document.querySelector(".canvas-container"),
+  canvas: document.querySelector(".canvas"),
+  scoreContainer: document.querySelector(".score"),
+  messageContainer: document.querySelector(".message"),
+  alertContainer: document.querySelector(".page-foreground")
+};
 
 },{}],21:[function(require,module,exports){
 
@@ -813,7 +813,7 @@ module.exports = createStore(combinedReducers, initialState);
 },{"./logic/helpers/createStore":9,"./logic/reducers":12,"./logic/reducers/initialState":13}],30:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const { render } = require("./presentation");
-const addKeydownListeners = require("./presentation/helpers/addKeydownListeners");
+const addKeydownListeners = require("./presentation/controls/addKeydownListeners");
 const {
   enqueueTurn,
   startGame,
@@ -826,6 +826,14 @@ const resizeCanvas = require("./presentation/helpers/resizeCanvas");
 
 let onLoad;
 const renderOnCanvas = () => render(getState(), DOM);
+const resizeBoardToCanvas = () =>
+  resizeBoard(
+    DOM.canvasContainer.clientWidth,
+    DOM.canvasContainer.clientHeight,
+    getState(),
+    DOM.canvas,
+    resizeCanvas
+  );
 
 if (document.body.clientWidth > 1024) {
   onLoad = () => {
@@ -836,23 +844,13 @@ if (document.body.clientWidth > 1024) {
       pauseGame,
       enqueueTurn
     );
-    resizeBoard(
-      DOM.canvasContainer.clientWidth,
-      DOM.canvasContainer.clientHeight,
-      getState(),
-      DOM.canvas,
-      resizeCanvas
-    );
+    resizeBoardToCanvas();
     renderOnCanvas();
   };
 }
 
-subscribe([renderOnCanvas]); // changeInterval should passed as an item of an array of functions
-
+subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
+window.addEventListener("resize", resizeBoardToCanvas);
 
-// window.addEventListener("resize", () => {
-//   resizeBoard();
-// });
-
-},{"./logic/actions":2,"./presentation":23,"./presentation/dom":19,"./presentation/helpers/addKeydownListeners":20,"./presentation/helpers/resizeCanvas":22,"./store":29}]},{},[30]);
+},{"./logic/actions":2,"./presentation":23,"./presentation/controls/addKeydownListeners":19,"./presentation/dom":20,"./presentation/helpers/resizeCanvas":22,"./store":29}]},{},[30]);
