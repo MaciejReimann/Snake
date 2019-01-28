@@ -1,6 +1,6 @@
-const { dispatch } = require("../store");
+const { dispatch } = require("../../store");
 const { RESIZE_BOARD } = require("../actions/constants");
-const resizeCanvas = require("../presentation/helpers/resizeCanvas");
+const resizeCanvas = require("../../presentation/helpers/resizeCanvas");
 
 function resizeBoard(containerWidth, containerHeight, state, canvas) {
   const res = state.resolution;

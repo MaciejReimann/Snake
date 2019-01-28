@@ -1,12 +1,12 @@
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
-const { directions } = require("../logic/directions");
+const { directions } = require("./directions");
 const {
   turnIsValid,
   nextHead,
   willCrash,
   willEat,
   placeFood
-} = require("../logic/logicHelpers");
+} = require("./logicHelpers");
 
 module.exports = function(state, action = {}) {
   let nextState = {};

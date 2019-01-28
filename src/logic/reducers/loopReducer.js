@@ -4,7 +4,7 @@ const {
   RESUME_GAME,
   CONTROL_INTERVAL
 } = require("../actions/constants");
-const initialState = require("../logic/initialState");
+const initialState = require("./initialState");
 
 module.exports = function(state, action = {}) {
   let nextState = {};

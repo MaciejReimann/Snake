@@ -1,4 +1,4 @@
-const { dispatch } = require("../store");
+const { dispatch } = require("../../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
 function moveForward(callback) {

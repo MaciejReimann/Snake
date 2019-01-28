@@ -35,8 +35,8 @@ module.exports = {
 };
 
 },{"./loopActions":3,"./snakeActions":4,"./viewActions":5}],3:[function(require,module,exports){
-const { dispatch, getState } = require("../store");
-const { tempo } = require("../logic/initialState");
+const { dispatch, getState } = require("../../store");
+const { tempo } = require("../reducers/initialState");
 const {
   START_GAME,
   PAUSE_GAME,
@@ -85,8 +85,8 @@ module.exports = {
   controlInterval
 };
 
-},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":28,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
-const { dispatch } = require("../store");
+},{"../../store":28,"../helpers/Gameloop":6,"../reducers/initialState":13,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+const { dispatch } = require("../../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
 function moveForward(callback) {
@@ -108,10 +108,10 @@ module.exports = {
   enqueueTurn
 };
 
-},{"../store":28,"./constants":1}],5:[function(require,module,exports){
-const { dispatch } = require("../store");
+},{"../../store":28,"./constants":1}],5:[function(require,module,exports){
+const { dispatch } = require("../../store");
 const { RESIZE_BOARD } = require("../actions/constants");
-const resizeCanvas = require("../presentation/helpers/resizeCanvas");
+const resizeCanvas = require("../../presentation/helpers/resizeCanvas");
 
 function resizeBoard(containerWidth, containerHeight, state, canvas) {
   const res = state.resolution;
@@ -131,7 +131,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../actions/constants":1,"../presentation/helpers/resizeCanvas":17,"../store":28}],6:[function(require,module,exports){
+},{"../../presentation/helpers/resizeCanvas":21,"../../store":28,"../actions/constants":1}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -318,26 +318,39 @@ module.exports = {
 } 
 },{}],11:[function(require,module,exports){
 module.exports = {
-    directions: {
-        UP: {
-            x: 0,
-            y: -1
-        },
-        RIGHT: {
-            x: 1,
-            y: 0
-        },
-        DOWN: {
-            x: 0,
-            y: 1
-        },
-        LEFT: {
-            x: -1,
-            y: 0
-        }
+  directions: {
+    UP: {
+      x: 0,
+      y: -1
+    },
+    RIGHT: {
+      x: 1,
+      y: 0
+    },
+    DOWN: {
+      x: 0,
+      y: 1
+    },
+    LEFT: {
+      x: -1,
+      y: 0
     }
+  }
 };
+
 },{}],12:[function(require,module,exports){
+const combineReducers = require("../helpers/combineReducers");
+const loopReducer = require("./loopReducer");
+const snakeReducer = require("./snakeReducer");
+const viewReducer = require("./viewReducer");
+
+module.exports = combineReducers({
+  loopReducer,
+  snakeReducer,
+  viewReducer
+});
+
+},{"../helpers/combineReducers":8,"./loopReducer":15,"./snakeReducer":16,"./viewReducer":17}],13:[function(require,module,exports){
 const { RIGHT } = require("./directions").directions;
 const { createPoint } = require("../helpers/pointHelpers");
 
@@ -358,7 +371,7 @@ module.exports = {
   score: 0
 };
 
-},{"../helpers/pointHelpers":10,"./directions":11}],13:[function(require,module,exports){
+},{"../helpers/pointHelpers":10,"./directions":11}],14:[function(require,module,exports){
 const { getLastItem } = require("../helpers/arrayHelpers");
 const {
   createPoint,
@@ -418,7 +431,103 @@ module.exports = {
   placeFood
 };
 
-},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],14:[function(require,module,exports){
+},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],15:[function(require,module,exports){
+const {
+  START_GAME,
+  PAUSE_GAME,
+  RESUME_GAME,
+  CONTROL_INTERVAL
+} = require("../actions/constants");
+const initialState = require("./initialState");
+
+module.exports = function(state, action = {}) {
+  let nextState = {};
+  if (action.type === START_GAME) {
+    if (state.isOver) {
+      return initialState;
+    }
+    nextState.isStarted = true;
+  } else if (action.type === PAUSE_GAME) {
+    nextState.isPaused = true;
+  } else if (action.type === RESUME_GAME) {
+    nextState.isPaused = false;
+  } else if (action.type === CONTROL_INTERVAL) {
+    nextState.tempo = state.tempo * state.tempoChangeRate;
+  }
+  return Object.assign(state, nextState);
+};
+
+},{"../actions/constants":1,"./initialState":13}],16:[function(require,module,exports){
+const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
+const { directions } = require("./directions");
+const {
+  turnIsValid,
+  nextHead,
+  willCrash,
+  willEat,
+  placeFood
+} = require("./logicHelpers");
+
+module.exports = function(state, action = {}) {
+  let nextState = {};
+  if (action.type === MOVE_FORWARD) {
+    const { directions } = state;
+    // remove last move from the queue
+    if (directions.length > 1) {
+      nextState.directions = directions.slice(1, directions.length);
+    }
+    // check for game over condition
+    if (willCrash(state)) {
+      nextState.isOver = true;
+    } else {
+      // place new food if food eaten and make the snake longer
+      if (willEat(state)) {
+        nextState.food = placeFood(state);
+        nextState.snake = [nextHead(state)].concat(state.snake);
+        nextState.score = state.score + state.snake.length;
+        if (state.food.prop.id % 2 === 0 && state.tempoChangeRate === 1) {
+          nextState.tempoChangeRate = 0.95;
+        }
+
+        // let the head be followed by the rest of the snake
+      } else {
+        nextState.tempoChangeRate = 1;
+        nextState.snake = [nextHead(state)]
+          .concat(state.snake)
+          .slice(0, state.snake.length);
+      }
+    }
+  } else if (action.type === ENQUEUE_TURN) {
+    const nextDirection = directions[action.payload];
+    if (turnIsValid(state, nextDirection)) {
+      nextState.directions = state.directions.concat(nextDirection);
+    }
+  }
+
+  return Object.assign(state, nextState);
+};
+
+},{"../actions/constants":1,"./directions":11,"./logicHelpers":14}],17:[function(require,module,exports){
+const {
+  RESIZE_BOARD,
+  // CHANGE_RESOLUTION,
+  ADD_CONTROLS
+} = require("../actions/constants");
+
+module.exports = function(state, action = {}) {
+  let nextState = {};
+  if (action.type === RESIZE_BOARD) {
+    nextState.boardWidth = action.payload.width;
+    nextState.boardHeight = action.payload.height;
+    //   } else if (action.type === CHANGE_RESOLUTION) {
+    // console.log("CHANGE_RESOLUTION from reducer")
+  } else if (action.type === ADD_CONTROLS) {
+    nextState.isOnDesktop = action.isOnDesktop;
+  }
+  return Object.assign(state, nextState);
+};
+
+},{"../actions/constants":1}],18:[function(require,module,exports){
 module.exports = {
   darkViolet: {
     snakeColor: "rgba(133, 201, 35, 0.78)",
@@ -429,7 +538,7 @@ module.exports = {
   }
 };
 
-},{}],15:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
@@ -465,7 +574,7 @@ module.exports = (state, start, resume, pause, turn) =>
     }
   });
 
-},{}],16:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -568,14 +677,14 @@ module.exports = {
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports = function(canvas, width, height) {
   canvas.width = width;
   canvas.height = height;
   return canvas;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
@@ -594,7 +703,7 @@ module.exports = {
   render
 };
 
-},{"./renderAlert":19,"./renderCanvas":20,"./renderMessage":21,"./renderScore":22,"./styleLayout":23}],19:[function(require,module,exports){
+},{"./renderAlert":23,"./renderCanvas":24,"./renderMessage":25,"./renderScore":26,"./styleLayout":27}],23:[function(require,module,exports){
 const { fill } = require("./helpers/renderHelpers");
 const { gameOverColor } = require("./colors").darkViolet;
 
@@ -613,7 +722,7 @@ module.exports = {
   renderAlert
 };
 
-},{"./colors":14,"./helpers/renderHelpers":16}],20:[function(require,module,exports){
+},{"./colors":18,"./helpers/renderHelpers":20}],24:[function(require,module,exports){
 const {
   clear,
   drawRectangularGrid,
@@ -641,7 +750,7 @@ module.exports = {
   renderCanvas
 };
 
-},{"./colors":14,"./helpers/renderHelpers":16}],21:[function(require,module,exports){
+},{"./colors":18,"./helpers/renderHelpers":20}],25:[function(require,module,exports){
 function renderMessage(state, container) {
   const { isStarted, isPaused, isOver } = state;
   let message;
@@ -661,7 +770,7 @@ module.exports = {
   renderMessage
 };
 
-},{}],22:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 function renderScore(state, container) {
   container.textContent = state.score;
 }
@@ -670,7 +779,7 @@ module.exports = {
   renderScore
 };
 
-},{}],23:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 const { gridColor, textColor } = require("./colors").darkViolet;
 
 function styleLayout(dom) {
@@ -685,121 +794,14 @@ module.exports = {
   styleLayout
 };
 
-},{"./colors":14}],24:[function(require,module,exports){
-const combineReducers = require('../helpers/combineReducers');
-const loopReducer = require('./loopReducer');
-const snakeReducer = require('./snakeReducer');
-const viewReducer = require('./viewReducer');
+},{"./colors":18}],28:[function(require,module,exports){
+const createStore = require("./logic/helpers/createStore");
+const combinedReducers = require("./logic/reducers");
+const initialState = require("./logic/reducers/initialState");
 
-module.exports = combineReducers({
-    loopReducer,
-    snakeReducer,
-    viewReducer
-})
-},{"../helpers/combineReducers":8,"./loopReducer":25,"./snakeReducer":26,"./viewReducer":27}],25:[function(require,module,exports){
-const {
-  START_GAME,
-  PAUSE_GAME,
-  RESUME_GAME,
-  CONTROL_INTERVAL
-} = require("../actions/constants");
-const initialState = require("../logic/initialState");
+module.exports = createStore(combinedReducers, initialState);
 
-module.exports = function(state, action = {}) {
-  let nextState = {};
-  if (action.type === START_GAME) {
-    if (state.isOver) {
-      return initialState;
-    }
-    nextState.isStarted = true;
-  } else if (action.type === PAUSE_GAME) {
-    nextState.isPaused = true;
-  } else if (action.type === RESUME_GAME) {
-    nextState.isPaused = false;
-  } else if (action.type === CONTROL_INTERVAL) {
-    nextState.tempo = state.tempo * state.tempoChangeRate;
-  }
-  return Object.assign(state, nextState);
-};
-
-},{"../actions/constants":1,"../logic/initialState":12}],26:[function(require,module,exports){
-const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
-const { directions } = require("../logic/directions");
-const {
-  turnIsValid,
-  nextHead,
-  willCrash,
-  willEat,
-  placeFood
-} = require("../logic/logicHelpers");
-
-module.exports = function(state, action = {}) {
-  let nextState = {};
-  if (action.type === MOVE_FORWARD) {
-    const { directions } = state;
-    // remove last move from the queue
-    if (directions.length > 1) {
-      nextState.directions = directions.slice(1, directions.length);
-    }
-    // check for game over condition
-    if (willCrash(state)) {
-      nextState.isOver = true;
-    } else {
-      // place new food if food eaten and make the snake longer
-      if (willEat(state)) {
-        nextState.food = placeFood(state);
-        nextState.snake = [nextHead(state)].concat(state.snake);
-        nextState.score = state.score + state.snake.length;
-        if (state.food.prop.id % 2 === 0 && state.tempoChangeRate === 1) {
-          nextState.tempoChangeRate = 0.95;
-        }
-
-        // let the head be followed by the rest of the snake
-      } else {
-        nextState.tempoChangeRate = 1;
-        nextState.snake = [nextHead(state)]
-          .concat(state.snake)
-          .slice(0, state.snake.length);
-      }
-    }
-  } else if (action.type === ENQUEUE_TURN) {
-    const nextDirection = directions[action.payload];
-    if (turnIsValid(state, nextDirection)) {
-      nextState.directions = state.directions.concat(nextDirection);
-    }
-  }
-
-  return Object.assign(state, nextState);
-};
-
-},{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],27:[function(require,module,exports){
-const {
-  RESIZE_BOARD,
-  // CHANGE_RESOLUTION,
-  ADD_CONTROLS
-} = require("../actions/constants");
-
-module.exports = function(state, action = {}) {
-  let nextState = {};
-  if (action.type === RESIZE_BOARD) {
-    nextState.boardWidth = action.payload.width;
-    nextState.boardHeight = action.payload.height;
-    //   } else if (action.type === CHANGE_RESOLUTION) {
-    // console.log("CHANGE_RESOLUTION from reducer")
-  } else if (action.type === ADD_CONTROLS) {
-    nextState.isOnDesktop = action.isOnDesktop;
-  }
-  return Object.assign(state, nextState);
-};
-
-},{"../actions/constants":1}],28:[function(require,module,exports){
-const createStore = require('./helpers/createStore')
-const combinedReducers = require('./reducers');
-const initialState = require('./logic/initialState');
-
-module.exports = createStore( combinedReducers, initialState );
-
-},{"./helpers/createStore":9,"./logic/initialState":12,"./reducers":24}],29:[function(require,module,exports){
+},{"./logic/helpers/createStore":9,"./logic/reducers":12,"./logic/reducers/initialState":13}],29:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const { render } = require("./presentation");
 const addKeydownListeners = require("./presentation/helpers/addKeydownListeners");
@@ -809,7 +811,7 @@ const {
   pauseGame,
   resumeGame,
   resizeBoard
-} = require("./actions");
+} = require("./logic/actions");
 const DOM = {
   header: document.querySelector(".header"),
   canvasContainer: document.querySelector(".canvas-container"),
@@ -849,4 +851,4 @@ window.addEventListener("load", onLoad);
 //   resizeBoard();
 // });
 
-},{"./actions":2,"./presentation":18,"./presentation/helpers/addKeydownListeners":15,"./store":28}]},{},[29]);
+},{"./logic/actions":2,"./presentation":22,"./presentation/helpers/addKeydownListeners":19,"./store":28}]},{},[29]);

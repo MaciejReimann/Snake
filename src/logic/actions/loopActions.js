@@ -1,5 +1,5 @@
-const { dispatch, getState } = require("../store");
-const { tempo } = require("../logic/initialState");
+const { dispatch, getState } = require("../../store");
+const { tempo } = require("../reducers/initialState");
 const {
   START_GAME,
   PAUSE_GAME,

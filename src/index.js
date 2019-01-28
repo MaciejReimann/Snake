@@ -7,7 +7,7 @@ const {
   pauseGame,
   resumeGame,
   resizeBoard
-} = require("./actions");
+} = require("./logic/actions");
 const DOM = {
   header: document.querySelector(".header"),
   canvasContainer: document.querySelector(".canvas-container"),
