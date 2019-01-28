@@ -8,12 +8,14 @@ const {
   resumeGame,
   resizeBoard
 } = require("./actions");
-
-const canvasContainer = document.querySelector(".canvas-container");
-const CANVAS = document.querySelector(".canvas");
+const DOM = {
+  canvasContainer: document.querySelector(".canvas-container"),
+  canvas: document.querySelector(".canvas"),
+  scoreContainer: document.querySelector(".score")
+};
 
 let onLoad;
-const renderOnCanvas = () => render(getState(), CANVAS);
+const renderOnCanvas = () => render(getState(), DOM);
 
 if (document.body.clientWidth > 1024) {
   onLoad = () => {
@@ -25,10 +27,10 @@ if (document.body.clientWidth > 1024) {
       enqueueTurn
     );
     resizeBoard(
-      canvasContainer.clientWidth,
-      canvasContainer.clientHeight,
+      DOM.canvasContainer.clientWidth,
+      DOM.canvasContainer.clientHeight,
       getState(),
-      CANVAS
+      DOM.canvas
     );
     renderOnCanvas();
   };

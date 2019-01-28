@@ -15,7 +15,7 @@ const {
 } = require("./colors").darkViolet;
 const { displayOnTopOfThePage } = require("./helpers/DOMHelpers");
 
-function render(state, canvas) {
+function renderCanvas(state, canvas) {
   const { snake, food, resolution, isOver } = state;
   clear(canvas);
 
@@ -36,5 +36,5 @@ function render(state, canvas) {
 }
 
 module.exports = {
-  render
+  renderCanvas
 };

@@ -3,9 +3,6 @@ const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
 function moveForward(callback) {
   callback();
-  // console.log(
-  //     getState().food.props.id
-  // )
   return dispatch({
     type: MOVE_FORWARD
   });

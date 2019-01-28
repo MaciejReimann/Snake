@@ -91,9 +91,6 @@ const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
 function moveForward(callback) {
   callback();
-  // console.log(
-  //     getState().food.props.id
-  // )
   return dispatch({
     type: MOVE_FORWARD
   });
@@ -134,7 +131,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":16,"../store":25}],6:[function(require,module,exports){
+},{"../actions/constants":1,"../presentation/helpers/DOMHelpers":15,"../store":25}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -433,27 +430,6 @@ module.exports = {
 };
 
 },{}],15:[function(require,module,exports){
-function addControls() {
-  let deviceType;
-  if (document.body.clientWidth > 1024) {
-    resizeBoard();
-    addKeydownListeners();
-  } else {
-    addSwipeListeners();
-  }
-  return dispatch({
-    type: ADD_CONTROLS,
-    payload: {
-      deviceType
-    }
-  });
-}
-
-module.exports = {
-  addControls
-};
-
-},{}],16:[function(require,module,exports){
 function createElement(element, className) {
   if (!className) {
     className = element;
@@ -480,7 +456,7 @@ module.exports = {
   displayOnTopOfThePage
 };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
@@ -516,7 +492,7 @@ module.exports = (state, start, resume, pause, turn) =>
     }
   });
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -619,16 +595,20 @@ module.exports = {
 
 
 
-},{}],19:[function(require,module,exports){
-const { render } = require("./render");
-const { controls } = require("./controls");
+},{}],18:[function(require,module,exports){
+const { renderCanvas } = require("./renderCanvas");
+const { renderScore } = require("./renderScore");
+
+function render(state, dom) {
+  renderCanvas(state, dom.canvas);
+  renderScore(state, dom.scoreContainer);
+}
 
 module.exports = {
-  render,
-  controls
+  render
 };
 
-},{"./controls":15,"./render":20}],20:[function(require,module,exports){
+},{"./renderCanvas":19,"./renderScore":20}],19:[function(require,module,exports){
 const {
   fill,
   clear,
@@ -646,7 +626,7 @@ const {
 } = require("./colors").darkViolet;
 const { displayOnTopOfThePage } = require("./helpers/DOMHelpers");
 
-function render(state, canvas) {
+function renderCanvas(state, canvas) {
   const { snake, food, resolution, isOver } = state;
   clear(canvas);
 
@@ -667,10 +647,19 @@ function render(state, canvas) {
 }
 
 module.exports = {
-  render
+  renderCanvas
 };
 
-},{"./colors":14,"./helpers/DOMHelpers":16,"./helpers/renderHelpers":18}],21:[function(require,module,exports){
+},{"./colors":14,"./helpers/DOMHelpers":15,"./helpers/renderHelpers":17}],20:[function(require,module,exports){
+function renderScore(state, container) {
+  container.textContent = state.score;
+}
+
+module.exports = {
+  renderScore
+};
+
+},{}],21:[function(require,module,exports){
 const combineReducers = require('../helpers/combineReducers');
 const loopReducer = require('./loopReducer');
 const snakeReducer = require('./snakeReducer');
@@ -795,12 +784,14 @@ const {
   resumeGame,
   resizeBoard
 } = require("./actions");
-
-const canvasContainer = document.querySelector(".canvas-container");
-const CANVAS = document.querySelector(".canvas");
+const DOM = {
+  canvasContainer: document.querySelector(".canvas-container"),
+  canvas: document.querySelector(".canvas"),
+  scoreContainer: document.querySelector(".score")
+};
 
 let onLoad;
-const renderOnCanvas = () => render(getState(), CANVAS);
+const renderOnCanvas = () => render(getState(), DOM);
 
 if (document.body.clientWidth > 1024) {
   onLoad = () => {
@@ -812,10 +803,10 @@ if (document.body.clientWidth > 1024) {
       enqueueTurn
     );
     resizeBoard(
-      canvasContainer.clientWidth,
-      canvasContainer.clientHeight,
+      DOM.canvasContainer.clientWidth,
+      DOM.canvasContainer.clientHeight,
       getState(),
-      CANVAS
+      DOM.canvas
     );
     renderOnCanvas();
   };
@@ -829,4 +820,4 @@ window.addEventListener("load", onLoad);
 //   resizeBoard();
 // });
 
-},{"./actions":2,"./presentation":19,"./presentation/helpers/addKeydownListeners":17,"./store":25}]},{},[26]);
+},{"./actions":2,"./presentation":18,"./presentation/helpers/addKeydownListeners":16,"./store":25}]},{},[26]);
