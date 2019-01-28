@@ -2,16 +2,16 @@ const {
   startGame,
   pauseGame,
   resumeGame,
-  changeInterval
+  controlInterval
 } = require("./loopActions");
-const { moveForward, enqueueTurn } = require("./loopActions");
+const { moveForward, enqueueTurn } = require("./snakeActions");
 const { resizeBoard } = require("./viewActions");
 
 module.exports = {
   startGame,
   pauseGame,
   resumeGame,
-  changeInterval,
+  controlInterval,
   moveForward,
   enqueueTurn,
   resizeBoard

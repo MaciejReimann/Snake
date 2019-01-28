@@ -1,8 +1,7 @@
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
-      if (!state.isStarted) {
-        console.log("pressed");
+      if (!state().isStarted) {
         start();
       } else if (state().isPaused) {
         resume();
@@ -11,7 +10,6 @@ module.exports = (state, start, resume, pause, turn) =>
       }
     } else if (e.key === "Enter") {
       if (state().isOver) {
-        console.log(state.isOver, state.isPaused);
         start();
       }
     }

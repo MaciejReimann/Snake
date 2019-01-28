@@ -17,10 +17,8 @@ const renderOnCanvas = () => render(getState(), CANVAS);
 
 if (document.body.clientWidth > 1024) {
   onLoad = () => {
-    console.log("loaded");
-    console.log(CANVAS);
     addKeydownListeners(
-      getState(),
+      getState,
       startGame,
       resumeGame,
       pauseGame,

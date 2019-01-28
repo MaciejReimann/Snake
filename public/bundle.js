@@ -8,7 +8,7 @@ module.exports = {
   START_GAME: "START_GAME",
   PAUSE_GAME: "PAUSE_GAME",
   RESUME_GAME: "RESUME_GAME",
-  CHANGE_INTERVAL: "CHANGE_INTERVAL",
+  CONTROL_INTERVAL: "CONTROL_INTERVAL",
   // snake actions
   MOVE_FORWARD: "MOVE_FORWARD",
   ENQUEUE_TURN: "ENQUEUE_TURN"
@@ -19,107 +19,98 @@ const {
   startGame,
   pauseGame,
   resumeGame,
-  changeInterval
+  controlInterval
 } = require("./loopActions");
-const { moveForward, enqueueTurn } = require("./loopActions");
+const { moveForward, enqueueTurn } = require("./snakeActions");
 const { resizeBoard } = require("./viewActions");
 
 module.exports = {
   startGame,
   pauseGame,
   resumeGame,
-  changeInterval,
+  controlInterval,
   moveForward,
   enqueueTurn,
   resizeBoard
 };
 
-},{"./loopActions":3,"./viewActions":5}],3:[function(require,module,exports){
+},{"./loopActions":3,"./snakeActions":4,"./viewActions":5}],3:[function(require,module,exports){
+const { dispatch, getState } = require("../store");
+const { tempo } = require("../logic/initialState");
 const {
-    dispatch,
-    getState
-} = require('../store');
-const {
-    tempo
-} = require('../logic/initialState');
-const {
-    START_GAME,
-    PAUSE_GAME,
-    RESUME_GAME,
-    CHANGE_INTERVAL
-} = require('./constants');
-const {
-    moveForward
-} = require('./snakeActions');
-const Gameloop = require('../helpers/Gameloop');
-// Initialize gameloop with a callback to be fired from inside the gameloop functions
-const gameloop = Gameloop(tempo, moveForward);
+  START_GAME,
+  PAUSE_GAME,
+  RESUME_GAME,
+  CONTROL_INTERVAL
+} = require("./constants");
+const { moveForward } = require("./snakeActions");
+const Gameloop = require("../helpers/Gameloop");
+// Initialize gameloop with a callback to be fired on each loop
+const gameloop = Gameloop(tempo, () =>
+  moveForward(() => controlInterval(getState().tempo))
+);
 
 function startGame() {
-    gameloop.start();
-    return dispatch({
-        type: START_GAME
-    });
-};
+  gameloop.start();
+  return dispatch({
+    type: START_GAME
+  });
+}
 
 function pauseGame() {
-    gameloop.stop();
-    return dispatch({
-        type: PAUSE_GAME
-    });
-};
+  gameloop.stop();
+  return dispatch({
+    type: PAUSE_GAME
+  });
+}
 
 function resumeGame() {
-    gameloop.start();
-    return dispatch({
-        type: RESUME_GAME
-    });
-};
+  gameloop.start();
+  return dispatch({
+    type: RESUME_GAME
+  });
+}
 
-function changeInterval(rate) { // this should be setIntercal instead, with the value taken as a par from state
-    gameloop.changeInterval(rate);
-    return dispatch({
-        type: CHANGE_INTERVAL
-    });
-};
+function controlInterval(rate) {
+  gameloop.changeInterval(rate);
+  return dispatch({
+    type: CONTROL_INTERVAL
+  });
+}
 
 module.exports = {
-    startGame,
-    pauseGame,
-    resumeGame,
-    changeInterval
+  startGame,
+  pauseGame,
+  resumeGame,
+  controlInterval
 };
-},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":25,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
-const {
-    dispatch,
-    getState
-} = require('../store');
-const {
-    MOVE_FORWARD,
-    ENQUEUE_TURN
-} = require('./constants');
 
-function moveForward() {
-    // console.log(
-    //     getState().food.props.id
-    // )     
-    return dispatch({
-        type: MOVE_FORWARD
-    });
-};
+},{"../helpers/Gameloop":6,"../logic/initialState":12,"../store":25,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+const { dispatch } = require("../store");
+const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
+
+function moveForward(callback) {
+  callback();
+  // console.log(
+  //     getState().food.props.id
+  // )
+  return dispatch({
+    type: MOVE_FORWARD
+  });
+}
 
 function enqueueTurn(turn) {
-    // dispatch(changeInterval(.8))
-    return dispatch({
-        type: ENQUEUE_TURN,
-        payload: turn
-    });
-};
+  return dispatch({
+    type: ENQUEUE_TURN,
+    payload: turn
+  });
+}
 
 module.exports = {
-    moveForward,
-    enqueueTurn
+  moveForward,
+  enqueueTurn
 };
+
 },{"../store":25,"./constants":1}],5:[function(require,module,exports){
 const { dispatch } = require("../store");
 const { RESIZE_BOARD } = require("../actions/constants");
@@ -147,36 +138,39 @@ module.exports = {
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
-    let interval = initialInterval;
-    let loopCallback = callback;
-    let lastTime;
-    let id;
+  let interval = initialInterval;
+  let loopCallback = callback;
+  let lastTime;
+  let id;
 
-    function _hasIntervalPassed() {
-        const intervalHasPassed = Date.now() > lastTime + interval;
-        if(intervalHasPassed) {
-            lastTime = Date.now();
-            loopCallback();
-        };
-        return intervalHasPassed;
-    };
+  function _hasIntervalPassed() {
+    const intervalHasPassed = Date.now() > lastTime + interval;
+    if (intervalHasPassed) {
+      lastTime = Date.now();
+      loopCallback();
+    }
+    return intervalHasPassed;
+  }
 
-    function changeInterval(rate) {
-        console.log("interval changed")
-        interval = interval * rate || interval ;
-    };
+  function changeInterval(newInterval) {
+    if (newInterval) {
+      interval = newInterval;
+      console.log(interval);
+    }
+  }
 
-    function start() {
-        lastTime = Date.now();
-        intervals.push(setInterval(_hasIntervalPassed, 10));
-    };
+  function start() {
+    lastTime = Date.now();
+    intervals.push(setInterval(_hasIntervalPassed, 10));
+  }
 
-    function stop() {
-        intervals.forEach(id => clearInterval(id))
-    };
+  function stop() {
+    intervals.forEach(id => clearInterval(id));
+  }
 
-    return {start, stop, changeInterval}
+  return { start, stop, changeInterval };
 };
+
 },{}],7:[function(require,module,exports){
 
 function getLastItem(array) {
@@ -347,93 +341,86 @@ module.exports = {
     }
 };
 },{}],12:[function(require,module,exports){
-const {
-    RIGHT
-} = require('./directions').directions
-const {
-    createPoint
-} = require('../helpers/pointHelpers');
+const { RIGHT } = require("./directions").directions;
+const { createPoint } = require("../helpers/pointHelpers");
 
 module.exports = {
-    tempo: 100,
-    increaseRate: .95,
-    resolution: 40,
-    directions: [RIGHT],
-    snake: Array(3).fill()
-        .map((_, i) => {
-            return {
-                x: 3 - i,
-                y: 1
-            }
-        }),
-    food: createPoint(7, 1, {
-        id: 1
-    }),
-    isOver: false,
-    isStarted: false,
-    isPaused: false,
-    score: 0
+  tempo: 100,
+  tempoChangeRate: 1,
+  resolution: 40,
+  directions: [RIGHT],
+  snake: Array(3)
+    .fill()
+    .map((_, i) => createPoint(3 - i, 1)),
+  food: createPoint(7, 1, {
+    id: 1
+  }),
+  isOver: false,
+  isStarted: false,
+  isPaused: false,
+  score: 0
 };
+
 },{"../helpers/pointHelpers":10,"./directions":11}],13:[function(require,module,exports){
+const { getLastItem } = require("../helpers/arrayHelpers");
 const {
-    getLastItem
-} = require('../helpers/arrayHelpers');
-const {
-    createPoint,
-    createRandomPoint,
-    arePointsEqual
-} = require('../helpers/pointHelpers');
+  createPoint,
+  createRandomPoint,
+  arePointsEqual
+} = require("../helpers/pointHelpers");
 
 function turnIsValid(state, nextDirection) {
-    return (
-        nextDirection.x + getLastItem(state.directions).x !== 0 ||
-
-
-        nextDirection.y + getLastItem(state.directions).y !== 0
-    );
-};
+  return (
+    nextDirection.x + getLastItem(state.directions).x !== 0 ||
+    nextDirection.y + getLastItem(state.directions).y !== 0
+  );
+}
 
 function nextHead(state) {
-    const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
-    return createPoint(
-        mod(state.boardWidth / state.resolution, state.snake[0].x + state.directions[0].x),
-        mod(state.boardHeight / state.resolution, state.snake[0].y + state.directions[0].y)
-    );
-};
+  const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
+  return createPoint(
+    mod(
+      state.boardWidth / state.resolution,
+      state.snake[0].x + state.directions[0].x
+    ),
+    mod(
+      state.boardHeight / state.resolution,
+      state.snake[0].y + state.directions[0].y
+    )
+  );
+}
 
 function willCrash(state) {
-    return state.snake.find(p => arePointsEqual(p, nextHead(state)));
-};
+  return state.snake.find(p => arePointsEqual(p, nextHead(state)));
+}
 
 function willEat(state) {
-    return arePointsEqual(nextHead(state), state.food);
-};
+  return arePointsEqual(nextHead(state), state.food);
+}
 
 function placeFood(state) {
-    const {
-        boardWidth,
-        boardHeight,
-        resolution,
-        food
-    } = state;
-    const nextId = food.prop.id + 1;
-    const newFood = createRandomPoint(
-        boardWidth / resolution,
-        boardHeight / resolution, {
-            id: nextId
-        }
-    );
-    return state.snake.find(p => arePointsEqual(newFood, p)) ?
-        placeFood(state) : newFood
-};
+  const { boardWidth, boardHeight, resolution, food } = state;
+  const nextId = food.prop.id + 1;
+  const newFood = createRandomPoint(
+    boardWidth / resolution,
+    boardHeight / resolution,
+    {
+      id: nextId
+    }
+  );
+  return state.snake.find(p => arePointsEqual(newFood, p))
+    ? placeFood(state)
+    : newFood;
+}
 
 module.exports = {
-    turnIsValid,
-    nextHead,
-    willCrash,
-    willEat,
-    placeFood
+  turnIsValid,
+  nextHead,
+  willCrash,
+  willEat,
+  placeFood
 };
+
 },{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],14:[function(require,module,exports){
 module.exports = {
   darkViolet: {
@@ -497,8 +484,7 @@ module.exports = {
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
-      if (!state.isStarted) {
-        console.log("pressed");
+      if (!state().isStarted) {
         start();
       } else if (state().isPaused) {
         resume();
@@ -507,7 +493,6 @@ module.exports = (state, start, resume, pause, turn) =>
       }
     } else if (e.key === "Enter") {
       if (state().isOver) {
-        console.log(state.isOver, state.isPaused);
         start();
       }
     }
@@ -679,7 +664,6 @@ function render(state, canvas) {
   drawCircle(canvas, resolution, foodColor, food);
   // draw grid
   drawRectangularGrid(canvas, resolution, gridColor, 0.5);
-  console.log("rendered");
 }
 
 module.exports = {
@@ -702,73 +686,77 @@ const {
   START_GAME,
   PAUSE_GAME,
   RESUME_GAME,
-  CHANGE_INTERVAL
-} = require('../actions/constants');
-const initialState  = require('../logic/initialState');
+  CONTROL_INTERVAL
+} = require("../actions/constants");
+const initialState = require("../logic/initialState");
 
 module.exports = function(state, action = {}) {
   let nextState = {};
-  if(action.type === START_GAME) {
-    if(state.isOver) {
+  if (action.type === START_GAME) {
+    if (state.isOver) {
       return initialState;
     }
     nextState.isStarted = true;
-  } else if(action.type === PAUSE_GAME) {
+  } else if (action.type === PAUSE_GAME) {
     nextState.isPaused = true;
-  } else if(action.type === RESUME_GAME) {
+  } else if (action.type === RESUME_GAME) {
     nextState.isPaused = false;
-  } else if(action.type === CHANGE_INTERVAL) {
-    nextState.tempo = state.tempo * state.increaseRate;
-  };
-  return Object.assign(state, nextState)
+  } else if (action.type === CONTROL_INTERVAL) {
+    nextState.tempo = state.tempo * state.tempoChangeRate;
+  }
+  return Object.assign(state, nextState);
 };
 
 },{"../actions/constants":1,"../logic/initialState":12}],23:[function(require,module,exports){
+const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
+const { directions } = require("../logic/directions");
 const {
-    MOVE_FORWARD,
-    ENQUEUE_TURN
-} = require('../actions/constants');
-const { directions } = require('../logic/directions');
-const {
-    turnIsValid,
-    nextHead,
-    willCrash,
-    willEat,
-    placeFood
-} = require('../logic/logicHelpers');
-  
+  turnIsValid,
+  nextHead,
+  willCrash,
+  willEat,
+  placeFood
+} = require("../logic/logicHelpers");
+
 module.exports = function(state, action = {}) {
-    let nextState = {};
-    if(action.type === MOVE_FORWARD) {
-        const { directions } = state;
-        // remove last move from the queue
-        if(directions.length > 1) {
-            nextState.directions = directions.slice(1, directions.length)
-        };
-        // check for game over condition
-        if(willCrash(state)) {
-            nextState.isOver = true
-        } else {
-            // place new food if food eaten and make the snake longer
-            if(willEat(state)) {
-                nextState.food = placeFood(state);
-                nextState.snake = [ nextHead(state) ].concat(state.snake);
-                nextState.score = state.score + state.snake.length;
-            // let the head be followed by the rest of the snake
-            } else {
-                nextState.snake =  [ nextHead(state) ].concat(state.snake).slice(0, state.snake.length)
-            };
-        };
+  let nextState = {};
+  if (action.type === MOVE_FORWARD) {
+    const { directions } = state;
+    // remove last move from the queue
+    if (directions.length > 1) {
+      nextState.directions = directions.slice(1, directions.length);
+    }
+    // check for game over condition
+    if (willCrash(state)) {
+      nextState.isOver = true;
+    } else {
+      // place new food if food eaten and make the snake longer
+      if (willEat(state)) {
+        nextState.food = placeFood(state);
+        nextState.snake = [nextHead(state)].concat(state.snake);
+        nextState.score = state.score + state.snake.length;
+        if (state.food.prop.id % 2 === 0 && state.tempoChangeRate === 1) {
+          nextState.tempoChangeRate = 0.95;
+        }
 
-    } else if(action.type === ENQUEUE_TURN) {
-        const nextDirection = directions[action.payload];
-        if(turnIsValid(state, nextDirection)) {
-            nextState.directions = state.directions.concat(nextDirection);
-        };
-    };
+        // let the head be followed by the rest of the snake
+      } else {
+        nextState.tempoChangeRate = 1;
+        nextState.snake = [nextHead(state)]
+          .concat(state.snake)
+          .slice(0, state.snake.length);
+      }
+    }
+  } else if (action.type === ENQUEUE_TURN) {
+    const nextDirection = directions[action.payload];
+    if (turnIsValid(state, nextDirection)) {
+      nextState.directions = state.directions.concat(nextDirection);
+    }
+  }
 
-    return Object.assign(state, nextState)
+  return Object.assign(state, nextState);
 };
+
 },{"../actions/constants":1,"../logic/directions":11,"../logic/logicHelpers":13}],24:[function(require,module,exports){
 const {
   RESIZE_BOARD,
@@ -816,10 +804,8 @@ const renderOnCanvas = () => render(getState(), CANVAS);
 
 if (document.body.clientWidth > 1024) {
   onLoad = () => {
-    console.log("loaded");
-    console.log(CANVAS);
     addKeydownListeners(
-      getState(),
+      getState,
       startGame,
       resumeGame,
       pauseGame,

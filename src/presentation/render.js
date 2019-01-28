@@ -33,7 +33,6 @@ function render(state, canvas) {
   drawCircle(canvas, resolution, foodColor, food);
   // draw grid
   drawRectangularGrid(canvas, resolution, gridColor, 0.5);
-  console.log("rendered");
 }
 
 module.exports = {
