@@ -1,25 +1,17 @@
 const {
-  fill,
   clear,
   drawRectangularGrid,
   drawSquareFromCorner,
   drawCircle
 } = require("./helpers/renderHelpers");
-
-const {
-  snakeColor,
-  foodColor,
-  gridColor,
-  textColor,
-  gameOverColor
-} = require("./colors").darkViolet;
-const { displayOnTopOfThePage } = require("./helpers/DOMHelpers");
+const { snakeColor, foodColor, gridColor } = require("./colors").darkViolet;
 
 function renderCanvas(state, canvas) {
   const { snake, food, resolution, isOver } = state;
   if (!isOver) {
     clear(canvas);
   }
+  // draw snake
   snake.forEach(square =>
     drawSquareFromCorner(canvas, resolution, snakeColor, square)
   );

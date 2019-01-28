@@ -2,10 +2,10 @@ const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
 const { renderAlert } = require("./renderAlert");
-const { applyStyles } = require("./applyStyles");
+const { styleLayout } = require("./styleLayout");
 
 function render(state, dom) {
-  // applyStyles();
+  styleLayout(dom);
   renderAlert(state, dom);
   renderCanvas(state, dom.canvas);
   renderScore(state, dom.scoreContainer);
