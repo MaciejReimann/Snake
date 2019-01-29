@@ -422,7 +422,8 @@ function placeFood(state) {
     }
   );
   if (state.snake.some(p => arePointsEqual(newFood, p))) {
-    placeFood(state);
+    console.log("overlap!!!!!!!!!!!!");
+    return placeFood(state);
   }
   return newFood;
 }
@@ -475,13 +476,17 @@ const {
 module.exports = function(state, action = {}) {
   let nextState = {};
   if (action.type === MOVE_FORWARD) {
-    const { snake, directions, score, food, tempoChangeRate } = state;
+    const { snake, directions, score, food, tempoChangeRate, isOver } = state;
+    if (isOver) {
+      return;
+    }
     // remove first move from the queue
     if (directions.length > 1) {
       nextState.directions = directions.slice(1, directions.length);
     }
     if (willCrash(state)) {
       nextState.isOver = true;
+      return Object.assign(state, nextState);
     } else {
       if (willEat(state)) {
         nextState.food = placeFood(state);

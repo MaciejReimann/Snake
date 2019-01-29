@@ -46,7 +46,8 @@ function placeFood(state) {
     }
   );
   if (state.snake.some(p => arePointsEqual(newFood, p))) {
-    placeFood(state);
+    console.log("overlap!!!!!!!!!!!!");
+    return placeFood(state);
   }
   return newFood;
 }
