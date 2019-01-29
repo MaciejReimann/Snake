@@ -10,7 +10,7 @@ const { moveForward } = require("./snakeActions");
 const Gameloop = require("../helpers/Gameloop");
 // Initialize gameloop with a callback to be fired on each loop
 const gameloop = Gameloop(tempo, () =>
-  moveForward(() => controlInterval(getState().tempo))
+  moveForward(() => controlInterval(getState()))
 );
 
 function startGame() {
@@ -34,8 +34,11 @@ function resumeGame() {
   });
 }
 
-function controlInterval(rate) {
-  gameloop.changeInterval(rate);
+function controlInterval(state) {
+  if (state.isOver) {
+    gameloop.stop();
+  }
+  gameloop.changeInterval(state.tempo);
   return dispatch({
     type: CONTROL_INTERVAL
   });
