@@ -88,7 +88,7 @@ module.exports = {
   controlInterval
 };
 
-},{"../../store":29,"../helpers/Gameloop":6,"../reducers/initialState":13,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+},{"../../store":29,"../helpers/Gameloop":6,"../reducers/initialState":12,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
@@ -322,28 +322,6 @@ module.exports = {
 };
 
 },{}],11:[function(require,module,exports){
-module.exports = {
-  directions: {
-    UP: {
-      x: 0,
-      y: -1
-    },
-    RIGHT: {
-      x: 1,
-      y: 0
-    },
-    DOWN: {
-      x: 0,
-      y: 1
-    },
-    LEFT: {
-      x: -1,
-      y: 0
-    }
-  }
-};
-
-},{}],12:[function(require,module,exports){
 const combineReducers = require("../helpers/combineReducers");
 const loopReducer = require("./loopReducer");
 const snakeReducer = require("./snakeReducer");
@@ -355,8 +333,8 @@ module.exports = combineReducers({
   viewReducer
 });
 
-},{"../helpers/combineReducers":8,"./loopReducer":15,"./snakeReducer":16,"./viewReducer":17}],13:[function(require,module,exports){
-const { RIGHT } = require("./directions").directions;
+},{"../helpers/combineReducers":8,"./loopReducer":14,"./snakeReducer":16,"./viewReducer":17}],12:[function(require,module,exports){
+const { RIGHT } = require("./possibleDirections");
 const { createPoint } = require("../helpers/pointHelpers");
 
 module.exports = {
@@ -376,7 +354,7 @@ module.exports = {
   score: 0
 };
 
-},{"../helpers/pointHelpers":10,"./directions":11}],14:[function(require,module,exports){
+},{"../helpers/pointHelpers":10,"./possibleDirections":15}],13:[function(require,module,exports){
 const { getLastItem } = require("../helpers/arrayHelpers");
 const {
   createPoint,
@@ -392,16 +370,11 @@ function turnIsValid(state, nextDirection) {
 }
 
 function nextHead(state) {
+  const { boardWidth, boardHeight, resolution, directions, snake } = state;
   const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
   return createPoint(
-    mod(
-      state.boardWidth / state.resolution,
-      state.snake[0].x + state.directions[0].x
-    ),
-    mod(
-      state.boardHeight / state.resolution,
-      state.snake[0].y + state.directions[0].y
-    )
+    mod(boardWidth / resolution, snake[0].x + directions[0].x),
+    mod(boardHeight / resolution, snake[0].y + directions[0].y)
   );
 }
 
@@ -439,7 +412,7 @@ module.exports = {
   placeFood
 };
 
-},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],15:[function(require,module,exports){
+},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],14:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -465,9 +438,29 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"./initialState":13}],16:[function(require,module,exports){
+},{"../actions/constants":1,"./initialState":12}],15:[function(require,module,exports){
+module.exports = {
+  UP: {
+    x: 0,
+    y: -1
+  },
+  RIGHT: {
+    x: 1,
+    y: 0
+  },
+  DOWN: {
+    x: 0,
+    y: 1
+  },
+  LEFT: {
+    x: -1,
+    y: 0
+  }
+};
+
+},{}],16:[function(require,module,exports){
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
-const { directions } = require("./directions");
+const possibleDirections = require("./possibleDirections");
 const {
   turnIsValid,
   nextHead,
@@ -477,9 +470,9 @@ const {
 } = require("./logicHelpers");
 
 module.exports = function(state, action = {}) {
+  const { snake, directions, score, food, tempoChangeRate } = state;
   let nextState = {};
   if (action.type === MOVE_FORWARD) {
-    const { snake, directions, score, food, tempoChangeRate, isOver } = state;
     // remove first move from the queue
     if (directions.length > 1) {
       nextState.directions = directions.slice(1, directions.length);
@@ -503,15 +496,15 @@ module.exports = function(state, action = {}) {
       }
     }
   } else if (action.type === ENQUEUE_TURN) {
-    const nextDirection = directions[action.payload];
+    const nextDirection = possibleDirections[action.payload];
     if (turnIsValid(state, nextDirection)) {
-      nextState.directions = state.directions.concat(nextDirection);
+      nextState.directions = directions.concat(nextDirection);
     }
   }
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"./directions":11,"./logicHelpers":14}],17:[function(require,module,exports){
+},{"../actions/constants":1,"./logicHelpers":13,"./possibleDirections":15}],17:[function(require,module,exports){
 const {
   RESIZE_BOARD,
   // CHANGE_RESOLUTION,
@@ -821,7 +814,7 @@ const initialState = require("./logic/reducers/initialState");
 
 module.exports = createStore(combinedReducers, initialState);
 
-},{"./logic/helpers/createStore":9,"./logic/reducers":12,"./logic/reducers/initialState":13}],30:[function(require,module,exports){
+},{"./logic/helpers/createStore":9,"./logic/reducers":11,"./logic/reducers/initialState":12}],30:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const {
   render,

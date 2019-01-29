@@ -13,16 +13,11 @@ function turnIsValid(state, nextDirection) {
 }
 
 function nextHead(state) {
+  const { boardWidth, boardHeight, resolution, directions, snake } = state;
   const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
   return createPoint(
-    mod(
-      state.boardWidth / state.resolution,
-      state.snake[0].x + state.directions[0].x
-    ),
-    mod(
-      state.boardHeight / state.resolution,
-      state.snake[0].y + state.directions[0].y
-    )
+    mod(boardWidth / resolution, snake[0].x + directions[0].x),
+    mod(boardHeight / resolution, snake[0].y + directions[0].y)
   );
 }
 

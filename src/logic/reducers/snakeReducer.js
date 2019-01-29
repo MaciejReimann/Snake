@@ -1,5 +1,5 @@
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
-const { directions } = require("./directions");
+const possibleDirections = require("./possibleDirections");
 const {
   turnIsValid,
   nextHead,
@@ -9,9 +9,9 @@ const {
 } = require("./logicHelpers");
 
 module.exports = function(state, action = {}) {
+  const { snake, directions, score, food, tempoChangeRate } = state;
   let nextState = {};
   if (action.type === MOVE_FORWARD) {
-    const { snake, directions, score, food, tempoChangeRate, isOver } = state;
     // remove first move from the queue
     if (directions.length > 1) {
       nextState.directions = directions.slice(1, directions.length);
@@ -35,9 +35,9 @@ module.exports = function(state, action = {}) {
       }
     }
   } else if (action.type === ENQUEUE_TURN) {
-    const nextDirection = directions[action.payload];
+    const nextDirection = possibleDirections[action.payload];
     if (turnIsValid(state, nextDirection)) {
-      nextState.directions = state.directions.concat(nextDirection);
+      nextState.directions = directions.concat(nextDirection);
     }
   }
   return Object.assign(state, nextState);

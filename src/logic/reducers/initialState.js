@@ -1,4 +1,4 @@
-const { RIGHT } = require("./directions").directions;
+const { RIGHT } = require("./possibleDirections");
 const { createPoint } = require("../helpers/pointHelpers");
 
 module.exports = {
