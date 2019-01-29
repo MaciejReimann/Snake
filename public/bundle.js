@@ -404,6 +404,7 @@ function willCrash(state) {
 }
 
 function willEat(state) {
+  console.log(state.food);
   return arePointsEqual(nextHead(state), state.food);
 }
 
@@ -417,9 +418,19 @@ function placeFood(state) {
       id: nextId
     }
   );
-  return state.snake.find(p => arePointsEqual(newFood, p))
-    ? placeFood(state)
-    : newFood;
+  if (state.snake.some(p => arePointsEqual(newFood, p))) {
+    console.log("overlap!!!!!!!");
+    placeFood(state);
+  }
+  if (
+    newFood.x > boardWidth.x ||
+    newFood.x < boardWidth.x ||
+    newFood.y > boardWidth.y ||
+    newFood.y < boardWidth.y
+  ) {
+    console.log("dupa");
+  }
+  return newFood;
 }
 
 module.exports = {
@@ -470,30 +481,27 @@ const {
 module.exports = function(state, action = {}) {
   let nextState = {};
   if (action.type === MOVE_FORWARD) {
-    const { directions } = state;
-    // remove last move from the queue
+    const { snake, directions, score, food, tempoChangeRate } = state;
+    // remove first move from the queue
     if (directions.length > 1) {
       nextState.directions = directions.slice(1, directions.length);
     }
-    // check for game over condition
     if (willCrash(state)) {
       nextState.isOver = true;
     } else {
-      // place new food if food eaten and make the snake longer
       if (willEat(state)) {
         nextState.food = placeFood(state);
-        nextState.snake = [nextHead(state)].concat(state.snake);
-        nextState.score = state.score + state.snake.length;
-        if (state.food.prop.id % 2 === 0 && state.tempoChangeRate === 1) {
+        nextState.snake = [nextHead(state)].concat(snake);
+        nextState.score = score + snake.length;
+        if (food.prop.id % 2 === 0 && tempoChangeRate === 1) {
           nextState.tempoChangeRate = 0.95;
         }
-
         // let the head be followed by the rest of the snake
       } else {
         nextState.tempoChangeRate = 1;
         nextState.snake = [nextHead(state)]
-          .concat(state.snake)
-          .slice(0, state.snake.length);
+          .concat(snake)
+          .slice(0, snake.length);
       }
     }
   } else if (action.type === ENQUEUE_TURN) {
@@ -502,7 +510,6 @@ module.exports = function(state, action = {}) {
       nextState.directions = state.directions.concat(nextDirection);
     }
   }
-
   return Object.assign(state, nextState);
 };
 
@@ -699,6 +706,9 @@ const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
 const { renderAlert } = require("./renderAlert");
 const { styleLayout } = require("./styleLayout");
+const addKeydownListeners = require("./controls/addKeydownListeners");
+const resizeCanvas = require("./helpers/resizeCanvas");
+const DOM = require("./dom");
 
 function render(state, dom) {
   styleLayout(dom);
@@ -709,10 +719,13 @@ function render(state, dom) {
 }
 
 module.exports = {
-  render
+  render,
+  addKeydownListeners,
+  resizeCanvas,
+  DOM
 };
 
-},{"./renderAlert":24,"./renderCanvas":25,"./renderMessage":26,"./renderScore":27,"./styleLayout":28}],24:[function(require,module,exports){
+},{"./controls/addKeydownListeners":19,"./dom":20,"./helpers/resizeCanvas":22,"./renderAlert":24,"./renderCanvas":25,"./renderMessage":26,"./renderScore":27,"./styleLayout":28}],24:[function(require,module,exports){
 const { fill } = require("./helpers/renderHelpers");
 const { gameOverColor } = require("./colors").darkViolet;
 
@@ -812,8 +825,12 @@ module.exports = createStore(combinedReducers, initialState);
 
 },{"./logic/helpers/createStore":9,"./logic/reducers":12,"./logic/reducers/initialState":13}],30:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
-const { render } = require("./presentation");
-const addKeydownListeners = require("./presentation/controls/addKeydownListeners");
+const {
+  render,
+  addKeydownListeners,
+  resizeCanvas,
+  DOM
+} = require("./presentation");
 const {
   enqueueTurn,
   startGame,
@@ -821,8 +838,6 @@ const {
   resumeGame,
   resizeBoard
 } = require("./logic/actions");
-const DOM = require("./presentation/dom");
-const resizeCanvas = require("./presentation/helpers/resizeCanvas");
 
 let onLoad;
 const renderOnCanvas = () => render(getState(), DOM);
@@ -835,22 +850,16 @@ const resizeBoardToCanvas = () =>
     resizeCanvas
   );
 
-if (document.body.clientWidth > 1024) {
-  onLoad = () => {
-    addKeydownListeners(
-      getState,
-      startGame,
-      resumeGame,
-      pauseGame,
-      enqueueTurn
-    );
-    resizeBoardToCanvas();
-    renderOnCanvas();
-  };
-}
+// if (document.body.clientWidth > 1024) {
+onLoad = () => {
+  addKeydownListeners(getState, startGame, resumeGame, pauseGame, enqueueTurn);
+  resizeBoardToCanvas();
+  renderOnCanvas();
+};
+// }
 
 subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
 window.addEventListener("resize", resizeBoardToCanvas);
 
-},{"./logic/actions":2,"./presentation":23,"./presentation/controls/addKeydownListeners":19,"./presentation/dom":20,"./presentation/helpers/resizeCanvas":22,"./store":29}]},{},[30]);
+},{"./logic/actions":2,"./presentation":23,"./store":29}]},{},[30]);

@@ -3,6 +3,9 @@ const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
 const { renderAlert } = require("./renderAlert");
 const { styleLayout } = require("./styleLayout");
+const addKeydownListeners = require("./controls/addKeydownListeners");
+const resizeCanvas = require("./helpers/resizeCanvas");
+const DOM = require("./dom");
 
 function render(state, dom) {
   styleLayout(dom);
@@ -13,5 +16,8 @@ function render(state, dom) {
 }
 
 module.exports = {
-  render
+  render,
+  addKeydownListeners,
+  resizeCanvas,
+  DOM
 };

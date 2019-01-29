@@ -1,6 +1,10 @@
 const { getState, subscribe } = require("./store");
-const { render } = require("./presentation");
-const addKeydownListeners = require("./presentation/controls/addKeydownListeners");
+const {
+  render,
+  addKeydownListeners,
+  resizeCanvas,
+  DOM
+} = require("./presentation");
 const {
   enqueueTurn,
   startGame,
@@ -8,8 +12,6 @@ const {
   resumeGame,
   resizeBoard
 } = require("./logic/actions");
-const DOM = require("./presentation/dom");
-const resizeCanvas = require("./presentation/helpers/resizeCanvas");
 
 let onLoad;
 const renderOnCanvas = () => render(getState(), DOM);
@@ -22,19 +24,13 @@ const resizeBoardToCanvas = () =>
     resizeCanvas
   );
 
-if (document.body.clientWidth > 1024) {
-  onLoad = () => {
-    addKeydownListeners(
-      getState,
-      startGame,
-      resumeGame,
-      pauseGame,
-      enqueueTurn
-    );
-    resizeBoardToCanvas();
-    renderOnCanvas();
-  };
-}
+// if (document.body.clientWidth > 1024) {
+onLoad = () => {
+  addKeydownListeners(getState, startGame, resumeGame, pauseGame, enqueueTurn);
+  resizeBoardToCanvas();
+  renderOnCanvas();
+};
+// }
 
 subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);

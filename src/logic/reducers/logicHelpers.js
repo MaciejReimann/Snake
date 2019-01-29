@@ -31,6 +31,7 @@ function willCrash(state) {
 }
 
 function willEat(state) {
+  console.log(state.food);
   return arePointsEqual(nextHead(state), state.food);
 }
 
@@ -44,9 +45,19 @@ function placeFood(state) {
       id: nextId
     }
   );
-  return state.snake.find(p => arePointsEqual(newFood, p))
-    ? placeFood(state)
-    : newFood;
+  if (state.snake.some(p => arePointsEqual(newFood, p))) {
+    console.log("overlap!!!!!!!");
+    placeFood(state);
+  }
+  if (
+    newFood.x > boardWidth.x ||
+    newFood.x < boardWidth.x ||
+    newFood.y > boardWidth.y ||
+    newFood.y < boardWidth.y
+  ) {
+    console.log("dupa");
+  }
+  return newFood;
 }
 
 module.exports = {
