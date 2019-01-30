@@ -2,6 +2,8 @@ const { getState, subscribe } = require("./store");
 const {
   render,
   addKeydownListeners,
+  addSwipeListeners,
+  addTapListeners,
   resizeCanvas,
   DOM
 } = require("./presentation");
@@ -24,14 +26,29 @@ const resizeBoardToCanvas = () =>
     resizeCanvas
   );
 
-// if (document.body.clientWidth > 1024) {
-onLoad = () => {
-  addKeydownListeners(getState, startGame, resumeGame, pauseGame, enqueueTurn);
+const resizeAndRender = () => {
   resizeBoardToCanvas();
   renderOnCanvas();
 };
-// }
+
+if (document.body.clientWidth > 1024) {
+  onLoad = () => {
+    addKeydownListeners(
+      getState,
+      startGame,
+      resumeGame,
+      pauseGame,
+      enqueueTurn
+    );
+  };
+} else {
+  onLoad = () => {
+    addSwipeListeners(getState(), enqueueTurn);
+    addTapListeners(getState, startGame, resumeGame, pauseGame);
+  };
+}
 
 subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
+window.addEventListener("load", resizeAndRender);
 window.addEventListener("resize", resizeBoardToCanvas);
