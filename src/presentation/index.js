@@ -4,6 +4,8 @@ const { renderMessage } = require("./renderMessage");
 const { renderAlert } = require("./renderAlert");
 const { styleLayout } = require("./styleLayout");
 const addKeydownListeners = require("./controls/addKeydownListeners");
+const addSwipeListeners = require("./controls/addSwipeListeners");
+const addTapListeners = require("./controls/addTapListeners");
 const resizeCanvas = require("./helpers/resizeCanvas");
 const DOM = require("./dom");
 
@@ -18,6 +20,8 @@ function render(state, dom) {
 module.exports = {
   render,
   addKeydownListeners,
+  addSwipeListeners,
+  addTapListeners,
   resizeCanvas,
   DOM
 };

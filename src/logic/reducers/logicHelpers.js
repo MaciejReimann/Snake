@@ -34,7 +34,8 @@ module.exports = function Snake(state) {
       }
     );
     if (state.snake.some(p => arePointsEqual(newFood, p))) {
-      _placeFood(state);
+      console.log("overlap!!!!!!!!!!!!!!!!!");
+      return _placeFood(state);
     }
     return newFood;
   }

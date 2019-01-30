@@ -88,7 +88,7 @@ module.exports = {
   controlInterval
 };
 
-},{"../../store":29,"../helpers/Gameloop":6,"../reducers/initialState":12,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+},{"../../store":31,"../helpers/Gameloop":6,"../reducers/initialState":12,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
@@ -111,7 +111,7 @@ module.exports = {
   enqueueTurn
 };
 
-},{"../../store":29,"./constants":1}],5:[function(require,module,exports){
+},{"../../store":31,"./constants":1}],5:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { RESIZE_BOARD } = require("../actions/constants");
 
@@ -133,7 +133,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../../store":29,"../actions/constants":1}],6:[function(require,module,exports){
+},{"../../store":31,"../actions/constants":1}],6:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -391,7 +391,8 @@ module.exports = function Snake(state) {
       }
     );
     if (state.snake.some(p => arePointsEqual(newFood, p))) {
-      _placeFood(state);
+      console.log("overlap!!!!!!!!!!!!!!!!!");
+      return _placeFood(state);
     }
     return newFood;
   }
@@ -579,6 +580,60 @@ module.exports = (state, start, resume, pause, turn) =>
   });
 
 },{}],20:[function(require,module,exports){
+let startX = 0;
+let endX = 0;
+let startY = 0;
+let endY = 0;
+
+module.exports = (state, turn) => {
+  window.addEventListener("touchmove", e => {
+    if (startX === 0) {
+      startX = e.targetTouches[0].screenX;
+      startY = e.targetTouches[0].screenY;
+    }
+    endX = e.targetTouches[0].screenX;
+    endY = e.targetTouches[0].screenY;
+    if (startX - endX > 50 && Math.abs(startY - endY) < 30) {
+      console.log("left");
+      turn("LEFT");
+    } else if (startX - endX < -50 && Math.abs(startY - endY) < 30) {
+      console.log("right");
+      turn("RIGHT");
+    } else if (Math.abs(startX - endX) < 30 && startY - endY < -30) {
+      console.log("down");
+      turn("DOWN");
+    } else if (Math.abs(startX - endX) < 30 && startY - endY > 30) {
+      console.log("up");
+      turn("UP");
+    }
+  });
+  window.addEventListener("touchend", e => {
+    startX = 0;
+    endX = 0;
+    startY = 0;
+    endY = 0;
+  });
+};
+
+},{}],21:[function(require,module,exports){
+let timeStamp = 0;
+module.exports = (state, start, resume, pause) =>
+  window.addEventListener("touchend", e => {
+    if (timeStamp === 0) {
+      timeStamp = e.timeStamp;
+    } else if (e.timeStamp - timeStamp < 500) {
+      if (!state().isStarted || state().isOver) {
+        start();
+      } else if (state().isPaused) {
+        resume();
+      } else {
+        pause();
+      }
+    }
+    timeStamp = e.timeStamp;
+  });
+
+},{}],22:[function(require,module,exports){
 module.exports = {
   header: document.querySelector(".header"),
   canvasContainer: document.querySelector(".canvas-container"),
@@ -588,7 +643,7 @@ module.exports = {
   alertContainer: document.querySelector(".page-foreground")
 };
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -691,20 +746,22 @@ module.exports = {
 
 
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 module.exports = function(canvas, width, height) {
   canvas.width = width;
   canvas.height = height;
   return canvas;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
 const { renderAlert } = require("./renderAlert");
 const { styleLayout } = require("./styleLayout");
 const addKeydownListeners = require("./controls/addKeydownListeners");
+const addSwipeListeners = require("./controls/addSwipeListeners");
+const addTapListeners = require("./controls/addTapListeners");
 const resizeCanvas = require("./helpers/resizeCanvas");
 const DOM = require("./dom");
 
@@ -719,11 +776,13 @@ function render(state, dom) {
 module.exports = {
   render,
   addKeydownListeners,
+  addSwipeListeners,
+  addTapListeners,
   resizeCanvas,
   DOM
 };
 
-},{"./controls/addKeydownListeners":19,"./dom":20,"./helpers/resizeCanvas":22,"./renderAlert":24,"./renderCanvas":25,"./renderMessage":26,"./renderScore":27,"./styleLayout":28}],24:[function(require,module,exports){
+},{"./controls/addKeydownListeners":19,"./controls/addSwipeListeners":20,"./controls/addTapListeners":21,"./dom":22,"./helpers/resizeCanvas":24,"./renderAlert":26,"./renderCanvas":27,"./renderMessage":28,"./renderScore":29,"./styleLayout":30}],26:[function(require,module,exports){
 const { fill } = require("./helpers/renderHelpers");
 const { gameOverColor } = require("./colors").darkViolet;
 
@@ -742,7 +801,7 @@ module.exports = {
   renderAlert
 };
 
-},{"./colors":18,"./helpers/renderHelpers":21}],25:[function(require,module,exports){
+},{"./colors":18,"./helpers/renderHelpers":23}],27:[function(require,module,exports){
 const {
   clear,
   drawRectangularGrid,
@@ -770,7 +829,7 @@ module.exports = {
   renderCanvas
 };
 
-},{"./colors":18,"./helpers/renderHelpers":21}],26:[function(require,module,exports){
+},{"./colors":18,"./helpers/renderHelpers":23}],28:[function(require,module,exports){
 function renderMessage(state, container) {
   const { isStarted, isPaused, isOver } = state;
   let message;
@@ -790,7 +849,7 @@ module.exports = {
   renderMessage
 };
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 function renderScore(state, container) {
   container.textContent = state.score;
 }
@@ -799,7 +858,7 @@ module.exports = {
   renderScore
 };
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 const { gridColor, textColor } = require("./colors").darkViolet;
 
 function styleLayout(dom) {
@@ -814,18 +873,20 @@ module.exports = {
   styleLayout
 };
 
-},{"./colors":18}],29:[function(require,module,exports){
+},{"./colors":18}],31:[function(require,module,exports){
 const createStore = require("./logic/helpers/createStore");
 const combinedReducers = require("./logic/reducers");
 const initialState = require("./logic/reducers/initialState");
 
 module.exports = createStore(combinedReducers, initialState);
 
-},{"./logic/helpers/createStore":9,"./logic/reducers":11,"./logic/reducers/initialState":12}],30:[function(require,module,exports){
+},{"./logic/helpers/createStore":9,"./logic/reducers":11,"./logic/reducers/initialState":12}],32:[function(require,module,exports){
 const { getState, subscribe } = require("./store");
 const {
   render,
   addKeydownListeners,
+  addSwipeListeners,
+  addTapListeners,
   resizeCanvas,
   DOM
 } = require("./presentation");
@@ -848,16 +909,31 @@ const resizeBoardToCanvas = () =>
     resizeCanvas
   );
 
-// if (document.body.clientWidth > 1024) {
-onLoad = () => {
-  addKeydownListeners(getState, startGame, resumeGame, pauseGame, enqueueTurn);
+const resizeAndRender = () => {
   resizeBoardToCanvas();
   renderOnCanvas();
 };
-// }
+
+if (document.body.clientWidth > 1024) {
+  onLoad = () => {
+    addKeydownListeners(
+      getState,
+      startGame,
+      resumeGame,
+      pauseGame,
+      enqueueTurn
+    );
+  };
+} else {
+  onLoad = () => {
+    addSwipeListeners(getState(), enqueueTurn);
+    addTapListeners(getState, startGame, resumeGame, pauseGame);
+  };
+}
 
 subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
+window.addEventListener("load", resizeAndRender);
 window.addEventListener("resize", resizeBoardToCanvas);
 
-},{"./logic/actions":2,"./presentation":23,"./store":29}]},{},[30]);
+},{"./logic/actions":2,"./presentation":25,"./store":31}]},{},[32]);
