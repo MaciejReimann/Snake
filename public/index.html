@@ -19,6 +19,19 @@
     </header>
     <div class="page-foreground"></div>
     <div class="canvas-container"><canvas class="canvas"></canvas></div>
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCSQSf-gUuH2itTy108f0UkqZkkwmshG6A",
+        authDomain: "snake-pwa.firebaseapp.com",
+        databaseURL: "https://snake-pwa.firebaseio.com",
+        projectId: "snake-pwa",
+        storageBucket: "snake-pwa.appspot.com",
+        messagingSenderId: "659278996951"
+      };
+      firebase.initializeApp(config);
+    </script>
     <script src="bundle.js"></script>
   </body>
 </html>
