@@ -1,0 +1,29 @@
+{
+  "short_name": "Snake",
+  "name": "Beautiful Snake For Mobile",
+  "icons": [
+    {
+      "src": "icons/snake_512",
+      "sizes": " 64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/snake_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#1f2d42",
+  "theme": {
+    "images": {
+      "headerURL": "icons/snake_512.png"
+    },
+    "colors": {
+      "accentcolor": "#CF723F",
+      "textcolor": "#000"
+    }
+  }
+}
