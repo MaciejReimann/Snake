@@ -1,3 +1,4 @@
+const registerServiceWorker = require("./registerServiceWorker");
 const { getState, subscribe } = require("./store");
 const {
   render,
@@ -52,3 +53,4 @@ subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
 window.addEventListener("load", resizeAndRender);
 window.addEventListener("resize", resizeBoardToCanvas);
+registerServiceWorker();

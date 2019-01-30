@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="Description" content="Beautiful snake game" />
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="styles/style.css" />
   </head>
   <body class="page">
+    <noscript> You need to enable JavaScript to run this app. </noscript>
     <header class="header">
       <div class="options"></div>
       <div class="message"></div>
@@ -24,8 +25,8 @@
     </header>
     <div class="page-foreground"></div>
     <div class="canvas-container"><canvas class="canvas"></canvas></div>
-    <!-- <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script> -->
-    <!-- <script>
+    <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+    <script>
       // Initialize Firebase
       var config = {
         apiKey: "AIzaSyCSQSf-gUuH2itTy108f0UkqZkkwmshG6A",
@@ -36,7 +37,8 @@
         messagingSenderId: "659278996951"
       };
       firebase.initializeApp(config);
-    </script> -->
+    </script>
+    <script src="snake-service-worker.js"></script>
     <script src="bundle.js"></script>
   </body>
 </html>

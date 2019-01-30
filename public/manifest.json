@@ -15,14 +15,14 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#1f2d42",
+  "theme_color": "#00A35C",
+  "background_color": "#00A35C",
   "theme": {
     "images": {
       "headerURL": "icons/snake_512.png"
     },
     "colors": {
-      "accentcolor": "#CF723F",
+      "accentcolor": "#00A35C",
       "textcolor": "#000"
     }
   }

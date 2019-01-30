@@ -1,4 +1,190 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],2:[function(require,module,exports){
 module.exports = {
   // view actions
   RESIZE_BOARD: "RESIZE_BOARD",
@@ -14,7 +200,7 @@ module.exports = {
   ENQUEUE_TURN: "ENQUEUE_TURN"
 };
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 const {
   startGame,
   pauseGame,
@@ -34,7 +220,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"./loopActions":3,"./snakeActions":4,"./viewActions":5}],3:[function(require,module,exports){
+},{"./loopActions":4,"./snakeActions":5,"./viewActions":6}],4:[function(require,module,exports){
 const { dispatch, getState } = require("../../store");
 const { tempo } = require("../reducers/initialState");
 const {
@@ -88,7 +274,7 @@ module.exports = {
   controlInterval
 };
 
-},{"../../store":31,"../helpers/Gameloop":6,"../reducers/initialState":12,"./constants":1,"./snakeActions":4}],4:[function(require,module,exports){
+},{"../../store":33,"../helpers/Gameloop":7,"../reducers/initialState":13,"./constants":2,"./snakeActions":5}],5:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("./constants");
 
@@ -111,7 +297,7 @@ module.exports = {
   enqueueTurn
 };
 
-},{"../../store":31,"./constants":1}],5:[function(require,module,exports){
+},{"../../store":33,"./constants":2}],6:[function(require,module,exports){
 const { dispatch } = require("../../store");
 const { RESIZE_BOARD } = require("../actions/constants");
 
@@ -133,7 +319,7 @@ module.exports = {
   resizeBoard
 };
 
-},{"../../store":31,"../actions/constants":1}],6:[function(require,module,exports){
+},{"../../store":33,"../actions/constants":2}],7:[function(require,module,exports){
 const intervals = [];
 
 module.exports = function Gameloop(initialInterval, callback) {
@@ -170,7 +356,7 @@ module.exports = function Gameloop(initialInterval, callback) {
   return { start, stop, changeInterval };
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 function getLastItem(array) {
     return array.length > 0
@@ -181,7 +367,7 @@ function getLastItem(array) {
 module.exports = {
     getLastItem
 }
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function combineReducers(reducers) {
     let combinedState = {};
     // Leave only valid reducers, 
@@ -193,7 +379,7 @@ module.exports = function combineReducers(reducers) {
         return combinedState;
     };
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // redux-like state store
 module.exports = function createStore(reducer, initialState) {
   let state = initialState || {};
@@ -222,7 +408,7 @@ module.exports = function createStore(reducer, initialState) {
   return { getState, dispatch, subscribe };
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function isPoint(something) {
   return (
     typeof something === "object" &&
@@ -321,7 +507,7 @@ module.exports = {
   rotatePointOnGlobalZero
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const combineReducers = require("../helpers/combineReducers");
 const loopReducer = require("./loopReducer");
 const snakeReducer = require("./snakeReducer");
@@ -333,7 +519,7 @@ module.exports = combineReducers({
   viewReducer
 });
 
-},{"../helpers/combineReducers":8,"./loopReducer":14,"./snakeReducer":16,"./viewReducer":17}],12:[function(require,module,exports){
+},{"../helpers/combineReducers":9,"./loopReducer":15,"./snakeReducer":17,"./viewReducer":18}],13:[function(require,module,exports){
 const { RIGHT } = require("./possibleDirections");
 const { createPoint } = require("../helpers/pointHelpers");
 
@@ -354,7 +540,7 @@ module.exports = {
   score: 0
 };
 
-},{"../helpers/pointHelpers":10,"./possibleDirections":15}],13:[function(require,module,exports){
+},{"../helpers/pointHelpers":11,"./possibleDirections":16}],14:[function(require,module,exports){
 const {
   createPoint,
   createRandomPoint,
@@ -431,7 +617,7 @@ module.exports = function Snake(state) {
   };
 };
 
-},{"../helpers/pointHelpers":10}],14:[function(require,module,exports){
+},{"../helpers/pointHelpers":11}],15:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -457,7 +643,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"./initialState":12}],15:[function(require,module,exports){
+},{"../actions/constants":2,"./initialState":13}],16:[function(require,module,exports){
 module.exports = {
   UP: {
     x: 0,
@@ -477,7 +663,7 @@ module.exports = {
   }
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
 const { getLastItem } = require("../helpers/arrayHelpers");
 const possibleDirections = require("./possibleDirections");
@@ -512,7 +698,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"../helpers/arrayHelpers":7,"./logicHelpers":13,"./possibleDirections":15}],17:[function(require,module,exports){
+},{"../actions/constants":2,"../helpers/arrayHelpers":8,"./logicHelpers":14,"./possibleDirections":16}],18:[function(require,module,exports){
 const {
   RESIZE_BOARD,
   // CHANGE_RESOLUTION,
@@ -532,7 +718,7 @@ module.exports = function(state, action = {}) {
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1}],18:[function(require,module,exports){
+},{"../actions/constants":2}],19:[function(require,module,exports){
 module.exports = {
   darkViolet: {
     snakeColor: "rgba(133, 201, 35, 0.78)",
@@ -543,7 +729,7 @@ module.exports = {
   }
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = (state, start, resume, pause, turn) =>
   window.addEventListener("keydown", e => {
     if (e.key === " ") {
@@ -579,7 +765,7 @@ module.exports = (state, start, resume, pause, turn) =>
     }
   });
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 let startX = 0;
 let endX = 0;
 let startY = 0;
@@ -625,7 +811,7 @@ module.exports = (state, turn) => {
   });
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 let timeStamp = 0;
 module.exports = (state, start, resume, pause) =>
   window.addEventListener("touchend", e => {
@@ -643,7 +829,7 @@ module.exports = (state, start, resume, pause) =>
     timeStamp = e.timeStamp;
   });
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports = {
   header: document.querySelector(".header"),
   canvasContainer: document.querySelector(".canvas-container"),
@@ -653,7 +839,7 @@ module.exports = {
   alertContainer: document.querySelector(".page-foreground")
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 
 function drawVerticalLine(canvas, offset, color, width) {
   const ctx = canvas.getContext('2d');
@@ -756,14 +942,14 @@ module.exports = {
 
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 module.exports = function(canvas, width, height) {
   canvas.width = width;
   canvas.height = height;
   return canvas;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 const { renderCanvas } = require("./renderCanvas");
 const { renderScore } = require("./renderScore");
 const { renderMessage } = require("./renderMessage");
@@ -792,7 +978,7 @@ module.exports = {
   DOM
 };
 
-},{"./controls/addKeydownListeners":19,"./controls/addSwipeListeners":20,"./controls/addTapListeners":21,"./dom":22,"./helpers/resizeCanvas":24,"./renderAlert":26,"./renderCanvas":27,"./renderMessage":28,"./renderScore":29,"./styleLayout":30}],26:[function(require,module,exports){
+},{"./controls/addKeydownListeners":20,"./controls/addSwipeListeners":21,"./controls/addTapListeners":22,"./dom":23,"./helpers/resizeCanvas":25,"./renderAlert":27,"./renderCanvas":28,"./renderMessage":29,"./renderScore":30,"./styleLayout":31}],27:[function(require,module,exports){
 const { fill } = require("./helpers/renderHelpers");
 const { gameOverColor } = require("./colors").darkViolet;
 
@@ -811,7 +997,7 @@ module.exports = {
   renderAlert
 };
 
-},{"./colors":18,"./helpers/renderHelpers":23}],27:[function(require,module,exports){
+},{"./colors":19,"./helpers/renderHelpers":24}],28:[function(require,module,exports){
 const {
   clear,
   drawRectangularGrid,
@@ -839,7 +1025,7 @@ module.exports = {
   renderCanvas
 };
 
-},{"./colors":18,"./helpers/renderHelpers":23}],28:[function(require,module,exports){
+},{"./colors":19,"./helpers/renderHelpers":24}],29:[function(require,module,exports){
 function renderMessage(state, container) {
   const { isStarted, isPaused, isOver } = state;
   let message;
@@ -859,7 +1045,7 @@ module.exports = {
   renderMessage
 };
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 function renderScore(state, container) {
   container.textContent = state.score;
 }
@@ -868,7 +1054,7 @@ module.exports = {
   renderScore
 };
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 const { gridColor, textColor } = require("./colors").darkViolet;
 
 function styleLayout(dom) {
@@ -883,14 +1069,120 @@ module.exports = {
   styleLayout
 };
 
-},{"./colors":18}],31:[function(require,module,exports){
+},{"./colors":19}],32:[function(require,module,exports){
+(function (process){
+const isLocalhost = Boolean(
+  window.location.hostname === "localhost" ||
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === "[::1]" ||
+    // 127.0.0.1/8 is considered localhost for IPv4.
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+    )
+);
+
+function registerValidSW(swUrl) {
+  console.log(swUrl);
+  navigator.serviceWorker
+    .register(swUrl)
+    .then(registration => {
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === "installed") {
+            if (navigator.serviceWorker.controller) {
+              // At this point, the old content will have been purged and
+              // the fresh content will have been added to the cache.
+              // It's the perfect time to display a "New content is
+              // available; please refresh." message in your web app.
+              console.log("New content is available; please refresh.");
+            } else {
+              // At this point, everything has been precached.
+              // It's the perfect time to display a
+              // "Content is cached for offline use." message.
+              console.log("Content is cached for offline use.");
+            }
+          }
+        };
+      };
+    })
+    .catch(error => {
+      console.error("Error during service worker registration:", error);
+    });
+}
+
+function checkValidServiceWorker(swUrl) {
+  // Check if the service worker can be found. If it can't reload the page.
+  fetch(swUrl)
+    .then(response => {
+      // Ensure service worker exists, and that we really are getting a JS file.
+      if (
+        response.status === 404 ||
+        response.headers.get("content-type").indexOf("javascript") === -1
+      ) {
+        // No service worker found. Probably a different app. Reload the page.
+        navigator.serviceWorker.ready.then(registration => {
+          registration.unregister().then(() => {
+            window.location.reload();
+          });
+        });
+      } else {
+        // Service worker found. Proceed as normal.
+        registerValidSW(swUrl);
+      }
+    })
+    .catch(() => {
+      console.log(
+        "No internet connection found. App is running in offline mode."
+      );
+    });
+}
+
+module.exports = function register() {
+  if ("serviceWorker" in navigator) {
+    // The URL constructor is available in all browsers that support SW.
+    const publicUrl = new URL(process.env.PUBLIC_URL, window.location);
+    // if (publicUrl.origin !== window.location.origin) {
+    //   // Our service worker won't work if PUBLIC_URL is on a different origin
+    //   // from what our page is served on. This might happen if a CDN is used to
+    //   // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
+    //   return;
+    // }
+
+    window.addEventListener("load", () => {
+      // const swUrl = `${process.env.PUBLIC_URL}/tetris-service-worker.js`;
+
+      if (isLocalhost) {
+        // This is running on localhost. Lets check if a service worker still exists or not.
+        checkValidServiceWorker("/snake-service-worker.js");
+
+        // Add some additional logging to localhost, pointing developers to the
+        // service worker/PWA documentation.
+        navigator.serviceWorker.ready.then(() => {
+          console.log(
+            "This web app is being served cache-first by a service " +
+              "worker. To learn more, visit https://goo.gl/SC7cgQ"
+          );
+        });
+      } else {
+        // Is not local host. Just register service worker
+
+        registerValidSW("/snake-service-worker.js");
+      }
+    });
+  }
+};
+
+}).call(this,require('_process'))
+},{"_process":1}],33:[function(require,module,exports){
 const createStore = require("./logic/helpers/createStore");
 const combinedReducers = require("./logic/reducers");
 const initialState = require("./logic/reducers/initialState");
 
 module.exports = createStore(combinedReducers, initialState);
 
-},{"./logic/helpers/createStore":9,"./logic/reducers":11,"./logic/reducers/initialState":12}],32:[function(require,module,exports){
+},{"./logic/helpers/createStore":10,"./logic/reducers":12,"./logic/reducers/initialState":13}],34:[function(require,module,exports){
+const registerServiceWorker = require("./registerServiceWorker");
 const { getState, subscribe } = require("./store");
 const {
   render,
@@ -945,5 +1237,6 @@ subscribe([renderOnCanvas]);
 window.addEventListener("load", onLoad);
 window.addEventListener("load", resizeAndRender);
 window.addEventListener("resize", resizeBoardToCanvas);
+registerServiceWorker();
 
-},{"./logic/actions":2,"./presentation":25,"./store":31}]},{},[32]);
+},{"./logic/actions":3,"./presentation":26,"./registerServiceWorker":32,"./store":33}]},{},[34]);
