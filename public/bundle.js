@@ -355,64 +355,82 @@ module.exports = {
 };
 
 },{"../helpers/pointHelpers":10,"./possibleDirections":15}],13:[function(require,module,exports){
-const { getLastItem } = require("../helpers/arrayHelpers");
 const {
   createPoint,
   createRandomPoint,
   arePointsEqual
 } = require("../helpers/pointHelpers");
 
-function turnIsValid(state, nextDirection) {
-  return (
-    nextDirection.x + getLastItem(state.directions).x !== 0 ||
-    nextDirection.y + getLastItem(state.directions).y !== 0
-  );
-}
+module.exports = function Snake(state) {
+  const {
+    boardWidth,
+    boardHeight,
+    resolution,
+    directions,
+    snake,
+    score,
+    tempoChangeRate,
+    food
+  } = state;
 
-function nextHead(state) {
-  const { boardWidth, boardHeight, resolution, directions, snake } = state;
-  const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
-  return createPoint(
-    mod(boardWidth / resolution, snake[0].x + directions[0].x),
-    mod(boardHeight / resolution, snake[0].y + directions[0].y)
-  );
-}
-
-function willCrash(state) {
-  return state.snake.find(p => arePointsEqual(p, nextHead(state)));
-}
-
-function willEat(state) {
-  console.log(state.food);
-  return arePointsEqual(nextHead(state), state.food);
-}
-
-function placeFood(state) {
-  const { boardWidth, boardHeight, resolution, food } = state;
-  const nextId = food.prop.id + 1;
-  const newFood = createRandomPoint(
-    boardWidth / resolution,
-    boardHeight / resolution,
-    {
-      id: nextId
-    }
-  );
-  if (state.snake.some(p => arePointsEqual(newFood, p))) {
-    console.log("overlap!!!!!!!!!!!!");
-    return placeFood(state);
+  function _moveHead() {
+    const mod = (x, y) => ((y % x) + x) % x; // http://bit.ly/2oF4mQ7
+    return createPoint(
+      mod(boardWidth / resolution, snake[0].x + directions[0].x),
+      mod(boardHeight / resolution, snake[0].y + directions[0].y)
+    );
   }
-  return newFood;
-}
 
-module.exports = {
-  turnIsValid,
-  nextHead,
-  willCrash,
-  willEat,
-  placeFood
+  function _placeFood(state) {
+    const nextId = food.prop.id + 1;
+    const newFood = createRandomPoint(
+      boardWidth / resolution,
+      boardHeight / resolution,
+      {
+        id: nextId
+      }
+    );
+    if (state.snake.some(p => arePointsEqual(newFood, p))) {
+      _placeFood(state);
+    }
+    return newFood;
+  }
+
+  function crashes() {
+    return snake.find(p => arePointsEqual(p, _moveHead(state)));
+  }
+
+  function eats() {
+    return arePointsEqual(_moveHead(state), food);
+  }
+
+  function moves(nextState) {
+    return Object.assign(nextState, {
+      tempoChangeRate: 1,
+      snake: [_moveHead(state)].concat(snake).slice(0, snake.length)
+    });
+  }
+
+  function grows(nextState) {
+    if (food.prop.id % 2 === 0 && tempoChangeRate === 1) {
+      nextState.tempoChangeRate = 0.95;
+    }
+    return Object.assign(nextState, {
+      food: _placeFood(state),
+      snake: [_moveHead(state)].concat(snake),
+      score: score + snake.length
+    });
+  }
+
+  return {
+    crashes,
+    eats,
+    moves,
+    grows
+  };
 };
 
-},{"../helpers/arrayHelpers":7,"../helpers/pointHelpers":10}],14:[function(require,module,exports){
+},{"../helpers/pointHelpers":10}],14:[function(require,module,exports){
 const {
   START_GAME,
   PAUSE_GAME,
@@ -460,51 +478,40 @@ module.exports = {
 
 },{}],16:[function(require,module,exports){
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
+const { getLastItem } = require("../helpers/arrayHelpers");
 const possibleDirections = require("./possibleDirections");
-const {
-  turnIsValid,
-  nextHead,
-  willCrash,
-  willEat,
-  placeFood
-} = require("./logicHelpers");
+const Snake = require("./logicHelpers");
 
 module.exports = function(state, action = {}) {
-  const { snake, directions, score, food, tempoChangeRate } = state;
+  const { type, payload } = action;
+  const { eats, crashes, moves, grows } = Snake(state);
   let nextState = {};
-  if (action.type === MOVE_FORWARD) {
-    // remove first move from the queue
-    if (directions.length > 1) {
-      nextState.directions = directions.slice(1, directions.length);
+  if (type === MOVE_FORWARD) {
+    if (state.directions.length > 1) {
+      nextState.directions = state.directions.slice(1, state.directions.length);
     }
-    if (willCrash(state)) {
+    if (crashes()) {
       nextState.isOver = true;
     } else {
-      if (willEat(state)) {
-        nextState.food = placeFood(state);
-        nextState.snake = [nextHead(state)].concat(snake);
-        nextState.score = score + snake.length;
-        if (food.prop.id % 2 === 0 && tempoChangeRate === 1) {
-          nextState.tempoChangeRate = 0.95;
-        }
-        // let the head be followed by the rest of the snake
+      if (eats()) {
+        nextState = grows(nextState);
       } else {
-        nextState.tempoChangeRate = 1;
-        nextState.snake = [nextHead(state)]
-          .concat(snake)
-          .slice(0, snake.length);
+        nextState = moves(nextState);
       }
     }
-  } else if (action.type === ENQUEUE_TURN) {
-    const nextDirection = possibleDirections[action.payload];
-    if (turnIsValid(state, nextDirection)) {
-      nextState.directions = directions.concat(nextDirection);
+  } else if (type === ENQUEUE_TURN) {
+    const nextDirection = possibleDirections[payload];
+    const isTurnValid =
+      nextDirection.x + getLastItem(state.directions).x !== 0 ||
+      nextDirection.y + getLastItem(state.directions).y !== 0;
+    if (isTurnValid) {
+      nextState.directions = state.directions.concat(nextDirection);
     }
   }
   return Object.assign(state, nextState);
 };
 
-},{"../actions/constants":1,"./logicHelpers":13,"./possibleDirections":15}],17:[function(require,module,exports){
+},{"../actions/constants":1,"../helpers/arrayHelpers":7,"./logicHelpers":13,"./possibleDirections":15}],17:[function(require,module,exports){
 const {
   RESIZE_BOARD,
   // CHANGE_RESOLUTION,

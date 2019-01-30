@@ -1,43 +1,32 @@
 const { MOVE_FORWARD, ENQUEUE_TURN } = require("../actions/constants");
+const { getLastItem } = require("../helpers/arrayHelpers");
 const possibleDirections = require("./possibleDirections");
-const {
-  turnIsValid,
-  nextHead,
-  willCrash,
-  willEat,
-  placeFood
-} = require("./logicHelpers");
+const Snake = require("./logicHelpers");
 
 module.exports = function(state, action = {}) {
-  const { snake, directions, score, food, tempoChangeRate } = state;
+  const { type, payload } = action;
+  const { eats, crashes, moves, grows } = Snake(state);
   let nextState = {};
-  if (action.type === MOVE_FORWARD) {
-    // remove first move from the queue
-    if (directions.length > 1) {
-      nextState.directions = directions.slice(1, directions.length);
+  if (type === MOVE_FORWARD) {
+    if (state.directions.length > 1) {
+      nextState.directions = state.directions.slice(1, state.directions.length);
     }
-    if (willCrash(state)) {
+    if (crashes()) {
       nextState.isOver = true;
     } else {
-      if (willEat(state)) {
-        nextState.food = placeFood(state);
-        nextState.snake = [nextHead(state)].concat(snake);
-        nextState.score = score + snake.length;
-        if (food.prop.id % 2 === 0 && tempoChangeRate === 1) {
-          nextState.tempoChangeRate = 0.95;
-        }
-        // let the head be followed by the rest of the snake
+      if (eats()) {
+        nextState = grows(nextState);
       } else {
-        nextState.tempoChangeRate = 1;
-        nextState.snake = [nextHead(state)]
-          .concat(snake)
-          .slice(0, snake.length);
+        nextState = moves(nextState);
       }
     }
-  } else if (action.type === ENQUEUE_TURN) {
-    const nextDirection = possibleDirections[action.payload];
-    if (turnIsValid(state, nextDirection)) {
-      nextState.directions = directions.concat(nextDirection);
+  } else if (type === ENQUEUE_TURN) {
+    const nextDirection = possibleDirections[payload];
+    const isTurnValid =
+      nextDirection.x + getLastItem(state.directions).x !== 0 ||
+      nextDirection.y + getLastItem(state.directions).y !== 0;
+    if (isTurnValid) {
+      nextState.directions = state.directions.concat(nextDirection);
     }
   }
   return Object.assign(state, nextState);
